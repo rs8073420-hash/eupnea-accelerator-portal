@@ -61,7 +61,8 @@
     }
 
     // ========================================================================
-    // LINKEDIN ACCELERATOR RANKERS & INFLUENCER OUTREACH ENGINE (20 PER PAGE)
+    // ========================================================================
+    // LINKEDIN ACCELERATOR RANKERS & INFLUENCER OUTREACH ENGINE (20 PER PAGE, LIGHT TABLE)
     // ========================================================================
     let cachedRankers = [];
     let filteredRankers = [];
@@ -82,8 +83,8 @@
     }
 
     async function loadAcceleratorRankers() {
-      const container = document.getElementById('rankers-cards-container');
-      if (!container) return;
+      const tbody = document.getElementById('rankers-table-body');
+      if (!tbody) return;
       try {
         const res = await fetch('/api/rankers');
         const data = await res.json();
@@ -97,7 +98,7 @@
         renderRankersPage();
       } catch (err) {
         console.error('Failed to load rankers:', err);
-        container.innerHTML = `<div class="text-center py-10 text-rose-400 font-mono text-xs">Error loading rankers: ${err.message}</div>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-10 text-rose-600 font-mono text-xs">Error loading rankers: ${err.message}</td></tr>`;
       }
     }
 
@@ -142,9 +143,19 @@
       renderRankersPage();
     }
 
+    function buildPaginationHtml(totalPages, curPage) {
+      let pagHtml = `<button onclick="prevRankersPage()" class="px-2.5 py-1 rounded-md bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-mono text-xs font-bold disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer shadow-xs transition-all">← Prev</button>`;
+      for (let p = 1; p <= totalPages; p++) {
+        const isActive = (p === curPage);
+        pagHtml += `<button onclick="goToRankersPage(${p})" class="px-3 py-1 rounded-md text-xs font-mono font-bold cursor-pointer transition-all shadow-xs ${isActive ? 'bg-blue-600 text-white border border-blue-600 ring-2 ring-blue-300 font-extrabold' : 'bg-white border border-slate-300 text-slate-700 hover:bg-blue-50 hover:text-blue-700'}">${p}</button>`;
+      }
+      pagHtml += `<button onclick="nextRankersPage()" class="px-2.5 py-1 rounded-md bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-mono text-xs font-bold disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer shadow-xs transition-all">Next →</button>`;
+      return pagHtml;
+    }
+
     function renderRankersPage() {
-      const container = document.getElementById('rankers-cards-container');
-      if (!container) return;
+      const tbody = document.getElementById('rankers-table-body');
+      if (!tbody) return;
 
       const totalItems = filteredRankers.length;
       const totalPages = Math.ceil(totalItems / rankersPerPage) || 1;
@@ -155,44 +166,37 @@
       const endIdx = Math.min(startIdx + rankersPerPage, totalItems);
       const pageItems = filteredRankers.slice(startIdx, endIdx);
 
-      // Indicators
-      const pageInd = document.getElementById('rankers-page-indicator');
-      if (pageInd) pageInd.innerText = `Page ${rankersCurrentPage} of ${totalPages}`;
+      // Summary text (Top & Bottom)
+      const summaryText = totalItems === 0 
+        ? 'No curators matched filter' 
+        : `Showing ${startIdx + 1}–${endIdx} of ${totalItems} (Page ${rankersCurrentPage} of ${totalPages})`;
 
-      const showingText = document.getElementById('rankers-showing-text');
-      if (showingText) {
-        showingText.innerText = totalItems === 0 
-          ? 'No rankers matched filter' 
-          : `Showing ${startIdx + 1}–${endIdx} of ${totalItems} verified curators (20 per page)`;
-      }
+      const topShowing = document.getElementById('rankers-showing-text-top');
+      if (topShowing) topShowing.innerText = summaryText;
 
-      const prevBtn = document.getElementById('btn-rankers-prev');
-      if (prevBtn) prevBtn.disabled = (rankersCurrentPage <= 1);
-      const nextBtn = document.getElementById('btn-rankers-next');
-      if (nextBtn) nextBtn.disabled = (rankersCurrentPage >= totalPages);
+      const btmPageInd = document.getElementById('rankers-page-indicator-bottom');
+      if (btmPageInd) btmPageInd.innerText = `Page ${rankersCurrentPage} of ${totalPages} (${totalItems} Total Curators)`;
 
-      // Numbered pagination buttons
-      const pagBtnsContainer = document.getElementById('rankers-pagination-buttons');
-      if (pagBtnsContainer) {
-        let pagHtml = `<button onclick="prevRankersPage()" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-xs font-semibold disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer">← Prev</button>`;
-        for (let p = 1; p <= totalPages; p++) {
-          const isActive = (p === rankersCurrentPage);
-          pagHtml += `<button onclick="goToRankersPage(${p})" class="px-2.5 py-1 rounded-lg text-xs font-mono font-bold cursor-pointer transition-all ${isActive ? 'bg-pink-600 text-white shadow-md shadow-pink-600/30 ring-1 ring-pink-400' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}">${p}</button>`;
-        }
-        pagHtml += `<button onclick="nextRankersPage()" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-xs font-semibold disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer">Next →</button>`;
-        pagBtnsContainer.innerHTML = pagHtml;
-      }
+      // Render pagination buttons (Top & Bottom)
+      const pagHtml = buildPaginationHtml(totalPages, rankersCurrentPage);
+      const topPag = document.getElementById('rankers-top-pagination-buttons');
+      if (topPag) topPag.innerHTML = pagHtml;
+
+      const btmPag = document.getElementById('rankers-bottom-pagination-buttons');
+      if (btmPag) btmPag.innerHTML = pagHtml;
 
       if (pageItems.length === 0) {
-        container.innerHTML = `
-          <div class="col-span-2 text-center py-12 text-slate-400 font-mono text-xs border border-dashed border-slate-800 rounded-xl bg-slate-950/40">
-            <span class="text-2xl block mb-2">🔍</span>
-            <span>No curators matched your query. Try clearing the search or status filter.</span>
-          </div>`;
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="text-center py-12 text-slate-500 font-mono text-xs bg-slate-50/50">
+              <span class="text-2xl block mb-2">🔍</span>
+              <span>No curators found matching your search. Try adjusting the query or clearing the filter.</span>
+            </td>
+          </tr>`;
         return;
       }
 
-      container.innerHTML = pageItems.map((r, i) => {
+      tbody.innerHTML = pageItems.map((r, i) => {
         const itemNum = startIdx + i + 1;
         const rankerName = r.author_name || r.name || 'Venture Curator';
         const rankerRole = r.headline || 'UK Accelerator Analyst';
@@ -205,75 +209,84 @@
         const searchFallbackUrl = `https://www.linkedin.com/search/results/all/?keywords=${searchKeywords}`;
         const googleFallbackUrl = `https://www.google.com/search?q=linkedin+${encodeURIComponent(rankerName)}+${encodeURIComponent(rankerRole)}`;
 
-        let statusClass = 'bg-slate-800 text-slate-300 border-slate-700';
-        if (status === 'contacted') statusClass = 'bg-sky-500/20 text-sky-300 border-sky-500/40 font-bold';
-        if (status === 'pitch_sent') statusClass = 'bg-purple-500/25 text-purple-300 border-purple-500/50 font-bold';
-        if (status === 'listed') statusClass = 'bg-emerald-500/25 text-emerald-300 border-emerald-500/50 font-bold';
+        let statusClass = 'bg-slate-100 text-slate-700 border-slate-300';
+        if (status === 'contacted') statusClass = 'bg-sky-50 text-sky-800 border-sky-300 font-bold';
+        if (status === 'pitch_sent') statusClass = 'bg-purple-50 text-purple-800 border-purple-300 font-bold';
+        if (status === 'listed') statusClass = 'bg-emerald-50 text-emerald-800 border-emerald-300 font-bold';
 
         return `
-        <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-pink-500/40 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4">
-          
-          <!-- Column 1: Number, Avatar & Identity -->
-          <div class="flex items-start gap-3 md:w-5/12">
-            <span class="w-7 h-7 rounded-lg bg-slate-800 text-pink-400 font-mono text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5 border border-slate-700">#${itemNum}</span>
-            <div class="min-w-0">
-              <div class="flex items-center gap-2 flex-wrap">
-                <h4 class="font-syne font-bold text-sm text-white flex items-center gap-1.5">
-                  <span>${escapeHtml(rankerName)}</span>
-                  <span class="text-sky-400 text-xs font-bold" title="Verified UK Venture Ecosystem Leader">✓</span>
-                </h4>
-                <span class="text-[10px] font-mono px-2 py-0.5 rounded font-bold" style="background: rgba(236,72,153,0.18); color: #f472b6; border: 1px solid rgba(236,72,153,0.4);">${escapeHtml(reach)}</span>
-              </div>
-              <div class="text-[11px] font-mono text-slate-300 mt-0.5 leading-snug truncate" title="${escapeHtml(rankerRole)}">${escapeHtml(rankerRole)}</div>
-              
-              <!-- Topic / Angle -->
-              <div class="text-[11px] text-slate-400 mt-1 leading-snug">
-                <span class="text-pink-400 font-semibold font-mono text-[10px] uppercase tracking-wider">Ranking Focus:</span> 
-                <span class="text-slate-300">${escapeHtml(angle)}</span>
-              </div>
-            </div>
-          </div>
+        <tr class="hover:bg-blue-50/40 transition-colors border-b border-slate-200">
+          <!-- Col 1: # Index -->
+          <td class="py-3.5 px-3 text-center font-mono font-bold text-slate-600 text-xs bg-slate-50/50">
+            #${itemNum}
+          </td>
 
-          <!-- Column 2: Direct Verified Links & Status Action -->
-          <div class="flex flex-col gap-2 md:w-3/12 shrink-0">
-            <div class="flex items-center gap-2 flex-wrap">
+          <!-- Col 2: Curator Identity & Role -->
+          <td class="py-3.5 px-4">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="font-syne font-bold text-sm text-slate-900">${escapeHtml(rankerName)}</span>
+              <span class="text-blue-600 text-xs font-bold" title="Verified Venture Ecosystem Leader">✓</span>
+            </div>
+            <div class="text-[11px] text-slate-600 mt-0.5 leading-snug font-sans line-clamp-2" title="${escapeHtml(rankerRole)}">
+              ${escapeHtml(rankerRole)}
+            </div>
+          </td>
+
+          <!-- Col 3: Reach & Ranking Focus Angle -->
+          <td class="py-3.5 px-4">
+            <span class="inline-block text-[10px] font-mono px-2 py-0.5 rounded font-bold bg-pink-50 text-pink-700 border border-pink-200 mb-1">
+              ${escapeHtml(reach)}
+            </span>
+            <div class="text-[11px] text-slate-700 font-medium leading-snug line-clamp-2" title="${escapeHtml(angle)}">
+              ${escapeHtml(angle)}
+            </div>
+          </td>
+
+          <!-- Col 4: Verified Direct Links -->
+          <td class="py-3.5 px-4">
+            <div class="flex flex-col gap-1.5 min-w-[140px]">
               ${profUrl ? `
-                <a href="${escapeHtml(profUrl)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-600/20 hover:bg-blue-600/40 text-blue-300 border border-blue-500/40 text-[11px] font-mono font-semibold transition-all">
-                  <span>Open Profile ↗</span>
+                <a href="${escapeHtml(profUrl)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-between px-2.5 py-1 rounded-md bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-[11px] font-mono font-bold transition-all shadow-xs" title="Open direct LinkedIn profile in new tab">
+                  <span>🔗 View Profile ↗</span>
                 </a>
               ` : ''}
-              <a href="${searchFallbackUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-[11px] font-mono transition-all" title="Verified live search on LinkedIn to prevent authwall 404">
-                <span>🔍 Verify</span>
+              <a href="${searchFallbackUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-between px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-[11px] font-mono font-medium transition-all shadow-xs" title="Live LinkedIn search query that bypasses guest authwall">
+                <span>🔍 Verify (No Wall)</span>
               </a>
-              <a href="${googleFallbackUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800 text-[10px] font-mono transition-all" title="Google Search Fallback">
-                <span>Google</span>
+              <a href="${googleFallbackUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-between px-2 py-0.5 rounded-md bg-slate-50 hover:bg-slate-100 text-slate-500 border border-slate-200 text-[10px] font-mono transition-all" title="Google search fallback">
+                <span>🌐 Google Search</span>
               </a>
             </div>
+          </td>
 
-            <!-- Status Dropdown -->
-            <div class="flex items-center gap-2">
-              <span class="text-[10px] font-mono px-2 py-0.5 rounded border uppercase ${statusClass}">${escapeHtml(status)}</span>
-              <select onchange="updateRankerStatus(${r.id}, this.value)" class="bg-slate-950 border border-slate-700 text-[10px] font-mono text-slate-200 rounded px-2 py-1 cursor-pointer outline-none">
+          <!-- Col 5: Outreach Status Dropdown -->
+          <td class="py-3.5 px-3">
+            <div class="flex flex-col gap-1.5 min-w-[110px]">
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded border uppercase text-center ${statusClass}">
+                ${escapeHtml(status)}
+              </span>
+              <select onchange="updateRankerStatus(${r.id}, this.value)" class="bg-white border border-slate-300 text-[11px] font-sans text-slate-800 rounded px-2 py-1 cursor-pointer outline-none focus:border-blue-500 shadow-xs">
                 <option value="identified" ${status === 'identified' ? 'selected' : ''}>Identified</option>
                 <option value="contacted" ${status === 'contacted' ? 'selected' : ''}>Contacted</option>
                 <option value="pitch_sent" ${status === 'pitch_sent' ? 'selected' : ''}>Pitch Sent</option>
                 <option value="listed" ${status === 'listed' ? 'selected' : ''}>Listed in Top X</option>
               </select>
             </div>
-          </div>
+          </td>
 
-          <!-- Column 3: Pitch Snippet & Copy Action -->
-          <div class="md:w-4/12 flex flex-col justify-between p-2.5 rounded-lg bg-slate-950/80 border border-slate-800 text-[11px] font-mono">
-            <div class="flex items-center justify-between mb-1 text-[10px] text-slate-400 font-bold uppercase">
-              <span>Bespoke Pitch:</span>
-              <button onclick="copyRankerPitch(${r.id})" class="text-pink-400 hover:text-pink-300 font-bold flex items-center gap-1 cursor-pointer">
-                <span id="copy-ranker-btn-${r.id}">📋 Copy Pitch</span>
-              </button>
+          <!-- Col 6: Tailored Pitch Snippet & Copy Action -->
+          <td class="py-3.5 px-4">
+            <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-[11px] font-sans shadow-xs">
+              <div class="flex items-center justify-between mb-1 text-[10px] text-slate-500 font-bold uppercase font-mono">
+                <span>Tailored Pitch:</span>
+                <button onclick="copyRankerPitch(${r.id})" class="text-pink-600 hover:text-pink-700 font-bold flex items-center gap-1 cursor-pointer">
+                  <span id="copy-ranker-btn-${r.id}">📋 Copy</span>
+                </button>
+              </div>
+              <div class="text-[11px] text-slate-700 leading-relaxed line-clamp-3" id="ranker-pitch-text-${r.id}">${escapeHtml(pitch)}</div>
             </div>
-            <div class="text-[10px] text-slate-300 line-clamp-3 leading-relaxed" id="ranker-pitch-text-${r.id}">${escapeHtml(pitch)}</div>
-          </div>
-
-        </div>
+          </td>
+        </tr>
         `;
       }).join('');
 
@@ -313,7 +326,7 @@
       navigator.clipboard.writeText(text).then(() => {
         if (btnEl) btnEl.innerText = '✓ Copied!';
         setTimeout(() => {
-          if (btnEl) btnEl.innerText = '📋 Copy Pitch';
+          if (btnEl) btnEl.innerText = '📋 Copy';
         }, 2000);
         if (typeof showToast === 'function') {
           showToast('Pitch copied to clipboard!');
@@ -332,7 +345,7 @@
         btn.disabled = true;
         btn.innerHTML = `<span class="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></span> <span>Hunting Real Curators...</span>`;
       }
-      if (statusMsg) statusMsg.innerHTML = '<span class="text-amber-400">⚡ Astra-R01 is scouting real UK/EU venture curators...</span>';
+      if (statusMsg) statusMsg.innerHTML = '<span class="text-amber-600 font-bold">⚡ Astra-R01 is scouting real UK/EU venture curators...</span>';
 
       try {
         const res = await fetch('/api/category-agents/astra_r01/run?batch_size=2', { method: 'POST' });
@@ -340,13 +353,13 @@
         if (data.success) {
           if (typeof showToast === 'function') showToast(`⚡ Astra-R01: ${data.message}`);
           if (statusMsg) {
-            statusMsg.innerHTML = `<span class="text-emerald-400 font-bold">✅ Success: Discovered ${data.count_added} curators (Total: ${data.total_rankers})</span>`;
+            statusMsg.innerHTML = `<span class="text-emerald-700 font-bold">✅ Success: Discovered ${data.count_added} curators (Total: ${data.total_rankers})</span>`;
           }
           await loadAcceleratorRankers();
           if (typeof loadDashboardStats === 'function') loadDashboardStats();
         } else {
           if (typeof showToast === 'function') showToast(data.message || 'Execution completed');
-          if (statusMsg) statusMsg.innerText = 'Status: Standby / Ready to Hunt';
+          if (statusMsg) statusMsg.innerText = '● Status: Active & Ready';
         }
       } catch (err) {
         console.error('Failed to run Astra-R01:', err);
@@ -354,7 +367,7 @@
       } finally {
         if (btn) {
           btn.disabled = false;
-          btn.innerHTML = `<span class="w-2 h-2 rounded-full bg-white animate-ping"></span> <span>⚡ Run Astra-R01 (AI Ranker Hunter)</span>`;
+          btn.innerHTML = `<span class="w-2 h-2 rounded-full bg-white animate-ping"></span> <span>⚡ Run Astra-R01 (Discover 2 More)</span>`;
         }
       }
     }
@@ -3104,62 +3117,62 @@
     </div>
   </div>
 
-  <!-- ⭐ DEDICATED MODAL: TOP UK ACCELERATOR RANKERS & LINKEDIN INFLUENCERS -->
-  <div id="modal-accelerator-rankers" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
-    <div class="rounded-2xl max-w-6xl w-full p-6 relative border border-slate-700 max-h-[92vh] overflow-y-auto shadow-2xl flex flex-col" style="background-color: #0c1222; color: #f8fafc;">
-      <button onclick="closeAcceleratorRankersModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white text-lg font-mono cursor-pointer transition-colors">✕</button>
+  <!-- ⭐ DEDICATED MODAL: TOP UK ACCELERATOR RANKERS & LINKEDIN INFLUENCERS (100% LIGHT THEME, STRUCTURED TABLE) -->
+  <div id="modal-accelerator-rankers" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-2 sm:p-4">
+    <div class="rounded-2xl max-w-7xl w-full p-4 sm:p-6 relative border border-slate-200 max-h-[94vh] overflow-y-auto shadow-2xl flex flex-col bg-white text-slate-900">
+      <button onclick="closeAcceleratorRankersModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-800 text-xl font-bold cursor-pointer transition-colors p-1.5 rounded-lg hover:bg-slate-100">✕</button>
       
-      <!-- Modal Header -->
-      <div class="flex items-start justify-between gap-4 mb-4 flex-wrap">
+      <!-- Modal Header (Clean White / Light Theme) -->
+      <div class="flex items-start justify-between gap-4 mb-4 flex-wrap border-b border-slate-200 pb-3">
         <div class="flex items-center gap-3">
-          <span class="w-10 h-10 rounded-xl bg-pink-500/20 text-pink-400 border border-pink-500/40 flex items-center justify-center font-bold text-xl shadow-lg shadow-pink-500/10">⭐</span>
+          <span class="w-11 h-11 rounded-xl bg-pink-50 text-pink-600 border border-pink-200 flex items-center justify-center font-bold text-2xl shadow-xs">⭐</span>
           <div>
-            <h3 class="font-syne font-bold text-lg text-white flex items-center gap-2 flex-wrap">
-              <span>Top UK Accelerator Rankers & LinkedIn Influencer Outreach</span>
-              <span id="rankers-count-badge" class="px-2.5 py-0.5 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/40 text-[10px] font-mono font-bold">Curators</span>
+            <h3 class="font-syne font-bold text-xl text-slate-900 flex items-center gap-2.5 flex-wrap">
+              <span>Top UK Accelerator Rankers & Curators</span>
+              <span id="rankers-count-badge" class="px-3 py-0.5 rounded-full bg-pink-100 text-pink-700 border border-pink-300 text-xs font-mono font-bold">74 Curators</span>
             </h3>
-            <p class="text-xs text-slate-400 font-mono mt-0.5">
-              Direct executive outreach to verified analysts, seed venture partners, and angel curators who publish "Top UK Accelerators" lists.
+            <p class="text-xs text-slate-600 font-medium mt-0.5">
+              Verified venture capitalists, accelerator managing directors, and tech analysts who curate and publish "Top UK/European Accelerators" rankings.
             </p>
           </div>
         </div>
         
         <!-- Astra-R01 Agent Trigger Button -->
         <div class="flex items-center gap-2">
-          <button id="btn-run-astra-r01" onclick="triggerAstraR01Hunter()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-mono font-bold text-xs flex items-center gap-2 shadow-lg shadow-pink-600/30 transition-all cursor-pointer">
+          <button id="btn-run-astra-r01" onclick="triggerAstraR01Hunter()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-mono font-bold text-xs flex items-center gap-2 shadow-sm shadow-pink-500/20 transition-all cursor-pointer">
             <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
-            <span>⚡ Run Astra-R01 (AI Ranker Hunter)</span>
+            <span>⚡ Run Astra-R01 (Discover 2 More)</span>
           </button>
         </div>
       </div>
 
-      <!-- Agent Status & Strategy Banner -->
+      <!-- Strategy & Engine Status Bar -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-        <div class="p-2.5 rounded-xl bg-slate-950/80 border border-pink-500/40 flex items-center justify-between text-xs font-mono">
-          <div class="flex items-center gap-2 text-pink-300">
-            <span class="px-1.5 py-0.5 rounded bg-pink-500/20 border border-pink-500/40 text-[10px] font-bold">🤖 ASTRA-R01</span>
-            <span class="font-bold text-white">Live Discovery Engine</span>
+        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs font-mono">
+          <div class="flex items-center gap-2 text-slate-700">
+            <span class="px-2 py-0.5 rounded bg-blue-100 text-blue-700 border border-blue-300 text-[10px] font-bold">🤖 ASTRA-R01</span>
+            <span class="font-bold text-slate-900">Live LinkedIn Discovery Engine</span>
           </div>
-          <div class="text-[11px] text-pink-400 font-bold" id="astra-r01-status-msg">Status: Standby / Ready to Hunt</div>
+          <div class="text-[11px] text-emerald-700 font-bold" id="astra-r01-status-msg">● Status: Active & Ready</div>
         </div>
-        <div class="p-2.5 rounded-xl bg-pink-950/20 border border-pink-500/30 text-xs text-slate-300 flex items-center gap-2">
-          <span class="text-pink-400">💡</span>
-          <span class="text-[11px] text-slate-300 leading-tight">Direct pitching to these curators secures inclusion in viral accelerator rankings with zero ad spend.</span>
+        <div class="p-2.5 rounded-xl bg-amber-50/70 border border-amber-200 text-xs text-amber-900 flex items-center gap-2.5">
+          <span class="text-amber-600 text-base">💡</span>
+          <span class="text-[11px] leading-tight font-medium"><strong>Strategy:</strong> Direct pitching to these curators secures inclusion in viral accelerator rankings with zero ad spend.</span>
         </div>
       </div>
 
-      <!-- Filter & Search Toolbar (20 Per Page Controls) -->
-      <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 mb-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <div class="flex items-center gap-3 flex-1 flex-wrap">
-          <!-- Search input -->
-          <div class="relative flex-1 min-w-[200px]">
-            <input type="text" id="rankers-search-input" oninput="filterRankers()" placeholder="Search by curator name, title, firm or angle..." class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white font-mono focus:border-pink-500 outline-none">
+      <!-- Search, Status Filter & TOP PAGINATION BAR (Instant Direct Click for Page 2, 3, 4) -->
+      <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 mb-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3 shadow-xs">
+        
+        <!-- Search & Filter Controls -->
+        <div class="flex items-center gap-2.5 flex-1 flex-wrap">
+          <div class="relative flex-1 min-w-[220px]">
+            <input type="text" id="rankers-search-input" oninput="filterRankers()" placeholder="🔍 Search curator name, firm, title or angle..." class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 font-sans focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">
           </div>
 
-          <!-- Status Filter -->
-          <div class="flex items-center gap-1.5 text-xs font-mono">
-            <span class="text-slate-400 text-[11px]">Status:</span>
-            <select id="rankers-status-filter" onchange="filterRankers()" class="bg-slate-950 border border-slate-700 text-xs text-slate-200 rounded-lg px-2.5 py-1.5 font-mono cursor-pointer outline-none">
+          <div class="flex items-center gap-1.5 text-xs font-medium text-slate-600">
+            <span>Status:</span>
+            <select id="rankers-status-filter" onchange="filterRankers()" class="bg-white border border-slate-300 text-xs text-slate-700 rounded-lg px-2.5 py-1.5 font-medium cursor-pointer outline-none focus:border-blue-500">
               <option value="all">All Statuses</option>
               <option value="identified">Identified</option>
               <option value="contacted">Contacted</option>
@@ -3169,31 +3182,55 @@
           </div>
         </div>
 
-        <!-- Showing summary -->
-        <div class="text-[11px] font-mono text-slate-400 shrink-0" id="rankers-showing-text">
-          Showing 1–20 of curators (20 per page)
+        <!-- TOP PAGINATION CONTROLS (CLICK [2] DIRECTLY HERE) -->
+        <div class="flex items-center gap-2.5 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-xs shrink-0">
+          <span class="text-xs font-bold text-slate-700 font-mono" id="rankers-showing-text-top">Showing 1–20 of 74 (Page 1 of 4)</span>
+          
+          <div class="h-4 w-px bg-slate-300"></div>
+
+          <div class="flex items-center gap-1" id="rankers-top-pagination-buttons">
+            <!-- Dynamic Buttons: [Prev] [1] [2] [3] [4] [Next] -->
+          </div>
         </div>
+
       </div>
 
-      <!-- Rankers Cards Container (Paginated) -->
-      <div id="rankers-cards-container" class="flex flex-col gap-3 min-h-[300px]">
-        <div class="text-center py-12 text-slate-400 font-mono text-xs">
-          <span>Loading curated accelerator rankers...</span>
-        </div>
+      <!-- STRUCTURED DATA TABLE (COLUMNS & ROWS, 100% LIGHT THEME) -->
+      <div class="overflow-x-auto border border-slate-200 rounded-xl shadow-xs bg-white">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-slate-100 border-b border-slate-200 text-slate-700 font-mono font-bold text-[11px] uppercase tracking-wider">
+              <th class="py-3 px-3 w-12 text-center">#</th>
+              <th class="py-3 px-4 w-64">Curator & Role</th>
+              <th class="py-3 px-4 w-44">Reach & Ranking Angle</th>
+              <th class="py-3 px-4 w-52">Verified Links</th>
+              <th class="py-3 px-3 w-36">Status</th>
+              <th class="py-3 px-4">Bespoke Pitch Draft</th>
+            </tr>
+          </thead>
+          <tbody id="rankers-table-body" class="divide-y divide-slate-200 text-slate-800">
+            <!-- Loaded dynamically from /api/rankers -->
+            <tr>
+              <td colspan="6" class="text-center py-12 text-slate-500 font-mono text-xs">
+                <span>Loading curated accelerator rankers...</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
-      <!-- Modal Footer with Pagination Controls -->
-      <div class="mt-6 pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono">
+      <!-- Modal Footer with BOTTOM PAGINATION CONTROLS -->
+      <div class="mt-4 pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono">
         <div class="flex items-center gap-3">
-          <span class="text-slate-400" id="rankers-page-indicator">Page 1</span>
-          <div id="rankers-pagination-buttons" class="flex items-center gap-1.5">
-            <!-- Dynamic pagination buttons -->
+          <span class="text-slate-600 font-bold" id="rankers-page-indicator-bottom">Page 1 of 4</span>
+          <div id="rankers-bottom-pagination-buttons" class="flex items-center gap-1.5">
+            <!-- Dynamic bottom pagination buttons -->
           </div>
         </div>
 
         <div class="flex items-center gap-3">
-          <span class="text-slate-500 text-[11px]">Strict 20/page view</span>
-          <button onclick="closeAcceleratorRankersModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold cursor-pointer transition-colors">Close Dossier</button>
+          <span class="text-slate-500 text-[11px]">20 Curators Per Page</span>
+          <button onclick="closeAcceleratorRankersModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold border border-slate-300 cursor-pointer transition-colors shadow-xs">Close Dossier</button>
         </div>
       </div>
 

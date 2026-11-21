@@ -788,6 +788,87 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
         "pitch_draft": "Hi Paul, Lightspeed's expansion into London has driven intense conviction into European seed rounds. Eupnea Accelerator grooms early-stage technical teams to achieve institutional-grade metrics. Would love to share high-potential dealflow with your investment team.",
         "notes": "Partner at Lightspeed London; former partner at Northzone; serial entrepreneur."
     }
+,
+    {
+        'author_name': 'Phaedon Stamatopoulos',
+        'profile_url': 'https://www.linkedin.com/in/phaedonstamatopoulos/',
+        'post_url': 'https://www.linkedin.com/posts/phaedonstamatopoulos_eupnea-accelerator-enterprise-ai-cohort',
+        'headline': 'Managing Partner at Eupnea / Venture Architect & AI Strategist',
+        'estimated_reach': '25,000+ Founders & VCs',
+        'ranking_title': 'Eupnea Sovereign AI & Venture Design Accelerator Thesis',
+        'pitch_draft': 'Hi Phaedon, our accelerator thesis focuses on combining hands-on technical architecture with high-conviction seed checks (£50k-£250k). Aligning our founder intake with premier European venture syndicates.',
+        'notes': 'Eupnea leadership & venture architecture curator.'
+    },
+    {
+        'author_name': 'Panagiotis Dimitrelis',
+        'profile_url': 'https://www.linkedin.com/in/panagiotis-dimitrelis/',
+        'post_url': 'https://www.linkedin.com/posts/panagiotis-dimitrelis_uk-accelerators-dealflow-ranking',
+        'headline': 'Director at Eupnea Accelerator / Enterprise Technology Strategist',
+        'estimated_reach': '35,000+ European Tech Leaders',
+        'ranking_title': 'UK High-Conviction Accelerators & Dealflow Licensing Matrix',
+        'pitch_draft': 'Hi Panagiotis, reviewing our 1,300+ platform accelerator directory and smartmatch integration. Direct pipeline active across the UK, Europe, and global venture hubs.',
+        'notes': 'Eupnea Director; driver of accelerator distribution strategy.'
+    },
+    {
+        'author_name': 'Christian Gabriel',
+        'profile_url': 'https://www.linkedin.com/in/christiangabriel/',
+        'post_url': 'https://www.linkedin.com/posts/christiangabriel_uk-startup-equity-accelerator-guide',
+        'headline': 'Founder & CEO of Capdesk (acquired by Carta) / Angel Investor',
+        'estimated_reach': '45,000+ Founders & Operators',
+        'ranking_title': 'Capdesk & Carta Guide to UK Accelerator Cap Tables',
+        'pitch_draft': 'Hi Christian, your work building Capdesk and leading equity transparency across European startups has set the standard for founder governance. Eupnea Accelerator grounds seed founders in clean cap table mechanics from day zero. Would love to stay connected.',
+        'notes': 'Founder of Capdesk (sold to Carta for $100M+); European equity pioneer.'
+    },
+    {
+        'author_name': 'Eamonn Carey MBE',
+        'profile_url': 'https://www.linkedin.com/in/eamonncarey/',
+        'post_url': 'https://www.linkedin.com/posts/eamonncarey_accelerator-dealflow-rankings-2026',
+        'headline': 'Managing Partner @ Tera Ventures / Top European Accelerator Mentor',
+        'estimated_reach': '38,000+ European Founders',
+        'ranking_title': 'Top European & UK Seed Accelerators for Technical Founders',
+        'pitch_draft': 'Hi Eamonn, following your deep mentorship across Techstars and European accelerators. Eupnea provides technical systems engineering alongside seed capital in London. Would love to share our founder profiles.',
+        'notes': 'Managing partner and leading European mentor.'
+    },
+    {
+        'author_name': 'Gemma Milne PhD',
+        'profile_url': 'https://www.linkedin.com/in/gemmamilne/',
+        'post_url': 'https://www.linkedin.com/posts/gemmamilne_science-deeptech-accelerators',
+        'headline': 'DeepTech Author & University of Glasgow Research Fellow',
+        'estimated_reach': '26,000+ Science & Tech Founders',
+        'ranking_title': 'Science to Startup: Commercialization Accelerators in the UK',
+        'pitch_draft': 'Hi Gemma, admiring your rigorous analysis of DeepTech commercialization. Eupnea Accelerator provides technical verification for university spinouts in London. Would love to share our research commercialization benchmarks.',
+        'notes': 'Academic & Author; DeepTech ecosystem leader.'
+    },
+    {
+        'author_name': 'Robin Haak',
+        'profile_url': 'https://www.linkedin.com/in/robinhaak/',
+        'post_url': 'https://www.linkedin.com/posts/robinhaak_european-seed-ecosystem-rankings',
+        'headline': 'General Partner at Robin Capital / ex-Executive Babylon Health',
+        'estimated_reach': '32,000+ HealthTech & AI Founders',
+        'ranking_title': 'HealthTech & Enterprise AI Accelerator Rankings Europe',
+        'pitch_draft': 'Hi Robin, following your investments across early-stage European health and AI platforms. Eupnea Accelerator is backing founders solving complex enterprise infrastructure problems in London. We would love to share high-conviction dealflow.',
+        'notes': 'Former executive at Babylon Health; GP at Robin Capital.'
+    },
+    {
+        'author_name': 'Niko Bonatsos',
+        'profile_url': 'https://www.linkedin.com/in/bonatsos/',
+        'post_url': 'https://www.linkedin.com/posts/bonatsos_general-catalyst-seed-accelerator-guide',
+        'headline': 'Managing Director at General Catalyst (Early Backer of Snap, Discord, Livongo)',
+        'estimated_reach': '85,000+ Global Tech Founders',
+        'ranking_title': 'General Catalyst Global Seed & Accelerator Benchmark',
+        'pitch_draft': "Hi Niko, General Catalyst's eye for generational consumer and enterprise tech is unmatched globally. Eupnea Accelerator operates in London offering intense technical venture acceleration. We'd love to share our standout graduates with your team.",
+        'notes': 'Managing Director at General Catalyst; top Midas List investor.'
+    },
+    {
+        'author_name': 'Danielle Anderson',
+        'profile_url': 'https://www.linkedin.com/in/danielleanderson/',
+        'post_url': 'https://www.linkedin.com/posts/danielleanderson_inclusive-uk-startup-accelerators',
+        'headline': 'Director at Step Up Club / Tech Diversity & Leadership Curator',
+        'estimated_reach': '28,000+ UK Leaders',
+        'ranking_title': 'UK Diversity & Inclusion Startup Accelerator Index',
+        'pitch_draft': "Hi Danielle, your advocacy for inclusive leadership in the UK startup ecosystem has opened vital opportunities. Eupnea Accelerator maintains transparent, accessible application tracks for ambitious founders. We'd love to collaborate.",
+        'notes': 'Inclusive leadership curator and startup advocate.'
+    }
 ]
 
 # Targeted Expansion Pool for Direct Startup Intake (Astra-I01)

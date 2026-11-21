@@ -627,6 +627,167 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
         "pitch_draft": "Hi Nadine, AlbionVC's track record in enterprise B2B software and deeptech is top-tier. Eupnea Accelerator operates hands-on engineering programs for early AI infrastructure teams. Would love to share our graduate profiles for Albion's seed monitoring pipeline.",
         "notes": "Investment Director at AlbionVC; specialized in DeepTech, B2B AI and data."
     }
+,
+{
+        "author_name": "Martin Mignot",
+        "profile_url": "https://www.linkedin.com/in/martinmignot/",
+        "post_url": "https://www.linkedin.com/posts/martinmignot_early-stage-european-accelerators-2026",
+        "headline": "Partner at Index Ventures London (Backer of Deliveroo, Revolut, Deliverect)",
+        "estimated_reach": "48,000+ Founders & VCs",
+        "ranking_title": "Index Ventures Early Stage & Seed Accelerator Roundup",
+        "pitch_draft": "Hi Martin, your investments in transformative consumer and enterprise platforms across London have defined high-growth tech. Eupnea Accelerator backs early-stage teams with hands-on venture design and seed capital. Would value connecting as our cohort scales.",
+        "notes": "Partner at Index Ventures London; early backer of Revolut and Deliveroo."
+    },
+    {
+        "author_name": "Hannah Seal",
+        "profile_url": "https://www.linkedin.com/in/hannah-seal/",
+        "post_url": "https://www.linkedin.com/posts/hannah-seal_b2b-software-accelerators-europe",
+        "headline": "Partner at Index Ventures London (Enterprise & Future of Work)",
+        "estimated_reach": "32,000+ B2B Software Operators",
+        "ranking_title": "Top European B2B Software & Workplace Tech Accelerators",
+        "pitch_draft": "Hi Hannah, following your insights on modern enterprise productivity and software infrastructure at Index. Eupnea Accelerator provides engineering support and pilot validation for early enterprise AI startups in London. Would love to share our founder profiles.",
+        "notes": "Partner at Index Ventures London focusing on future of work and enterprise SaaS."
+    },
+    {
+        "author_name": "Fred Destin",
+        "profile_url": "https://www.linkedin.com/in/fdestin/",
+        "post_url": "https://www.linkedin.com/posts/fdestin_founder-first-seed-accelerator-guide",
+        "headline": "Founder & General Partner at Stride.VC London / ex-Partner Accel & Atlas",
+        "estimated_reach": "70,000+ Startup Founders & Angels",
+        "ranking_title": "Stride.VC Unfiltered Guide to UK Seed Launchpads & Accelerators",
+        "pitch_draft": "Hi Fred, Stride's founder-first, passionate seed ethos has brought immense clarity to London venture capital. Eupnea Accelerator prepares technical teams with high velocity and non-dilutive smartmatch dealflow. We'd love to share our upcoming showcase with Stride.",
+        "notes": "Founder of Stride.VC; early investor in Deliveroo, PillPack, Zoopla."
+    },
+    {
+        "author_name": "Pia d'Iribarne",
+        "profile_url": "https://www.linkedin.com/in/piadiribarne/",
+        "post_url": "https://www.linkedin.com/posts/piadiribarne_new-wave-european-preseed-rankings",
+        "headline": "Co-Founder & Managing Partner at New Wave / ex-Partner Stride.VC & Accel",
+        "estimated_reach": "40,000+ European Tech Founders",
+        "ranking_title": "New Wave Cross-Border Seed Accelerators & Studios",
+        "pitch_draft": "Hi Pia, New Wave's cross-border seed investing between London and Paris has empowered incredible engineering teams. Eupnea Accelerator backs technical founders building enterprise infrastructure in the UK. Would love to align on pipeline sharing.",
+        "notes": "Co-founder of New Wave; former partner at Stride.VC and Accel London."
+    },
+    {
+        "author_name": "Jean de La Rochebrochard",
+        "profile_url": "https://www.linkedin.com/in/larochebrochard/",
+        "post_url": "https://www.linkedin.com/posts/larochebrochard_kima-ventures-top-accelerators-europe",
+        "headline": "Managing Partner at Kima Ventures (Most Active Angel Fund in Europe)",
+        "estimated_reach": "95,000+ Seed Founders Globally",
+        "ranking_title": "Kima Ventures 100 Startups a Year: Accelerator Feeder Index",
+        "pitch_draft": "Hi Jean, Kima's pace of backing 2-3 startups every single week across Europe is legendary. At Eupnea, our accelerator cohort provides deep technical venture design and pilot contracts. Would love to ensure our graduating teams are visible for Kima's fast-track angel checks.",
+        "notes": "Managing Partner at Kima Ventures; invests in 100 startups per year."
+    },
+    {
+        "author_name": "Roxanne Varza",
+        "profile_url": "https://www.linkedin.com/in/varza/",
+        "post_url": "https://www.linkedin.com/posts/varza_station-f-top-accelerator-programs",
+        "headline": "Director at Station F (World's Largest Startup Campus) / Investor",
+        "estimated_reach": "110,000+ Global Tech Ecosystem Leaders",
+        "ranking_title": "Station F Definitive Guide to Top European Accelerators",
+        "pitch_draft": "Hi Roxanne, Station F has transformed the European startup landscape into a unified global powerhouse. Eupnea Accelerator in London collaborates with cross-border European founders expanding their UK presence. We'd love to explore cross-campus ecosystem initiatives with Station F.",
+        "notes": "Director of Station F; former Editor of TechCrunch France."
+    },
+    {
+        "author_name": "Simon Menashy",
+        "profile_url": "https://www.linkedin.com/in/simonmenashy/",
+        "post_url": "https://www.linkedin.com/posts/simonmenashy_mmc-ventures-ai-accelerator-rankings",
+        "headline": "Partner at MMC Ventures London (Enterprise AI & Data Science Lead)",
+        "estimated_reach": "28,000+ DeepTech Founders",
+        "ranking_title": "MMC Ventures Annual UK AI Accelerator & Incubator Index",
+        "pitch_draft": "Hi Simon, MMC's flagship research reports on the State of AI have been essential reading for UK founders. Eupnea Accelerator supports early-stage enterprise AI builders with dedicated infrastructure. We would love to share our technical diligence metrics with MMC's research team.",
+        "notes": "Partner at MMC Ventures; leads AI and data infrastructure investments."
+    },
+    {
+        "author_name": "George Robson",
+        "profile_url": "https://www.linkedin.com/in/georgerobson/",
+        "post_url": "https://www.linkedin.com/posts/georgerobson_sequoia-europe-fintech-ai-accelerators",
+        "headline": "Partner at Sequoia Capital London / ex-Product Lead at Revolut",
+        "estimated_reach": "36,000+ FinTech & AI Founders",
+        "ranking_title": "Top FinTech & Enterprise Accelerators in Britain",
+        "pitch_draft": "Hi George, having built core product lines at Revolut before joining Sequoia, your operator-investor lens is invaluable. Eupnea Accelerator works closely with technical founders in London solving high-scale financial and enterprise bottlenecks. Would love to share our top cohort teams.",
+        "notes": "Partner at Sequoia Capital London; former Revolut product lead."
+    },
+    {
+        "author_name": "Damian Kimmelman",
+        "profile_url": "https://www.linkedin.com/in/damiankimmelman/",
+        "post_url": "https://www.linkedin.com/posts/damiankimmelman_uk-tech-founder-accelerators",
+        "headline": "Serial Tech Founder & Angel Investor (Duedil, Bathtub Regatta)",
+        "estimated_reach": "30,000+ UK Startup Founders",
+        "ranking_title": "The UK Tech Founder's Honest Guide to Early Accelerators",
+        "pitch_draft": "Hi Damian, your journey founding Duedil and creating Bathtub Regatta has brought genuine community spirit to UK tech. Eupnea Accelerator operates in London offering transparent terms and hands-on venture execution. Would love to connect and share notes on founder resilience.",
+        "notes": "Founder of Duedil; prominent angel investor and community builder."
+    },
+    {
+        "author_name": "Kaidi Ruusalepp",
+        "profile_url": "https://www.linkedin.com/in/kaidiruusalepp/",
+        "post_url": "https://www.linkedin.com/posts/kaidiruusalepp_funderbeam-accelerator-syndicate-guide",
+        "headline": "Founder & CEO of Funderbeam / Former CEO of Nasdaq Tallinn",
+        "estimated_reach": "35,000+ Global Angel Syndicates",
+        "ranking_title": "Funderbeam Guide to Early Stage Accelerator Liquidity & Syndicates",
+        "pitch_draft": "Hi Kaidi, Funderbeam's marketplace has opened innovative secondary liquidity for early-stage startup investors. Eupnea Accelerator supports founders building scalable capital tables from the very first round. We would welcome the chance to explore syndication synergy.",
+        "notes": "Founder & CEO of Funderbeam; former CEO of Nasdaq Tallinn."
+    },
+    {
+        "author_name": "Maren Bannon",
+        "profile_url": "https://www.linkedin.com/in/marenbannon/",
+        "post_url": "https://www.linkedin.com/posts/marenbannon_january-ventures-preseed-accelerator-rankings",
+        "headline": "Co-Founder & General Partner at January Ventures / ex-Stanford MBA",
+        "estimated_reach": "42,000+ Female & Underrepresented Founders",
+        "ranking_title": "January Ventures Top Pre-Seed Launchpads & Accelerators",
+        "pitch_draft": "Hi Maren, January Ventures' transparent, open-pitch pre-seed model is setting a new benchmark for venture accessibility. Eupnea Accelerator operates an open, merit-based application engine in London. We'd love to connect on supporting exceptional early-stage founders.",
+        "notes": "Co-founder & General Partner of January Ventures; advocate for diverse founders."
+    },
+    {
+        "author_name": "Julia Hawkins",
+        "profile_url": "https://www.linkedin.com/in/juliahawkins/",
+        "post_url": "https://www.linkedin.com/posts/juliahawkins_healthtech-deeptech-accelerators-uk",
+        "headline": "General Partner at Phoenix Court (LocalGlobe, Health & BioTech Lead)",
+        "estimated_reach": "28,000+ HealthTech & Bio Founders",
+        "ranking_title": "UK HealthTech & Computational Biology Accelerator Guide",
+        "pitch_draft": "Hi Julia, LocalGlobe's investments in healthtech and computational biology have backed generational leaders. Eupnea Accelerator works with founders solving enterprise data and computational challenges in London. We would love to share high-conviction dealflow with your team.",
+        "notes": "General Partner at LocalGlobe / Phoenix Court; leads HealthTech investments."
+    },
+    {
+        "author_name": "Nic Brisbourne",
+        "profile_url": "https://www.linkedin.com/in/nicbrisbourne/",
+        "post_url": "https://www.linkedin.com/posts/nicbrisbourne_forward-partners-applied-accelerator-guide",
+        "headline": "Managing Partner at Forward Partners / Author of 'The Equity Kicker'",
+        "estimated_reach": "38,000+ Pre-Seed Founders",
+        "ranking_title": "Applied Startup Acceleration: The UK Venture Builder Benchmark",
+        "pitch_draft": "Hi Nic, 'The Equity Kicker' has guided British founders on venture math and accelerator value for over a decade. At Eupnea, we combine direct equity checks with full-stack venture design. Would be thrilled to connect on early-stage UK ecosystem trends.",
+        "notes": "Managing Partner at Forward Partners; author of 'The Equity Kicker'."
+    },
+    {
+        "author_name": "Tracy Doree",
+        "profile_url": "https://www.linkedin.com/in/tracydoree/",
+        "post_url": "https://www.linkedin.com/posts/tracydoree_kindred-capital-equitable-venture-accelerators",
+        "headline": "Founder & Managing Partner at Kindred Capital (Equitable Venture Pioneer)",
+        "estimated_reach": "30,000+ Seed Founders & Angels",
+        "ranking_title": "Kindred Capital Guide to Founder-Friendly UK Accelerators",
+        "pitch_draft": "Hi Tracy, Kindred's 'Equitable Venture' model sharing fund carry directly with portfolio founders has revolutionized seed investing. Eupnea Accelerator is built with founder-aligned incentive structures. We would love to share our founder program milestones.",
+        "notes": "Founder & Managing Partner of Kindred Capital; pioneer of Equitable Venture."
+    },
+    {
+        "author_name": "Russell Buckley",
+        "profile_url": "https://www.linkedin.com/in/russellbuckley/",
+        "post_url": "https://www.linkedin.com/posts/russellbuckley_uk-angel-and-accelerator-ecosystem",
+        "headline": "Partner at Kindred Capital / ex-Managing Director of AdMob Europe (Google)",
+        "estimated_reach": "25,000+ Mobile & Tech Leaders",
+        "ranking_title": "Top UK Mobile & Software Acceleration Programs",
+        "pitch_draft": "Hi Russell, having scaled AdMob across Europe to its historic Google acquisition, your commercial instincts are deeply valued by founders. Eupnea Accelerator supports early enterprise software teams in London with pilot contracts. Would love to stay in touch.",
+        "notes": "Partner at Kindred Capital; former MD of AdMob Europe (acquired by Google)."
+    },
+    {
+        "author_name": "Paul Murphy",
+        "profile_url": "https://www.linkedin.com/in/paulanthonymurphy/",
+        "post_url": "https://www.linkedin.com/posts/paulanthonymurphy_lightspeed-europe-seed-accelerator-feeders",
+        "headline": "Partner at Lightspeed Venture Partners London / ex-Partner Northzone",
+        "estimated_reach": "55,000+ Founders & VCs",
+        "ranking_title": "Lightspeed European Seed & Accelerator Feeder Landscape",
+        "pitch_draft": "Hi Paul, Lightspeed's expansion into London has driven intense conviction into European seed rounds. Eupnea Accelerator grooms early-stage technical teams to achieve institutional-grade metrics. Would love to share high-potential dealflow with your investment team.",
+        "notes": "Partner at Lightspeed London; former partner at Northzone; serial entrepreneur."
+    }
 ]
 
 # Targeted Expansion Pool for Direct Startup Intake (Astra-I01)

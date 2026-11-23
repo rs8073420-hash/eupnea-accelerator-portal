@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+agent_browser_profiles/
+fundraising_engine/

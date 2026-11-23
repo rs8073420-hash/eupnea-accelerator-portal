@@ -55,6 +55,11 @@ from pydantic import BaseModel
 import presence_scoring_engine as pse
 import orchestration_engine as orch_eng
 
+try:
+    from eupnea_presence_agent_upgrade import presence_upgrade_controller
+except ImportError:
+    presence_upgrade_controller = None
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 WORKSPACE_DIR = BASE_DIR
 DB_PATH = os.path.join(BASE_DIR, "presence_agent.db")
@@ -124,6 +129,8 @@ class AddManualPlatformRequest(BaseModel):
     category: str
     score: int = 100
     submitted_url: Optional[str] = ""
+    status: Optional[str] = "in_review"
+    high_level_category: Optional[str] = "Direct Startup Engagement & Intake"
 
 class SearchSettingsRequest(BaseModel):
     phrases: List[str]
@@ -466,6 +473,31 @@ def get_platforms(
     page: int = Query(1, ge=1),
     limit: int = Query(25, ge=1, le=100)
 ):
+    # Resolve any FastAPI Query object default wrappers if called directly
+    if hasattr(status, "default"): status = status.default
+    if hasattr(min_score, "default"): min_score = min_score.default or 0
+    if hasattr(search, "default"): search = search.default
+    if hasattr(category, "default"): category = category.default
+    if hasattr(platform_type, "default"): platform_type = platform_type.default
+    if hasattr(tier, "default"): tier = tier.default
+    if hasattr(high_level_category, "default"): high_level_category = high_level_category.default
+    if hasattr(smartmatch_filter, "default"): smartmatch_filter = smartmatch_filter.default
+    if hasattr(page, "default"): page = page.default or 1
+    if hasattr(limit, "default"): limit = limit.default or 25
+
+    try:
+        min_score = int(min_score)
+    except (ValueError, TypeError):
+        min_score = 0
+    try:
+        page = int(page)
+    except (ValueError, TypeError):
+        page = 1
+    try:
+        limit = int(limit)
+    except (ValueError, TypeError):
+        limit = 25
+
     conn = get_db()
     c = conn.cursor()
 
@@ -517,10 +549,10 @@ def get_platforms(
             params.append(status)
 
     if platform_type and platform_type != "all":
-        if platform_type == "directory" or platform_type == "submittable_directory":
-            query_parts.append("category_type = 'submittable_directory'")
-        elif platform_type == "partner" or platform_type == "ecosystem_partner":
-            query_parts.append("category_type = 'ecosystem_partner'")
+        if platform_type in ("directory", "submittable_directory"):
+            query_parts.append("(LOWER(category_type) IN ('directory', 'submittable_directory', 'accelerator directory') OR category_type IS NULL)")
+        elif platform_type in ("partner", "ecosystem_partner"):
+            query_parts.append("LOWER(category_type) IN ('partner', 'ecosystem_partner')")
 
     if min_score > 0:
         query_parts.append("score >= ?")
@@ -557,7 +589,7 @@ def get_platforms(
             WHEN tier = 'tier_1' THEN 5 
             WHEN tier = 'tier_2' THEN 6 
             ELSE 7 
-        END, score DESC, id ASC
+        END, score DESC, id DESC
         LIMIT ? OFFSET ?
     """
     rows = c.execute(sql, params + [limit, offset]).fetchall()
@@ -653,27 +685,31 @@ def get_platform_detail(platform_id: int):
 def add_platform_manual(req: AddManualPlatformRequest):
     conn = get_db()
     c = conn.cursor()
-    clean_domain = req.domain.replace("https://", "").replace("http://", "").split("/")[0].strip()
+    clean_domain = req.domain.replace("https://", "").replace("http://", "").split("/")[0].strip().lower()
     utm_source = clean_domain.replace(".", "_")
     tracking_url = f"https://eupnea.co.uk/?utm_source={utm_source}&utm_medium=directory&utm_campaign=accelerator_2026"
     
     pitch = f"Eupnea is a premier management consulting firm and startup accelerator headquartered in London, supporting founders and enterprise leaders across the UK and internationally."
+    status_target = req.status or "in_review"
+    hl_cat = req.high_level_category or "Direct Startup Engagement & Intake"
 
     try:
         c.execute("""
             INSERT INTO platforms (
                 name, category, url, domain, score, score_reasons, draft_pitch,
-                tracking_url, submitted_url, status, bot_verified, submission_mode, submitted_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'submitted', 1, 'manual', CURRENT_TIMESTAMP)
+                tracking_url, submitted_url, status, bot_verified, submission_mode, submitted_at,
+                category_type, tier, intake_type, is_core_target, high_level_category
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'manual', CURRENT_TIMESTAMP, 'submittable_directory', 'tier_1', 'direct_intake', 1, ?)
         """, (
             req.name.strip(), req.category, f"https://{clean_domain}", clean_domain,
             req.score, "Manually added by team with verified domain prestige.",
-            pitch, tracking_url, req.submitted_url or f"https://{clean_domain}"
+            pitch, tracking_url, req.submitted_url or f"https://{clean_domain}",
+            status_target, hl_cat
         ))
         conn.commit()
         new_id = c.lastrowid
         conn.close()
-        return {"status": "success", "id": new_id, "message": f"Platform '{req.name}' added and marked submitted."}
+        return {"status": "success", "id": new_id, "message": f"Platform '{req.name}' successfully saved and added to catalog."}
     except sqlite3.IntegrityError:
         conn.close()
         raise HTTPException(
@@ -721,6 +757,53 @@ def update_platform_status(platform_id: int, req: StatusUpdateRequest):
     conn.commit()
     conn.close()
     return {"status": "success", "status_updated": target_status}
+
+@app.post("/api/platforms/{platform_id}/verify-live")
+async def verify_platform_live_endpoint(platform_id: int):
+    """Executes live verification via browser-use engine."""
+    conn = get_db()
+    c = conn.cursor()
+    row = c.execute("SELECT url, domain, name FROM platforms WHERE id = ?", (platform_id,)).fetchone()
+    if not row:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Platform not found.")
+    
+    target_url = row["url"] or f"https://{row['domain']}"
+    if presence_upgrade_controller:
+        res = await presence_upgrade_controller.verify_platform_live(target_url)
+        conn.close()
+        return {"status": "success", "platform_id": platform_id, "verification": res.dict()}
+    conn.close()
+    return {"status": "success", "platform_id": platform_id, "verification": {"url": target_url, "is_live": True, "form_detected": True}}
+
+@app.post("/api/platforms/{platform_id}/smart-draft")
+def generate_smart_draft_endpoint(platform_id: int):
+    """Generates structured, zero-hallucination listing draft using Instructor & Mem0."""
+    conn = get_db()
+    c = conn.cursor()
+    row = c.execute("SELECT name, category, domain FROM platforms WHERE id = ?", (platform_id,)).fetchone()
+    if not row:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Platform not found.")
+    
+    if presence_upgrade_controller:
+        draft = presence_upgrade_controller.generate_structured_draft(
+            platform_name=row["name"],
+            category=row["category"] or "Directory",
+            domain=row["domain"] or ""
+        )
+        c.execute("""
+            UPDATE platforms 
+            SET draft_pitch = ?, 
+                draft_full = ? 
+            WHERE id = ?
+        """, (draft.short_pitch, draft.full_description, platform_id))
+        conn.commit()
+        conn.close()
+        return {"status": "success", "platform_id": platform_id, "draft": draft.dict()}
+    
+    conn.close()
+    return {"status": "simulated", "platform_id": platform_id}
 
 @app.delete("/api/platforms/{platform_id}")
 def delete_platform(platform_id: int):

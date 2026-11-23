@@ -2007,7 +2007,7 @@ def run_category_platform_hunter(agent_id: str, category_key: str, batch_size: i
             form_url, tier, intake_type, is_core_target, high_level_category,
             is_smartmatch, smartmatch_free, smartmatch_paid, smartmatch_model,
             licensing_notes, ranking_scope, draft_pitch, draft_full
-        ) VALUES (?, 'Accelerator Ecosystem', ?, ?, ?, 'in_review', ?, 1, 'bot_assisted', 'Directory', ?, 'Tier 1', 'intake', 1, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, 'Accelerator Ecosystem', ?, ?, ?, 'in_review', ?, 1, 'bot_assisted', 'submittable_directory', ?, 'tier_1', 'intake', 1, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             nm,
             cand["url"],

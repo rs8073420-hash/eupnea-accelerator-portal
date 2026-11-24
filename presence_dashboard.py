@@ -54,6 +54,7 @@ from pydantic import BaseModel
 
 import presence_scoring_engine as pse
 import orchestration_engine as orch_eng
+import deepseek_flash_engine as dfe
 
 try:
     from eupnea_presence_agent_upgrade import presence_upgrade_controller
@@ -346,19 +347,21 @@ def get_dashboard_stats():
     pending_reviews = c.execute("SELECT COUNT(*) FROM platforms WHERE status IN ('draft_ready', 'in_review', 'found', 'ready_to_submit')").fetchone()[0]
     approved_count = c.execute("SELECT COUNT(*) FROM platforms WHERE status = 'approved'").fetchone()[0]
     submitted_count = c.execute("SELECT COUNT(*) FROM platforms WHERE status = 'submitted'").fetchone()[0]
-    unqualified_count = c.execute("SELECT COUNT(*) FROM platforms WHERE status = 'unqualified'").fetchone()[0]
+    unqualified_count = c.execute("SELECT COUNT(*) FROM platforms WHERE status IN ('unqualified', 'not_suitable')").fetchone()[0]
+    perk_benefit_count = c.execute("SELECT COUNT(*) FROM platforms WHERE status = 'perk_benefit'").fetchone()[0]
     dismissed_count = c.execute("SELECT COUNT(*) FROM platforms WHERE status = 'dismissed'").fetchone()[0]
 
-    submittable_count = c.execute("SELECT COUNT(*) FROM platforms WHERE category_type = 'submittable_directory'").fetchone()[0]
-    ecosystem_partner_count = c.execute("SELECT COUNT(*) FROM platforms WHERE category_type = 'ecosystem_partner'").fetchone()[0]
+    qualified_platforms = c.execute("SELECT COUNT(*) FROM platforms WHERE status NOT IN ('unqualified', 'not_suitable', 'perk_benefit', 'dismissed')").fetchone()[0]
+    submittable_count = c.execute("SELECT COUNT(*) FROM platforms WHERE category_type = 'submittable_directory' AND status NOT IN ('unqualified', 'not_suitable', 'perk_benefit', 'dismissed')").fetchone()[0]
+    ecosystem_partner_count = c.execute("SELECT COUNT(*) FROM platforms WHERE category_type = 'ecosystem_partner' AND status NOT IN ('unqualified', 'not_suitable', 'dismissed')").fetchone()[0]
 
-    tier_1_count = c.execute("SELECT COUNT(*) FROM platforms WHERE tier = 'tier_1'").fetchone()[0]
-    tier_2_count = c.execute("SELECT COUNT(*) FROM platforms WHERE tier = 'tier_2'").fetchone()[0]
+    tier_1_count = c.execute("SELECT COUNT(*) FROM platforms WHERE tier = 'tier_1' AND status NOT IN ('unqualified', 'not_suitable', 'perk_benefit', 'dismissed')").fetchone()[0]
+    tier_2_count = c.execute("SELECT COUNT(*) FROM platforms WHERE tier = 'tier_2' AND status NOT IN ('unqualified', 'not_suitable', 'perk_benefit', 'dismissed')").fetchone()[0]
     deprioritized_count = c.execute("SELECT COUNT(*) FROM platforms WHERE tier = 'deprioritized'").fetchone()[0]
-    core_target_count = c.execute("SELECT COUNT(*) FROM platforms WHERE is_core_target = 1").fetchone()[0]
+    core_target_count = c.execute("SELECT COUNT(*) FROM platforms WHERE is_core_target = 1 AND status NOT IN ('unqualified', 'not_suitable', 'perk_benefit', 'dismissed')").fetchone()[0]
 
-    # High-level category breakdown (Per Panagiotis Leadership Directive)
-    hl_rows = c.execute("SELECT high_level_category, COUNT(*) as cnt FROM platforms GROUP BY high_level_category").fetchall()
+    # High-level category breakdown (Qualified Active Portals Only - Zero Unqualified Contamination)
+    hl_rows = c.execute("SELECT high_level_category, COUNT(*) as cnt FROM platforms WHERE status NOT IN ('unqualified', 'not_suitable', 'perk_benefit', 'dismissed') GROUP BY high_level_category").fetchall()
     hl_categories = {r["high_level_category"]: r["cnt"] for r in hl_rows if r["high_level_category"]}
     smartmatch_count = hl_categories.get("SmartMatch & Dealflow Licensing Engines", 0)
     engagement_intake_count = hl_categories.get("Direct Startup Engagement & Intake", 0)
@@ -368,8 +371,8 @@ def get_dashboard_stats():
     media_press_count = hl_categories.get("Media, Press & Industry Publications", 0)
     uk_reviews_count = hl_categories.get("UK Accelerator Review & Ranking Platforms", 0)
 
-    smartmatch_free_count = c.execute("SELECT COUNT(*) FROM platforms WHERE smartmatch_free = 1").fetchone()[0]
-    smartmatch_paid_count = c.execute("SELECT COUNT(*) FROM platforms WHERE smartmatch_paid = 1").fetchone()[0]
+    smartmatch_free_count = c.execute("SELECT COUNT(*) FROM platforms WHERE smartmatch_free = 1 AND status NOT IN ('unqualified', 'not_suitable', 'perk_benefit', 'dismissed')").fetchone()[0]
+    smartmatch_paid_count = c.execute("SELECT COUNT(*) FROM platforms WHERE smartmatch_paid = 1 AND status NOT IN ('unqualified', 'not_suitable', 'perk_benefit', 'dismissed')").fetchone()[0]
 
     try:
         rankers_count = c.execute("SELECT COUNT(*) FROM accelerator_rankers").fetchone()[0]
@@ -377,7 +380,7 @@ def get_dashboard_stats():
         rankers_count = 0
 
     # Category breakdown
-    cat_rows = c.execute("SELECT category, COUNT(*) as cnt FROM platforms GROUP BY category").fetchall()
+    cat_rows = c.execute("SELECT category, COUNT(*) as cnt FROM platforms WHERE status NOT IN ('unqualified', 'not_suitable', 'perk_benefit', 'dismissed') GROUP BY category").fetchall()
     categories = {r["category"]: r["cnt"] for r in cat_rows}
 
     # Recent runs
@@ -428,7 +431,8 @@ def get_dashboard_stats():
         "applications": None,        # Held for later agent
         "meetings_booked": None,     # Held for later agent
         "conversion_rate": None,     # Held for later agent
-        "total_platforms": total_platforms,
+        "total_platforms": qualified_platforms,
+        "raw_total_platforms": total_platforms,
         "submittable_directories": submittable_count,
         "ecosystem_partners": ecosystem_partner_count,
         "tier_1_count": tier_1_count,
@@ -450,7 +454,9 @@ def get_dashboard_stats():
         "approved": approved_count,
         "submitted": submitted_count,
         "unqualified": unqualified_count,
+        "perk_benefit": perk_benefit_count,
         "dismissed": dismissed_count,
+        "deepseek_engine": dfe.DeepSeekFlashEngine.get_engine_status(),
         "categories": categories,
         "runs": runs,
         "alerts": alerts,
@@ -531,19 +537,21 @@ def get_platforms(
         elif smartmatch_filter == "any":
             query_parts.append("is_smartmatch = 1")
 
-    if tier and tier != "all":
+    if tier and tier != "all" and status not in ("unqualified", "not_suitable", "perk_benefit", "dismissed"):
         if tier == "tier_1":
             query_parts.append("tier = 'tier_1'")
         elif tier == "tier_2":
             query_parts.append("tier = 'tier_2'")
         elif tier in ("core", "all_active"):
-            query_parts.append("is_core_target = 1")
+            query_parts.append("is_core_target = 1 AND status NOT IN ('unqualified', 'not_suitable', 'perk_benefit', 'dismissed')")
         elif tier == "deprioritized":
             query_parts.append("tier = 'deprioritized'")
 
     if status and status != "all":
         if status == "in_review":
             query_parts.append("status IN ('draft_ready', 'in_review', 'found', 'ready_to_submit', 'pending')")
+        elif status == "unqualified":
+            query_parts.append("status IN ('unqualified', 'not_suitable')")
         else:
             query_parts.append("status = ?")
             params.append(status)
@@ -623,10 +631,12 @@ def update_ranker_status(ranker_id: int, payload: Dict[str, Any]):
     conn = get_db()
     c = conn.cursor()
     new_status = payload.get("status", "contacted")
+    row = c.execute("SELECT author_name FROM accelerator_rankers WHERE id = ?", (ranker_id,)).fetchone()
     c.execute("UPDATE accelerator_rankers SET status = ? WHERE id = ?", (new_status, ranker_id))
     conn.commit()
     conn.close()
-    return {"success": True, "ranker_id": ranker_id, "status": new_status}
+    author_name = row["author_name"] if row else f"Curator #{ranker_id}"
+    return {"success": True, "ranker_id": ranker_id, "name": author_name, "status": new_status}
 
 # ================================================================================
 # CATEGORY AGENTS FLEET ENDPOINTS (Astra-R01 to Astra-C01)
@@ -688,28 +698,49 @@ def add_platform_manual(req: AddManualPlatformRequest):
     clean_domain = req.domain.replace("https://", "").replace("http://", "").split("/")[0].strip().lower()
     utm_source = clean_domain.replace(".", "_")
     tracking_url = f"https://eupnea.co.uk/?utm_source={utm_source}&utm_medium=directory&utm_campaign=accelerator_2026"
-    
+
+    cand_payload = {
+        "name": req.name.strip(),
+        "domain": clean_domain,
+        "url": f"https://{clean_domain}",
+        "form_url": req.submitted_url or f"https://{clean_domain}",
+        "category": req.category,
+        "score": req.score
+    }
+    score_eval = dfe.DeepSeekFlashEngine.score_platform(cand_payload, verify_network=True)
+    if not score_eval.get("is_qualified") or score_eval.get("score", 0) <= 0:
+        conn.close()
+        raise HTTPException(
+            status_code=400,
+            detail=score_eval.get("score_reasons_summary") or "Failed DeepSeek Flash v4.1 4-Gate Pre-Qualification (dead website, synthetic domain, or unsuitable portal)."
+        )
+
     pitch = f"Eupnea is a premier management consulting firm and startup accelerator headquartered in London, supporting founders and enterprise leaders across the UK and internationally."
-    status_target = req.status or "in_review"
+    status_target = req.status or score_eval.get("status", "in_review")
     hl_cat = req.high_level_category or "Direct Startup Engagement & Intake"
+    final_score = score_eval.get("score", req.score)
+    final_tier = score_eval.get("tier", "tier_2")
+    healed_url = score_eval.get("healed_url") or f"https://{clean_domain}"
+    healed_form = score_eval.get("healed_form_url") or req.submitted_url or healed_url
+    reasons = score_eval.get("score_reasons_summary") or "Verified by DeepSeek Flash v4.1 Four-Gate Engine."
 
     try:
         c.execute("""
             INSERT INTO platforms (
-                name, category, url, domain, score, score_reasons, draft_pitch,
+                name, category, url, domain, form_url, score, score_reasons, draft_pitch,
                 tracking_url, submitted_url, status, bot_verified, submission_mode, submitted_at,
                 category_type, tier, intake_type, is_core_target, high_level_category
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'manual', CURRENT_TIMESTAMP, 'submittable_directory', 'tier_1', 'direct_intake', 1, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'manual', CURRENT_TIMESTAMP, 'submittable_directory', ?, 'direct_intake', 1, ?)
         """, (
-            req.name.strip(), req.category, f"https://{clean_domain}", clean_domain,
-            req.score, "Manually added by team with verified domain prestige.",
-            pitch, tracking_url, req.submitted_url or f"https://{clean_domain}",
-            status_target, hl_cat
+            req.name.strip(), req.category, healed_url, clean_domain, healed_form,
+            final_score, reasons,
+            pitch, tracking_url, req.submitted_url or "",
+            status_target, final_tier, hl_cat
         ))
         conn.commit()
         new_id = c.lastrowid
         conn.close()
-        return {"status": "success", "id": new_id, "message": f"Platform '{req.name}' successfully saved and added to catalog."}
+        return {"status": "success", "id": new_id, "score": final_score, "tier": final_tier, "message": f"Platform '{req.name}' verified by DeepSeek Flash v4.1 ({final_score}/100) and saved."}
     except sqlite3.IntegrityError:
         conn.close()
         raise HTTPException(
@@ -731,7 +762,7 @@ def edit_platform_score(platform_id: int, req: EditScoreRequest):
 
 @app.post("/api/platforms/{platform_id}/status")
 def update_platform_status(platform_id: int, req: StatusUpdateRequest):
-    valid_statuses = ["found", "scored", "draft_ready", "in_review", "approved", "submitted", "unqualified", "dismissed", "undo_submit", "ready_to_submit"]
+    valid_statuses = ["found", "scored", "draft_ready", "in_review", "approved", "submitted", "unqualified", "not_suitable", "perk_benefit", "dismissed", "undo_submit", "ready_to_submit"]
     if req.status not in valid_statuses:
         raise HTTPException(status_code=400, detail="Invalid status specified.")
 
@@ -773,8 +804,9 @@ async def verify_platform_live_endpoint(platform_id: int):
         res = await presence_upgrade_controller.verify_platform_live(target_url)
         conn.close()
         return {"status": "success", "platform_id": platform_id, "verification": res.dict()}
+    probe = dfe.DeepSeekFlashEngine.probe_live_website(target_url)
     conn.close()
-    return {"status": "success", "platform_id": platform_id, "verification": {"url": target_url, "is_live": True, "form_detected": True}}
+    return {"status": "success", "platform_id": platform_id, "verification": probe}
 
 @app.post("/api/platforms/{platform_id}/smart-draft")
 def generate_smart_draft_endpoint(platform_id: int):
@@ -1002,122 +1034,80 @@ PARALLEL_CATEGORY_SPECS = [
 ]
 
 
+# Verified live rosters only (Zero NXDOMAIN / Zero 404 / Zero Sree-rejected domains)
 DYNAMIC_CATEGORY_ROSTERS: Dict[str, List[Dict[str, Any]]] = {
     "SmartMatch & Dealflow Licensing Engines": [
-        {"name": "IncubatorList Global SmartMatch Portal", "domain": "incubatorlist.com", "url": "https://incubatorlist.com", "form_url": "https://incubatorlist.com/submit"},
-        {"name": "Round Funded Investor & Accelerator Matchmaking", "domain": "roundfunded.com", "url": "https://roundfunded.com", "form_url": "https://roundfunded.com/accelerator-license"},
-        {"name": "OpenVC Pro Dealflow SmartMatch", "domain": "openvc.app", "url": "https://openvc.app", "form_url": "https://openvc.app/accelerators"},
-        {"name": "Vestbee Dealflow Engine & Partner Network", "domain": "vestbee.com", "url": "https://vestbee.com", "form_url": "https://vestbee.com/accelerators"},
-        {"name": "Finnovating B2B Matchmaking Marketplace", "domain": "finnovating.com", "url": "https://finnovating.com", "form_url": "https://finnovating.com/accelerator-pipeline"},
-        {"name": "Dealum Dealflow Management Network", "domain": "dealum.com", "url": "https://dealum.com", "form_url": "https://dealum.com/join"},
-        {"name": "InnMind Global Web3 & Tech Dealflow Hub", "domain": "innmind.com", "url": "https://innmind.com", "form_url": "https://innmind.com/accelerators"},
-        {"name": "OneValley Passport Dealflow Matchmaker", "domain": "theonevalley.com", "url": "https://theonevalley.com", "form_url": "https://theonevalley.com/programs"},
-        {"name": "Gust Accelerator SmartMatch Pipeline", "domain": "gust.com", "url": "https://gust.com", "form_url": "https://gust.com/accelerators"},
-        {"name": "F6S SmartMatch Dealflow Directory", "domain": "f6s.com", "url": "https://f6s.com", "form_url": "https://f6s.com/programs"},
-        {"name": "YouNoodle Global Competition & Dealflow Engine", "domain": "younoodle.com", "url": "https://younoodle.com", "form_url": "https://younoodle.com/judge-intake"},
-        {"name": "VC4A Dealflow & Sourcing Matchmaker", "domain": "vc4a.com", "url": "https://vc4a.com", "form_url": "https://vc4a.com/programs"},
-        {"name": "Bridge for Billions Match & Incubator Network", "domain": "bridgeforbillions.org", "url": "https://bridgeforbillions.org", "form_url": "https://bridgeforbillions.org/programs"},
-        {"name": "Hello Tomorrow DeepTech Matchmaking Platform", "domain": "hello-tomorrow.org", "url": "https://hello-tomorrow.org", "form_url": "https://hello-tomorrow.org/challenge"},
-        {"name": "ChallengeRocket Innovation Match Hub", "domain": "challengerocket.com", "url": "https://challengerocket.com", "form_url": "https://challengerocket.com/challenges"}
+        {"name": "IncubatorList Global SmartMatch Portal", "domain": "incubatorlist.com", "url": "https://incubatorlist.com/", "form_url": "https://incubatorlist.com/submit"},
+        {"name": "Round Funded Investor & Accelerator Matchmaking", "domain": "roundfunded.com", "url": "https://www.roundfunded.com/en", "form_url": "https://www.roundfunded.com/en"},
+        {"name": "OpenVC Pro Dealflow SmartMatch", "domain": "openvc.app", "url": "https://openvc.app/", "form_url": "https://openvc.app/"},
+        {"name": "Vestbee Dealflow Engine & Partner Network", "domain": "vestbee.com", "url": "https://www.vestbee.com/", "form_url": "https://www.vestbee.com/accelerators"},
+        {"name": "Dealum Dealflow Management Network", "domain": "dealum.com", "url": "https://dealum.com/", "form_url": "https://dealum.com/"},
+        {"name": "InnMind Global Web3 & Tech Dealflow Hub", "domain": "innmind.com", "url": "https://innmind.com/", "form_url": "https://innmind.com/"},
+        {"name": "OneValley Passport Dealflow Matchmaker", "domain": "theonevalley.com", "url": "https://www.onevalley.com/", "form_url": "https://www.onevalley.com/"},
+        {"name": "Gust Accelerator SmartMatch Pipeline", "domain": "gust.com", "url": "https://gust.com/accelerators", "form_url": "https://gust.com/accelerators"},
+        {"name": "F6S SmartMatch Dealflow Directory", "domain": "f6s.com", "url": "https://www.f6s.com/programs", "form_url": "https://www.f6s.com/programs"},
+        {"name": "YouNoodle Global Competition & Dealflow Engine", "domain": "younoodle.com", "url": "https://www.younoodle.com/", "form_url": "https://www.younoodle.com/"},
+        {"name": "VC4A Dealflow & Sourcing Matchmaker", "domain": "vc4a.com", "url": "https://vc4a.com/", "form_url": "https://vc4a.com/"},
+        {"name": "Bridge for Billions Match & Incubator Network", "domain": "bridgeforbillions.org", "url": "https://www.bridgeforbillions.org/programs/", "form_url": "https://www.bridgeforbillions.org/programs/"},
+        {"name": "Hello Tomorrow DeepTech Matchmaking Platform", "domain": "hello-tomorrow.org", "url": "https://www.hello-tomorrow.org/challenge/hello-tomorrow-challenge", "form_url": "https://www.hello-tomorrow.org/challenge/hello-tomorrow-challenge"},
+        {"name": "ChallengeRocket Innovation Match Hub", "domain": "challengerocket.com", "url": "https://challengerocket.com/", "form_url": "https://challengerocket.com/"}
     ],
     "UK Accelerator Review & Ranking Platforms": [
         {"name": "SeedLegals Top UK Startup Accelerators Guide", "domain": "seedlegals.com", "url": "https://seedlegals.com/resources/top-uk-startup-accelerators/", "form_url": "https://seedlegals.com/resources/top-uk-startup-accelerators/"},
-        {"name": "Tracxn UK Accelerators & Incubators Directory", "domain": "tracxn.com", "url": "https://tracxn.com/d/investor-lists/accelerators-incubators-in-united-kingdom/__ipYdkLo_FgbzV1gMFal2rfOI7uSkiwKnmcPBD8JQ_u4#t-3-salesforce-accelerate", "form_url": "https://tracxn.com"},
-        {"name": "PartnershipsBuddy UK Programmes Guide", "domain": "partnershipsbuddy.com", "url": "https://partnershipsbuddy.com/programmes/", "form_url": "https://partnershipsbuddy.com/programmes/"},
-        {"name": "Beauhurst UK Incubators & Accelerators Report", "domain": "beauhurst.com", "url": "https://www.beauhurst.com/blog/accelerators-and-incubators-in-the-uk/", "form_url": "https://www.beauhurst.com"},
-        {"name": "Sifted UK Accelerators Guide & Rankings", "domain": "sifted.eu", "url": "https://sifted.eu/articles/top-accelerators-uk", "form_url": "https://sifted.eu"},
-        {"name": "UKTN (UK Tech News) Accelerators Directory", "domain": "uktech.news", "url": "https://www.uktech.news/guides/uk-accelerators-incubators", "form_url": "https://www.uktech.news"},
-        {"name": "TechRound Top UK Startup Accelerators Guide", "domain": "techround.co.uk", "url": "https://techround.co.uk/guides/top-uk-startup-accelerators/", "form_url": "https://techround.co.uk"},
-        {"name": "Startups.co.uk UK Accelerators Directory & Comparison", "domain": "startups.co.uk", "url": "https://startups.co.uk/starting-a-business/business-accelerators/", "form_url": "https://startups.co.uk"},
-        {"name": "Enterprise Nation UK Startup Incubators Guide", "domain": "enterprisenation.com", "url": "https://www.enterprisenation.com/grow-your-business/guide-to-uk-accelerators/", "form_url": "https://www.enterprisenation.com"},
-        {"name": "British Business Bank UK Accelerator Portal", "domain": "british-business-bank.co.uk", "url": "https://www.british-business-bank.co.uk/finance-hub/accelerators-and-incubators/", "form_url": "https://www.british-business-bank.co.uk"}
+        {"name": "Tracxn UK Accelerators & Incubators Directory", "domain": "tracxn.com", "url": "https://tracxn.com/", "form_url": "https://tracxn.com/"},
+        {"name": "PartnershipsBuddy UK Programmes Guide", "domain": "partnershipsbuddy.com", "url": "https://partnershipsbuddy.com/", "form_url": "https://partnershipsbuddy.com/"},
+        {"name": "Beauhurst UK Incubators & Accelerators Report", "domain": "beauhurst.com", "url": "https://www.beauhurst.com/", "form_url": "https://www.beauhurst.com/"},
+        {"name": "Sifted UK Accelerators Guide & Rankings", "domain": "sifted.eu", "url": "https://sifted.eu/articles/top-accelerators-uk", "form_url": "https://sifted.eu/"},
+        {"name": "UKTN (UK Tech News) Accelerators Directory", "domain": "uktech.news", "url": "https://www.uktech.news/", "form_url": "https://www.uktech.news/"},
+        {"name": "TechRound Top UK Startup Accelerators Guide", "domain": "techround.co.uk", "url": "https://techround.co.uk/", "form_url": "https://techround.co.uk/"},
+        {"name": "Startups.co.uk UK Funding & Accelerators Guide", "domain": "startups.co.uk", "url": "https://startups.co.uk/funding/", "form_url": "https://startups.co.uk/funding/"},
+        {"name": "Enterprise Nation UK Startup Support Portal", "domain": "enterprisenation.com", "url": "https://www.enterprisenation.com/", "form_url": "https://www.enterprisenation.com/"},
+        {"name": "British Business Bank UK Accelerator Portal", "domain": "british-business-bank.co.uk", "url": "https://www.british-business-bank.co.uk/business-guidance/guidance-articles/finance/business-accelerators-and-incubators", "form_url": "https://www.british-business-bank.co.uk/"}
     ],
     "Direct Startup Engagement & Intake": [
-        {"name": "EIC Scaling Hub & European Accelerator Intake", "domain": "eic-scaling.eu", "url": "https://eic-scaling.eu", "form_url": "https://eic-scaling.eu/accelerators"},
-        {"name": "Scaleup Champions European Sourcing Network", "domain": "scaleupchampions.eu", "url": "https://scaleupchampions.eu", "form_url": "https://scaleupchampions.eu/intake"},
-        {"name": "Techstars Startup Community Program Hub", "domain": "techstars.community", "url": "https://techstars.community", "form_url": "https://techstars.community/accelerator-directory"},
-        {"name": "StartupMatcher European Founder Matchmaker", "domain": "startupmatcher.eu", "url": "https://startupmatcher.eu", "form_url": "https://startupmatcher.eu/programs"},
-        {"name": "Founders Network Europe Accelerator Exchange", "domain": "foundersnetwork.eu", "url": "https://foundersnetwork.eu", "form_url": "https://foundersnetwork.eu/accelerator-intake"},
-        {"name": "Global Accelerator Sourcing Hub", "domain": "globalaccelerator.io", "url": "https://globalaccelerator.io", "form_url": "https://globalaccelerator.io/submit"},
-        {"name": "SmartDealflow Founder Intake & Matchmaking", "domain": "smartdealflow.io", "url": "https://smartdealflow.io", "form_url": "https://smartdealflow.io/intake"},
-        {"name": "EarlyIntake Seed Accelerator Portal", "domain": "earlyintake.com", "url": "https://earlyintake.com", "form_url": "https://earlyintake.com/submit-program"},
-        {"name": "Startup Radar Europe Cohort Intake", "domain": "startupradar.eu", "url": "https://startupradar.eu", "form_url": "https://startupradar.eu/accelerators"},
-        {"name": "Incubator Hub Global Network", "domain": "incubatorhub.global", "url": "https://incubatorhub.global", "form_url": "https://incubatorhub.global/submit"},
-        {"name": "Venture Match Tech Discovery Network", "domain": "venturematch.tech", "url": "https://venturematch.tech", "form_url": "https://venturematch.tech/accelerator-signup"},
-        {"name": "DealPipeline Global Program Hub", "domain": "dealpipeline.io", "url": "https://dealpipeline.io", "form_url": "https://dealpipeline.io/intake"},
-        {"name": "AcceleratorLink Global Directory", "domain": "acceleratorlink.org", "url": "https://acceleratorlink.org", "form_url": "https://acceleratorlink.org/submit"},
-        {"name": "Cohort Sourcing Engine for Accelerators", "domain": "cohortsourcing.com", "url": "https://cohortsourcing.com", "form_url": "https://cohortsourcing.com/accelerators"},
-        {"name": "Pitch Hub Global Founder Intake", "domain": "pitchhub.global", "url": "https://pitchhub.global", "form_url": "https://pitchhub.global/submit"},
-        {"name": "VenturePulse Early Stage Accelerator Portal", "domain": "venturepulse.io", "url": "https://venturepulse.io", "form_url": "https://venturepulse.io/intake"},
-        {"name": "StartupCompass Global Accelerator Map", "domain": "startupcompass.org", "url": "https://startupcompass.org", "form_url": "https://startupcompass.org/submit"},
-        {"name": "DealflowDirect Two-Sided Intake Engine", "domain": "dealflowdirect.com", "url": "https://dealflowdirect.com", "form_url": "https://dealflowdirect.com/accelerators"},
-        {"name": "AcceleratorGate European Cohort Portal", "domain": "acceleratorgate.eu", "url": "https://acceleratorgate.eu", "form_url": "https://acceleratorgate.eu/submit"},
-        {"name": "SeedFlow Global Accelerator Matching", "domain": "seedflow.co", "url": "https://seedflow.co", "form_url": "https://seedflow.co/join"}
+        {"name": "PitGrowth Startup & Accelerator Portal", "domain": "pitgrowth.com", "url": "https://pitgrowth.com/", "form_url": "https://pitgrowth.com/auth/register"},
+        {"name": "StartupCorners Curated Accelerator Index", "domain": "startupcorners.com", "url": "https://startupcorners.com/accelerators", "form_url": "https://startupcorners.com/accelerators"},
+        {"name": "Listed Startups Venture & Accelerator Hub", "domain": "listedstartups.com", "url": "https://listedstartups.com/accelerators", "form_url": "https://listedstartups.com/submit"},
+        {"name": "GAN Global Accelerator Network", "domain": "gan.co", "url": "https://www.gan.co/", "form_url": "https://www.gan.co/"},
+        {"name": "Submittable Accelerator & Grant Intake", "domain": "submittable.com", "url": "https://www.submittable.com/", "form_url": "https://www.submittable.com/"},
+        {"name": "Agorize Global Innovation & Accelerator Challenges", "domain": "agorize.com", "url": "https://www.agorize.com/web/en/challenges", "form_url": "https://www.agorize.com/web/en/challenges"},
+        {"name": "Barclays Eagle Labs UK Incubator Network", "domain": "labs.uk.barclays", "url": "https://labs.uk.barclays/", "form_url": "https://labs.uk.barclays/"},
+        {"name": "Founders Factory London Venture Studio", "domain": "foundersfactory.com", "url": "https://foundersfactory.com/", "form_url": "https://foundersfactory.com/"},
+        {"name": "SETsquared UK University Accelerator Partnership", "domain": "setsquared.co.uk", "url": "https://www.setsquared.co.uk/", "form_url": "https://www.setsquared.co.uk/"},
+        {"name": "Bethnal Green Ventures Tech for Good", "domain": "bethnalgreenventures.com", "url": "https://bethnalgreenventures.com/", "form_url": "https://bethnalgreenventures.com/"}
     ],
     "Investor Match & Capital Networks": [
-        {"name": "Angel Academy Syndicate Network", "domain": "angelacademy.vc", "url": "https://angelacademy.vc", "form_url": "https://angelacademy.vc/apply"},
-        {"name": "SuperAngel European Co-Investment Syndicate", "domain": "superangel.io", "url": "https://superangel.io", "form_url": "https://superangel.io/syndicate"},
-        {"name": "Cambridge Angels Network Hub", "domain": "cambridgeangels.net", "url": "https://cambridgeangels.net", "form_url": "https://cambridgeangels.net/apply"},
-        {"name": "Oxford Angels Early Stage Syndicate", "domain": "oxfordangels.com", "url": "https://oxfordangels.com", "form_url": "https://oxfordangels.com/syndicate"},
-        {"name": "London Business Angels Network", "domain": "londonbusinessangels.com", "url": "https://londonbusinessangels.com", "form_url": "https://londonbusinessangels.com/apply"},
-        {"name": "Green Angel Syndicate & CleanTech Hub", "domain": "greenangelsyndicate.com", "url": "https://greenangelsyndicate.com", "form_url": "https://greenangelsyndicate.com/pitch"},
-        {"name": "DeepTech Angels Europe Syndicate", "domain": "deeptechangels.eu", "url": "https://deeptechangels.eu", "form_url": "https://deeptechangels.eu/intake"},
-        {"name": "FinTech Syndicate Network UK", "domain": "fintechsyndicate.io", "url": "https://fintechsyndicate.io", "form_url": "https://fintechsyndicate.io/dealflow"},
-        {"name": "Enterprise Angels UK Co-Investment Hub", "domain": "enterpriseangels.uk", "url": "https://enterpriseangels.uk", "form_url": "https://enterpriseangels.uk/join"},
-        {"name": "Venture Syndicate Global LP Hub", "domain": "venturesyndicate.global", "url": "https://venturesyndicate.global", "form_url": "https://venturesyndicate.global/apply"},
-        {"name": "Capital Connect Angel Sourcing Portal", "domain": "capitalconnect.io", "url": "https://capitalconnect.io", "form_url": "https://capitalconnect.io/syndicate"},
-        {"name": "Founders & Angels Co-Investment Network", "domain": "foundersangels.org", "url": "https://foundersangels.org", "form_url": "https://foundersangels.org/pitch"},
-        {"name": "EarlyCapital Venture Syndicate Hub", "domain": "earlycapital.vc", "url": "https://earlycapital.vc", "form_url": "https://earlycapital.vc/accelerators"},
-        {"name": "Syndicate Match European LP Pipeline", "domain": "syndicatematch.eu", "url": "https://syndicatematch.eu", "form_url": "https://syndicatematch.eu/dealflow"},
-        {"name": "UK Angel Co-Investment Portal", "domain": "ukangelportal.com", "url": "https://ukangelportal.com", "form_url": "https://ukangelportal.com/join"}
+        {"name": "UK Business Angels Association (UKBAA)", "domain": "ukbaa.org.uk", "url": "https://ukbaa.org.uk/", "form_url": "https://ukbaa.org.uk/"},
+        {"name": "Green Angel Syndicate & CleanTech Hub", "domain": "greenangelsyndicate.com", "url": "https://greenangelsyndicate.com/invest/", "form_url": "https://greenangelsyndicate.com/invest/"},
+        {"name": "Cambridge Angels Co-Investment Portal", "domain": "cambridgeangels.com", "url": "https://www.cambridgeangels.com/", "form_url": "https://www.cambridgeangels.com/"},
+        {"name": "Minerva Business Angel Network", "domain": "minerva.uk.net", "url": "https://minerva.uk.net/", "form_url": "https://minerva.uk.net/"},
+        {"name": "SeedBlink European Equity Co-Investment", "domain": "seedblink.com", "url": "https://seedblink.com/", "form_url": "https://seedblink.com/"},
+        {"name": "Floww Regulated Venture Capital Network", "domain": "floww.io", "url": "https://www.floww.io/", "form_url": "https://www.floww.io/"}
     ],
     "Ecosystem Visibility & Program Discovery": [
-        {"name": "Amsterdam Tech City Innovation Hub", "domain": "amsterdamtech.com", "url": "https://amsterdamtech.com", "form_url": "https://amsterdamtech.com/directory"},
-        {"name": "Munich Tech Ecosystem Directory", "domain": "munichtechecosystem.de", "url": "https://munichtechecosystem.de", "form_url": "https://munichtechecosystem.de/submit"},
-        {"name": "Barcelona Tech City Innovation Map", "domain": "barcelonatechcity.com", "url": "https://barcelonatechcity.com", "form_url": "https://barcelonatechcity.com/join"},
-        {"name": "Milan Innovation Summit Hub", "domain": "milaninnovationsummit.it", "url": "https://milaninnovationsummit.it", "form_url": "https://milaninnovationsummit.it/submit"},
-        {"name": "Vienna Startups Ecosystem Portal", "domain": "vienna-startups.at", "url": "https://vienna-startups.at", "form_url": "https://vienna-startups.at/accelerators"},
-        {"name": "Warsaw Tech Hub Innovation Registry", "domain": "warsawtechhub.pl", "url": "https://warsawtechhub.pl", "form_url": "https://warsawtechhub.pl/directory"},
-        {"name": "Helsinki Innovation Ecosystem Map", "domain": "helsinki-innovation.fi", "url": "https://helsinki-innovation.fi", "form_url": "https://helsinki-innovation.fi/submit"},
-        {"name": "CopenTech Nordic Innovation Registry", "domain": "copentech.dk", "url": "https://copentech.dk", "form_url": "https://copentech.dk/directory"},
-        {"name": "Brussels Tech Hub European Directory", "domain": "brusselstechhub.be", "url": "https://brusselstechhub.be", "form_url": "https://brusselstechhub.be/join"},
-        {"name": "Prague Startups Innovation Registry", "domain": "praguestartups.cz", "url": "https://praguestartups.cz", "form_url": "https://praguestartups.cz/submit"}
+        {"name": "Crunchbase Accelerators & Venture Directory", "domain": "crunchbase.com", "url": "https://www.crunchbase.com/hub/accelerators", "form_url": "https://www.crunchbase.com/add-new"},
+        {"name": "Dealroom European Venture Intelligence", "domain": "dealroom.co", "url": "https://dealroom.co/profiles/", "form_url": "https://dealroom.co/profiles/"},
+        {"name": "StartupBlink Global Accelerator Ecosystem Map", "domain": "startupblink.com", "url": "https://www.startupblink.com/", "form_url": "https://www.startupblink.com/"},
+        {"name": "TheIncubatorPro Global Incubator Index", "domain": "theincubatorpro.com", "url": "https://theincubatorpro.com/accelerators/", "form_url": "https://theincubatorpro.com/accelerators/"},
+        {"name": "EU-Startups European Startup & Accelerator Directory", "domain": "eu-startups.com", "url": "https://www.eu-startups.com/directory/", "form_url": "https://www.eu-startups.com/directory/"},
+        {"name": "BetaList Early Startup Discovery", "domain": "betalist.com", "url": "https://betalist.com/", "form_url": "https://betalist.com/submissions/new"},
+        {"name": "Failory Startup Accelerators Guide", "domain": "failory.com", "url": "https://www.failory.com/blog/startup-accelerators", "form_url": "https://www.failory.com/blog/startup-accelerators"}
     ],
     "Regional Chambers & Business Networks": [
-        {"name": "Essex Chambers of Commerce", "domain": "essexchambers.co.uk", "url": "https://www.essexchambers.co.uk", "form_url": "https://www.essexchambers.co.uk/membership"},
-        {"name": "Kent Invicta Chamber of Commerce", "domain": "kentinvictachamber.co.uk", "url": "https://www.kentinvictachamber.co.uk", "form_url": "https://www.kentinvictachamber.co.uk/join-us"},
-        {"name": "Hertfordshire Chamber of Commerce", "domain": "hertschamber.com", "url": "https://www.hertschamber.com", "form_url": "https://www.hertschamber.com/membership"},
-        {"name": "Bedfordshire Chamber of Commerce", "domain": "bedfordshirechamber.co.uk", "url": "https://www.chamber-business.com", "form_url": "https://www.chamber-business.com/membership"},
-        {"name": "Buckinghamshire Chamber of Commerce", "domain": "bucks-chamber.co.uk", "url": "https://www.bbf.uk.com", "form_url": "https://www.bbf.uk.com/join"},
-        {"name": "Cumbria Chamber of Commerce", "domain": "cumbriachamber.co.uk", "url": "https://www.cumbriachamber.co.uk", "form_url": "https://www.cumbriachamber.co.uk/membership"},
-        {"name": "North & Western Lancashire Chamber", "domain": "lancashirechamber.co.uk", "url": "https://www.lancschamber.co.uk", "form_url": "https://www.lancschamber.co.uk/membership"},
-        {"name": "Lincolnshire Chamber of Commerce", "domain": "lincolnshirechamber.co.uk", "url": "https://www.lincs-chamber.co.uk", "form_url": "https://www.lincs-chamber.co.uk/membership"},
-        {"name": "Staffordshire Chambers of Commerce", "domain": "staffordshirechamber.co.uk", "url": "https://staffordshirechambers.co.uk", "form_url": "https://staffordshirechambers.co.uk/membership"},
-        {"name": "Shropshire Chamber of Commerce", "domain": "shropshirechamber.co.uk", "url": "https://www.shropshire-chamber.co.uk", "form_url": "https://www.shropshire-chamber.co.uk/membership"}
+        {"name": "Essex Chambers of Commerce", "domain": "essexchambers.co.uk", "url": "https://www.essexchambers.co.uk/", "form_url": "https://www.essexchambers.co.uk/"},
+        {"name": "Kent Invicta Chamber of Commerce", "domain": "kentinvictachamber.co.uk", "url": "https://www.kentinvictachamber.co.uk/", "form_url": "https://www.kentinvictachamber.co.uk/"},
+        {"name": "Hertfordshire Chamber of Commerce", "domain": "hertschamber.com", "url": "https://www.hertschamber.com/", "form_url": "https://www.hertschamber.com/"},
+        {"name": "Cumbria Chamber of Commerce", "domain": "cumbriachamber.co.uk", "url": "https://www.cumbriachamber.co.uk/", "form_url": "https://www.cumbriachamber.co.uk/"},
+        {"name": "Lincolnshire Chamber of Commerce", "domain": "lincs-chamber.co.uk", "url": "https://www.lincs-chamber.co.uk/", "form_url": "https://www.lincs-chamber.co.uk/"},
+        {"name": "Staffordshire Chambers of Commerce", "domain": "staffordshirechambers.co.uk", "url": "https://staffordshirechambers.co.uk/", "form_url": "https://staffordshirechambers.co.uk/"},
+        {"name": "Shropshire Chamber of Commerce", "domain": "shropshire-chamber.co.uk", "url": "https://www.shropshire-chamber.co.uk/", "form_url": "https://www.shropshire-chamber.co.uk/"}
     ],
     "Media, Press & Industry Publications": [
-        {"name": "Techloy Global Innovation Media", "domain": "techloy.com", "url": "https://techloy.com", "form_url": "https://techloy.com/contact"},
-        {"name": "Silicon Canal West Midlands Tech Media", "domain": "siliconcanal.co.uk", "url": "https://siliconcanal.co.uk", "form_url": "https://siliconcanal.co.uk/contact"},
-        {"name": "Venture Intelligence News Hub", "domain": "ventureintelligence.com", "url": "https://ventureintelligence.com", "form_url": "https://ventureintelligence.com/submit-news"},
-        {"name": "Silicon Valley Europe Magazine", "domain": "siliconvalleyeurope.com", "url": "https://siliconvalleyeurope.com", "form_url": "https://siliconvalleyeurope.com/press"},
-        {"name": "DIGIT Scotland Tech Media", "domain": "digit.fyi", "url": "https://digit.fyi", "form_url": "https://digit.fyi/contact"},
-        {"name": "Future Tech Media Europe", "domain": "futuretechmedia.eu", "url": "https://futuretechmedia.eu", "form_url": "https://futuretechmedia.eu/submit"},
-        {"name": "UK Tech News Network", "domain": "uktechnews.org", "url": "https://uktechnews.org", "form_url": "https://uktechnews.org/contact"},
-        {"name": "Scaleup News UK Journal", "domain": "scaleupnews.co.uk", "url": "https://scaleupnews.co.uk", "form_url": "https://scaleupnews.co.uk/submit-news"},
-        {"name": "Innovation News Network", "domain": "innovationnewsnetwork.com", "url": "https://innovationnewsnetwork.com", "form_url": "https://innovationnewsnetwork.com/contact"},
-        {"name": "Frontier Tech Media Europe", "domain": "frontiertech.media", "url": "https://frontiertech.media", "form_url": "https://frontiertech.media/submit"}
-    ],
-    "Software & B2B Review Platforms": [
-        {"name": "The Manifest Top B2B Service Providers", "domain": "themanifest.com", "url": "https://themanifest.com", "form_url": "https://themanifest.com/get-listed"},
-        {"name": "Top B2B Consultants Directory", "domain": "topb2bconsultants.com", "url": "https://topb2bconsultants.com", "form_url": "https://topb2bconsultants.com/register"},
-        {"name": "AdvisoryCloud Executive & Accelerator Board", "domain": "advisorycloud.com", "url": "https://advisorycloud.com", "form_url": "https://advisorycloud.com/join"},
-        {"name": "Expertise Top UK & Global Consultants", "domain": "expertise.com", "url": "https://expertise.com", "form_url": "https://expertise.com/join"},
-        {"name": "FirmChecker UK Verified Review Index", "domain": "firmchecker.co.uk", "url": "https://firmchecker.co.uk", "form_url": "https://firmchecker.co.uk/get-listed"},
-        {"name": "B2B Ranking Global Strategy Firms", "domain": "b2branking.io", "url": "https://b2branking.io", "form_url": "https://b2branking.io/submit"},
-        {"name": "Trusted Consultants UK Registry", "domain": "trustedconsultants.uk", "url": "https://trustedconsultants.uk", "form_url": "https://trustedconsultants.uk/join"},
-        {"name": "ProAdvisor Search B2B Hub", "domain": "proadvisorsearch.com", "url": "https://proadvisorsearch.com", "form_url": "https://proadvisorsearch.com/register"},
-        {"name": "Business Ratings UK Review Board", "domain": "businessratings.org.uk", "url": "https://businessratings.org.uk", "form_url": "https://businessratings.org.uk/submit"},
-        {"name": "Top Accelerators Verified Review Index", "domain": "topaccelerators.review", "url": "https://topaccelerators.review", "form_url": "https://topaccelerators.review/submit"}
+        {"name": "Techloy Global Innovation Media", "domain": "techloy.com", "url": "https://techloy.com/", "form_url": "https://techloy.com/"},
+        {"name": "Silicon Canal West Midlands Tech Media", "domain": "siliconcanal.co.uk", "url": "https://siliconcanal.co.uk/", "form_url": "https://siliconcanal.co.uk/"},
+        {"name": "Venture Intelligence News Hub", "domain": "ventureintelligence.com", "url": "https://ventureintelligence.com/", "form_url": "https://ventureintelligence.com/"},
+        {"name": "DIGIT Scotland Tech Media", "domain": "digit.fyi", "url": "https://digit.fyi/", "form_url": "https://digit.fyi/"},
+        {"name": "Innovation News Network", "domain": "innovationnewsnetwork.com", "url": "https://www.innovationnewsnetwork.com/", "form_url": "https://www.innovationnewsnetwork.com/"}
     ]
 }
 
@@ -1192,9 +1182,20 @@ def run_single_category_browser_worker(run_id: int, spec: Dict[str, Any], pool_c
         name = cand["name"]
         domain = cand["domain"].lower()
         url = cand["url"]
-        form_url = cand.get("form_url") or f"https://{domain}/submit"
+        form_url = cand.get("form_url") or url
         tracking_url = f"https://eupnea.co.uk/?utm_source={domain.replace('.', '_')}&utm_medium=directory&utm_campaign=accelerator_2026"
         category = get_master_category(name, domain, "")
+
+        # Strict DeepSeek Flash v4.1 Algorithmic & Live Network Gate
+        score_eval = dfe.DeepSeekFlashEngine.score_platform(cand, verify_network=True)
+        if not score_eval.get("is_qualified") or score_eval.get("score", 0) <= 0:
+            continue
+
+        healed_url = score_eval.get("healed_url") or url
+        healed_form_url = score_eval.get("healed_form_url") or form_url
+        final_score = score_eval.get("score", spec["score"])
+        final_tier = score_eval.get("tier", spec["tier"])
+        final_reasons = score_eval.get("score_reasons_summary") or spec["score_reasons"]
 
         draft_pitch = f"{spec['pitch_prefix']} Direct intake & partnership via {domain}."
         draft_full = f"Eupnea UK Accelerator Cohort 2026 invites applications from early-stage founders and co-investors. Providing seed capital (£50k-£250k), executive partner mentorship, and commercial pilot deployment in London. Categorized under {cat_name}."
@@ -1203,7 +1204,7 @@ def run_single_category_browser_worker(run_id: int, spec: Dict[str, Any], pool_c
         sm_free = spec.get("smartmatch_free", 0)
         sm_paid = spec.get("smartmatch_paid", 0)
         sm_model = spec.get("smartmatch_model", "none")
-        lic_notes = spec.get("licensing_notes", "")
+        lic_notes = spec.get("licensing_notes", "") if is_sm else ""
         r_scope = spec.get("ranking_scope", "global")
 
         with DB_WRITE_LOCK:
@@ -1211,12 +1212,12 @@ def run_single_category_browser_worker(run_id: int, spec: Dict[str, Any], pool_c
                 INSERT OR IGNORE INTO platforms
                 (name, category, url, domain, score, score_reasons, draft_pitch, draft_full, tracking_url, status, discovered_at, submitted_url, visit_count, form_url, category_type, tier, intake_type, is_core_target, intake_features, high_level_category, is_smartmatch, smartmatch_free, smartmatch_paid, smartmatch_model, licensing_notes, ranking_scope)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'in_review', ?, '', 0, ?, 'submittable_directory', ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (name, category, url, domain, spec["score"], spec["score_reasons"], draft_pitch, draft_full, tracking_url, now_str, form_url, spec["tier"], spec["intake_type"], spec["intake_features"], cat_name, is_sm, sm_free, sm_paid, sm_model, lic_notes, r_scope))
+            """, (name, category, healed_url, domain, final_score, final_reasons, draft_pitch, draft_full, tracking_url, now_str, healed_form_url, final_tier, spec["intake_type"], spec["intake_features"], cat_name, is_sm, sm_free, sm_paid, sm_model, lic_notes, r_scope))
 
             if c.rowcount > 0:
                 existing_domains.add(domain)
                 existing_names.add(name.lower())
-                discovered.append({"name": name, "domain": domain, "category": cat_name})
+                discovered.append({"name": name, "domain": domain, "category": cat_name, "score": final_score})
             conn.commit()
 
     with DB_WRITE_LOCK:
@@ -1675,7 +1676,7 @@ def serve_live_listing_view(slug: str):
                 <li>Headquarters: 124 City Road, London EC1V 2NX</li>
               </ul>
             </div>
-            <a href="http://localhost:8855/?utm_source={slug}&utm_medium=directory&utm_campaign=accelerator_2026" class="btn">Visit Official Eupnea Website →</a>
+            <a href="/?utm_source={slug}&utm_medium=directory&utm_campaign=accelerator_2026" class="btn">Visit Official Eupnea Website →</a>
           </div>
         </body>
         </html>"""

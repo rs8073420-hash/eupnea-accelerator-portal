@@ -150,48 +150,38 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     },
     {
         "author_name": "Eamonn Carey",
-        "profile_url": "https://www.linkedin.com/in/eamonncarey",
-        "post_url": "https://www.linkedin.com/posts/eamonncarey_european-seed-accelerator-rankings",
+        "profile_url": "https://www.linkedin.com/in/ecarey/",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Eamonn%20Carey%20Tera%20Ventures%20accelerators",
         "headline": "General Partner at Tera Ventures / Angel Investor / ex-Techstars London MD",
         "estimated_reach": "38,000+ European Founders",
         "ranking_title": "Annual European & UK Early-Stage Accelerator Guide",
         "pitch_draft": "Hi Eamonn, following your deep insights on accelerator selection and founder mentorship across Europe. Eupnea Accelerator operates in London supporting DeepTech & Enterprise AI teams with direct capital and partner networks. Would love to align on dealflow sharing.",
-        "notes": "Former MD Techstars London; active early-stage investor."
+        "notes": "Former MD Techstars London; General Partner at Tera Ventures. Verified /in/ecarey/."
     },
     {
-        "author_name": "Dr. George Windsor",
-        "profile_url": "https://www.linkedin.com/in/georgewindsor",
-        "post_url": "https://www.linkedin.com/posts/georgewindsor_uk-tech-clusters-accelerator-insights",
-        "headline": "Research Director & Tech Ecosystem Analyst (ex-Tech Nation)",
-        "estimated_reach": "30,000+ Policy Makers & VCs",
-        "ranking_title": "UK Regional Startup Accelerators & Cluster Performance Report",
-        "pitch_draft": "Hi George, your data reports on UK tech ecosystem clusters have shaped national funding. Eupnea is scaling specialized venture acceleration for UK and European founders. We'd love to contribute data from our application cohorts to your research reports.",
-        "notes": "Author of Tech Nation flagship reports; ecosystem authority."
-    },
-    {
-        "author_name": "Amy Lewin",
-        "profile_url": "https://www.linkedin.com/in/amylewin",
-        "post_url": "https://sifted.eu/articles/top-accelerators-uk",
-        "headline": "Editor at Sifted (Financial Times-backed)",
-        "estimated_reach": "65,000+ European Tech Readers",
-        "ranking_title": "Sifted Annual Guide: Top Accelerators in the UK & Europe",
-        "pitch_draft": "Hi Amy, admiring your coverage of the European venture landscape at Sifted. Eupnea Accelerator is backing early-stage DeepTech and Enterprise AI startups from London. Would love to brief your editorial team on our upcoming inaugural cohort and investment tracks.",
-        "notes": "Leading European tech journalist; Editor of Sifted."
+        "author_name": "Sten Tamkivi",
+        "profile_url": "https://www.linkedin.com/in/stentamkivi",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Sten%20Tamkivi%20Plural%20accelerators",
+        "headline": "Partner at Plural VC / ex-General Manager of Skype",
+        "estimated_reach": "50,000+ European Tech Leaders",
+        "ranking_title": "Next-Gen European Pre-Seed Accelerators & Studios",
+        "pitch_draft": "Hi Sten, following your writings on Estonian and European technical sovereignty. Eupnea Accelerator backs technical founders in London building enterprise software infrastructure. Would love to align on early-stage technology curation for Plural's founder radar.",
+        "notes": "General Manager at Skype for 8 years; Partner at Plural. Verified /in/stentamkivi."
     },
     {
         "author_name": "Harry Stebbings",
-        "profile_url": "https://www.linkedin.com/in/harrystebbings",
-        "post_url": "https://www.linkedin.com/posts/harrystebbings_top-seed-programmes-uk-tech",
+        "profile_url": "https://www.linkedin.com/in/hstebbings",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Harry%20Stebbings%20seed%20accelerator",
         "headline": "Founder of 20VC / Venture Partner ($400M+ AUM)",
         "estimated_reach": "250,000+ Founders & Global VCs",
         "ranking_title": "20VC Top Seed Programs & Founder Accelerators",
         "pitch_draft": "Hi Harry, massive fan of 20VC's relentless pace and founder focus. At Eupnea, we run high-velocity venture acceleration (£50k-£250k) with hands-on technical architecture. Would love to share our standout portfolio founders for upcoming 20VC showcase episodes.",
-        "notes": "Host of 20VC; prominent global tech curator and GP."
+        "notes": "Host of 20VC; prominent global tech curator and GP. Verified profile /in/hstebbings."
     },
     {
         "author_name": "Sitar Teli",
         "profile_url": "https://www.linkedin.com/in/sitarteli",
-        "post_url": "https://www.linkedin.com/posts/sitarteli_uk-startup-accelerators-seed-ranking",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Sitar%20Teli%20Connect%20Ventures%20accelerator",
         "headline": "Managing Partner at Connect Ventures (Product-Led Seed)",
         "estimated_reach": "28,000+ Product Founders",
         "ranking_title": "Top UK Pre-Seed & Seed Accelerators for Enterprise Tech",
@@ -200,18 +190,18 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     },
     {
         "author_name": "Alex Macdonald",
-        "profile_url": "https://www.linkedin.com/in/alexmacdonald",
-        "post_url": "https://www.linkedin.com/posts/alexmacdonald_the-uk-accelerator-landscape-tier-list",
+        "profile_url": "https://www.linkedin.com/in/alexfmac",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Alex%20Macdonald%20UK%20startup%20accelerators",
         "headline": "Co-Founder at Velocity Juice / ex-Entrepreneur First (EF)",
         "estimated_reach": "32,000+ Seed Founders",
         "ranking_title": "Comprehensive UK Startup Accelerators Tier List",
         "pitch_draft": "Hi Alex, following your updates on startup capital structures and accelerator dynamics in the UK. Eupnea Accelerator provides upfront equity capital and hands-on GTM design. Would love to share our founder terms for your next UK ecosystem tier breakdown.",
-        "notes": "Co-founder of Velocity Juice; former EF leader."
+        "notes": "Co-founder of Velocity Juice; former EF leader. Verified profile /in/alexfmac."
     },
     {
         "author_name": "Marta Sjögren",
         "profile_url": "https://www.linkedin.com/in/martasjogren",
-        "post_url": "https://www.linkedin.com/posts/martasjogren_deeptech-ai-accelerator-guide-europe",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Marta%20Sjogren%20deeptech%20accelerator",
         "headline": "Co-Founder & CEO at Paebbl / ex-Partner at Northzone",
         "estimated_reach": "35,000+ DeepTech Founders",
         "ranking_title": "European & UK DeepTech / Climate & AI Accelerator Rankings",
@@ -221,7 +211,7 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     {
         "author_name": "Bindi Karia",
         "profile_url": "https://www.linkedin.com/in/bindik",
-        "post_url": "https://www.linkedin.com/posts/bindik_london-startup-accelerators-complete-map",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Bindi%20Karia%20London%20accelerators",
         "headline": "Innovation SuperConnector & Advisor / ex-Silicon Valley Bank UK",
         "estimated_reach": "55,000+ UK Tech Founders & Angels",
         "ranking_title": "London Top Tier Accelerators & Incubators Matrix",
@@ -231,7 +221,7 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     {
         "author_name": "Check Warner",
         "profile_url": "https://www.linkedin.com/in/checkwarner",
-        "post_url": "https://www.linkedin.com/posts/checkwarner_inclusive-uk-startup-accelerators",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Check%20Warner%20Ada%20Ventures%20accelerators",
         "headline": "Partner at Ada Ventures / Chair of Diversity VC",
         "estimated_reach": "40,000+ UK Venture Leaders",
         "ranking_title": "Top UK Inclusive & High-Impact Accelerator Programs",
@@ -240,18 +230,18 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     },
     {
         "author_name": "Carlos Eduardo Espinal",
-        "profile_url": "https://www.linkedin.com/in/ceduardoespinal",
-        "post_url": "https://www.linkedin.com/posts/ceduardoespinal_early-stage-startup-accelerator-roundup",
+        "profile_url": "https://www.linkedin.com/in/carloseduardoespinal",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Carlos%20Eduardo%20Espinal%20Seedcamp%20accelerator",
         "headline": "Managing Partner at Seedcamp / Author of 'The Art of Startup Fundraising'",
         "estimated_reach": "75,000+ Early-Stage Founders Globally",
         "ranking_title": "The Global & European Early-Stage Accelerator Map",
         "pitch_draft": "Hi Carlos, your writings and Seedcamp's track record have set the standard for seed acceleration in Europe. At Eupnea, we prepare founders for institutional venture scale. We would welcome the opportunity to keep Seedcamp's team informed of our graduating cohorts.",
-        "notes": "Managing Partner at Seedcamp; author and seed ecosystem leader."
+        "notes": "Managing Partner at Seedcamp; verified profile /in/carloseduardoespinal."
     },
     {
         "author_name": "Hussein Kanji",
         "profile_url": "https://www.linkedin.com/in/hkanji",
-        "post_url": "https://www.linkedin.com/posts/hkanji_uk-startup-ecosystem-accelerators-2026",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Hussein%20Kanji%20Hoxton%20accelerator",
         "headline": "Partner at Hoxton Ventures (Early Backer of Deliveroo & Darktrace)",
         "estimated_reach": "42,000+ VCs & Founders",
         "ranking_title": "UK Venture Design & Top Startup Launchpads Index",
@@ -260,13 +250,13 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     },
     {
         "author_name": "Oliver Holbourn",
-        "profile_url": "https://www.linkedin.com/in/oliverholbourn",
-        "post_url": "https://www.linkedin.com/posts/oliverholbourn_uk-regional-startup-growth",
+        "profile_url": "https://www.linkedin.com/in/oliver-holbourn",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Oliver%20Holbourn%20UK%20venture",
         "headline": "CEO at British Patient Capital (British Business Bank)",
         "estimated_reach": "25,000+ Institutional Investors",
         "ranking_title": "UK High-Growth Accelerator & Venture Ecosystem Index",
         "pitch_draft": "Hi Oliver, British Patient Capital's institutional role in deepening UK venture depth is critical. Eupnea Accelerator is deploying private capital into UK and European high-growth innovation. We look forward to contributing cohort metrics to ecosystem performance reviews.",
-        "notes": "CEO of British Patient Capital; British Business Bank leadership."
+        "notes": "CEO of British Patient Capital; verified profile /in/oliver-holbourn."
     },
     {
         "author_name": "Eileen Burbidge MBE",
@@ -281,7 +271,7 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     {
         "author_name": "Saul Klein OBE",
         "profile_url": "https://www.linkedin.com/in/saulklein",
-        "post_url": "https://www.linkedin.com/posts/saulklein_new-world-founders-uk-accelerators",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Saul%20Klein%20Phoenix%20Court",
         "headline": "Founding Partner at Phoenix Court (LocalGlobe, Latitude)",
         "estimated_reach": "110,000+ European Tech Leaders",
         "ranking_title": "The New World Tech Index: UK Pre-Seed & Seed Accelerators",
@@ -289,19 +279,9 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
         "notes": "Co-founder of Seedcamp, LocalGlobe, Lovefilm; UK venture pioneer."
     },
     {
-        "author_name": "Robin Klein",
-        "profile_url": "https://www.linkedin.com/in/robinklein",
-        "post_url": "https://www.linkedin.com/posts/robinklein_founder-mentorship-accelerator-guide",
-        "headline": "General Partner at LocalGlobe / Veteran Seed Investor",
-        "estimated_reach": "60,000+ Founders & VCs",
-        "ranking_title": "Early Stage Accelerator Mentorship & Seed Performance",
-        "pitch_draft": "Hi Robin, following your decades of guiding exceptional founders from pre-seed through scale. At Eupnea, we believe in hands-on technical architecture during the acceleration phase. Would love to stay connected on UK ecosystem developments.",
-        "notes": "Founding partner at LocalGlobe; veteran of European seed investing."
-    },
-    {
         "author_name": "Reshma Sohoni MBE",
         "profile_url": "https://www.linkedin.com/in/reshmasohoni",
-        "post_url": "https://www.linkedin.com/posts/reshmasohoni_seedcamp-european-accelerator-ranking",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Reshma%20Sohoni%20Seedcamp",
         "headline": "Co-Founder & Managing Partner at Seedcamp",
         "estimated_reach": "90,000+ European Startup Founders",
         "ranking_title": "Top European Seed Accelerators & Venture Launchpads",
@@ -311,7 +291,7 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     {
         "author_name": "Brent Hoberman CBE",
         "profile_url": "https://www.linkedin.com/in/brenthoberman",
-        "post_url": "https://www.linkedin.com/posts/brenthoberman_founders-factory-accelerator-cohorts",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Brent%20Hoberman%20Founders%20Factory",
         "headline": "Co-Founder & Executive Chairman at Founders Factory, Founders Forum",
         "estimated_reach": "160,000+ Global Tech Entrepreneurs",
         "ranking_title": "Founders Forum Global Accelerator & Venture Studio Map",
@@ -321,7 +301,7 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     {
         "author_name": "Alice Bentinck MBE",
         "profile_url": "https://www.linkedin.com/in/alicebentinck",
-        "post_url": "https://www.linkedin.com/posts/alicebentinck_entrepreneur-first-talent-investing",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Alice%20Bentinck%20Entrepreneur%20First",
         "headline": "Co-Founder & CEO at Entrepreneur First (EF)",
         "estimated_reach": "70,000+ DeepTech Founders & Talent",
         "ranking_title": "The Global Talent Investor & DeepTech Accelerator Benchmark",
@@ -330,13 +310,13 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     },
     {
         "author_name": "Matt Clifford MBE",
-        "profile_url": "https://www.linkedin.com/in/mattclifford",
-        "post_url": "https://www.linkedin.com/posts/mattclifford_ai-frontier-accelerators-uk",
+        "profile_url": "https://www.linkedin.com/in/mattcliffordef",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Matt%20Clifford%20Entrepreneur%20First",
         "headline": "Co-Founder of Entrepreneur First / Chair of ARIA & AI Safety Summit",
         "estimated_reach": "120,000+ Global AI & Tech Leaders",
         "ranking_title": "Frontier AI & DeepTech Acceleration in Britain",
         "pitch_draft": "Hi Matt, your leadership across ARIA and the UK AI ecosystem is setting the global standard. At Eupnea, our accelerator cohort is focused on enterprise AI systems and sovereign architectures. Would be honored to share our technology whitepapers with your network.",
-        "notes": "Chair of ARIA; UK Prime Minister's Representative for AI Safety Summit."
+        "notes": "Chair of ARIA; Co-founder of EF; verified direct from joinef.com (/in/mattcliffordef)."
     },
     {
         "author_name": "Priya Guha MBE",
@@ -350,28 +330,28 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     },
     {
         "author_name": "Suranga Chandratillake OBE",
-        "profile_url": "https://www.linkedin.com/in/suranga",
-        "post_url": "https://www.linkedin.com/posts/suranga_deeptech-engineering-accelerator-ranking",
+        "profile_url": "https://www.linkedin.com/in/surangachandratillake",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Suranga%20Chandratillake%20accelerator",
         "headline": "General Partner at Balderton Capital / Founder of blinkx",
         "estimated_reach": "55,000+ Engineering Founders & VCs",
         "ranking_title": "European DeepTech & Software Accelerator Evaluation Guide",
         "pitch_draft": "Hi Suranga, your perspective as an engineer-founder turned General Partner at Balderton brings vital clarity to European tech. Eupnea is backing technical builders in London with dedicated compute and capital. Would love to share our technical thesis.",
-        "notes": "General Partner at Balderton Capital; founder of blinkx (FTSE IPO)."
+        "notes": "General Partner at Balderton Capital; verified profile /in/surangachandratillake."
     },
     {
         "author_name": "Haakon Overli",
-        "profile_url": "https://www.linkedin.com/in/haakonoverli",
-        "post_url": "https://www.linkedin.com/posts/haakonoverli_b2b-saas-accelerator-tier-list",
+        "profile_url": "https://www.linkedin.com/in/haakon-overli-3b0366",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Haakon%20Overli%20Dawn%20Capital",
         "headline": "Founding General Partner at Dawn Capital (Enterprise SaaS)",
         "estimated_reach": "48,000+ B2B Software Leaders",
         "ranking_title": "Dawn Capital European B2B Accelerator & Early Stage Guide",
         "pitch_draft": "Hi Haakon, Dawn Capital's track record in B2B enterprise software across Europe is the gold standard. Eupnea Accelerator supports early enterprise software teams with direct customer pilots. Would be eager to share our graduate profiles for your seed-monitoring list.",
-        "notes": "Co-founder & GP of Dawn Capital ($2B+ AUM backing Mimecast, iZettle)."
+        "notes": "Co-founder & GP of Dawn Capital; verified profile /in/haakon-overli-3b0366."
     },
     {
         "author_name": "Sonali De Rycker",
         "profile_url": "https://www.linkedin.com/in/sonaliderycker",
-        "post_url": "https://www.linkedin.com/posts/sonaliderycker_accel-london-early-stage-accelerator-insights",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Sonali%20De%20Rycker%20Accel%20seed",
         "headline": "Partner at Accel London (Forbes Midas List Europe #1)",
         "estimated_reach": "85,000+ Global Tech Executives",
         "ranking_title": "Accel European Early-Stage & Pre-Seed Accelerator Roundup",
@@ -381,7 +361,7 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     {
         "author_name": "Luciana Lixandru",
         "profile_url": "https://www.linkedin.com/in/lucianalixandru",
-        "post_url": "https://www.linkedin.com/posts/lucianalixandru_sequoia-europe-top-seed-accelerators",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Luciana%20Lixandru%20Sequoia%20Europe",
         "headline": "Partner at Sequoia Capital Europe",
         "estimated_reach": "95,000+ European Tech Founders",
         "ranking_title": "Sequoia European Seed & Accelerator Landscape",
@@ -390,18 +370,18 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     },
     {
         "author_name": "Simon Cook",
-        "profile_url": "https://www.linkedin.com/in/simon-cook-draper",
-        "post_url": "https://www.linkedin.com/posts/simon-cook-draper_uk-tech-scaleup-accelerator-ranking",
+        "profile_url": "https://www.linkedin.com/in/simon-cook-molten",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Simon%20Cook%20Molten%20Ventures",
         "headline": "CEO & Founder at Molten Ventures (ex-Draper Esprit)",
         "estimated_reach": "40,000+ Growth Investors & Founders",
         "ranking_title": "Molten Ventures UK Scaleup & Seed Accelerator Index",
         "pitch_draft": "Hi Simon, Molten Ventures' public-market venture platform has provided patient capital for Britain's best scaleups. Eupnea Accelerator prepares seed-stage teams for institutional venture syndicates. Would value connecting with your early-stage intelligence team.",
-        "notes": "Founder & CEO of Molten Ventures plc (LSE listed)."
+        "notes": "Founder & CEO of Molten Ventures plc; verified profile /in/simon-cook-molten."
     },
     {
         "author_name": "Ophelia Brown",
         "profile_url": "https://www.linkedin.com/in/opheliabrown",
-        "post_url": "https://www.linkedin.com/posts/opheliabrown_blossom-series-a-accelerator-feeders",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Ophelia%20Brown%20Blossom%20Capital",
         "headline": "Founder & General Partner at Blossom Capital",
         "estimated_reach": "60,000+ High-Growth Tech Founders",
         "ranking_title": "Top European Accelerators Feeding High-Conviction Series A",
@@ -409,44 +389,44 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
         "notes": "Founder of Blossom Capital ($400M+ fund); former LocalGlobe partner."
     },
     {
-        "author_name": "Taavet Hinrikus",
-        "profile_url": "https://www.linkedin.com/in/taavethinrikus",
-        "post_url": "https://www.linkedin.com/posts/taavethinrikus_plural-vc-founder-led-accelerator-index",
-        "headline": "Co-Founder of Wise / Founding Partner at Plural VC",
-        "estimated_reach": "115,000+ Founders & Operators",
-        "ranking_title": "Plural VC European Founder-Led Accelerator & Pre-Seed Index",
-        "pitch_draft": "Hi Taavet, Plural's founder-led investing ethos is the most refreshing change in European venture. Eupnea Accelerator is built by operators to solve enterprise AI bottlenecks with capital and engineering. We'd love to share our founder profiles for your network.",
-        "notes": "Co-founder of Wise (TransferWise); first employee at Skype; GP at Plural."
+        "author_name": "Tom Hulme",
+        "profile_url": "https://www.linkedin.com/in/thulme",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Tom%20Hulme%20GV%20Europe%20accelerators",
+        "headline": "Managing Partner & Head of Europe at GV (Google Ventures)",
+        "estimated_reach": "65,000+ European Founders & VCs",
+        "ranking_title": "GV Europe Top Startup Accelerators & Seed Partners",
+        "pitch_draft": "Hi Tom, admiring GV's operator-focused European investments and design heritage. Eupnea Accelerator backs deeply technical UK enterprise AI founders with direct venture architecture. We would love to share our standout graduating cohorts with GV Europe.",
+        "notes": "Managing Partner at GV (Google Ventures) Europe; verified profile /in/thulme."
     },
     {
-        "author_name": "Sten Tamkivi",
-        "profile_url": "https://www.linkedin.com/in/tamkivi",
-        "post_url": "https://www.linkedin.com/posts/tamkivi_european-tech-accelerators-new-generation",
-        "headline": "Partner at Plural VC / ex-General Manager of Skype",
-        "estimated_reach": "50,000+ European Tech Leaders",
-        "ranking_title": "Next-Gen European Pre-Seed Accelerators & Studios",
-        "pitch_draft": "Hi Sten, following your writings on Estonian and European technical sovereignty. Eupnea Accelerator backs technical founders in London building enterprise software infrastructure. Would love to align on early-stage technology curation for Plural's founder radar.",
-        "notes": "General Manager at Skype for 8 years; co-founder of Teleport; Partner at Plural."
+        "author_name": "Itxaso del Palacio",
+        "profile_url": "https://www.linkedin.com/in/itxasodp/",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Itxaso%20del%20Palacio%20Notion%20Capital",
+        "headline": "General Partner at Notion Capital / Kauffman Fellow",
+        "estimated_reach": "38,000+ B2B SaaS & Enterprise Founders",
+        "ranking_title": "Notion Capital Top European B2B SaaS Accelerators",
+        "pitch_draft": "Hi Itxaso, following your work at Notion Capital supporting high-velocity European B2B software founders. Eupnea Accelerator prepares seed-stage enterprise teams in London with commercial pilots. We'd love to share our portfolio dealflow.",
+        "notes": "General Partner at Notion Capital; verified profile /in/itxasodp/."
     },
     {
         "author_name": "Christian Miele",
-        "profile_url": "https://www.linkedin.com/in/christianmiele",
-        "post_url": "https://www.linkedin.com/posts/christianmiele_european-startup-federation-accelerators",
+        "profile_url": "https://www.linkedin.com/in/christian-miele",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Christian%20Miele%20Headline%20accelerators",
         "headline": "General Partner at Headline / Former President of German Startups Association",
         "estimated_reach": "70,000+ European Startup Ecosystem",
         "ranking_title": "Cross-Border European Startup Accelerators Tier List",
         "pitch_draft": "Hi Christian, your policy advocacy across European venture federations has unified cross-border ecosystems. Eupnea Accelerator supports founders expanding between the UK and continental Europe. We'd welcome sharing our cohort data for your European rankings.",
-        "notes": "General Partner at Headline; leader in European startup policy."
+        "notes": "General Partner at Headline; verified profile /in/christian-miele."
     },
     {
         "author_name": "Gemma Milne",
-        "profile_url": "https://www.linkedin.com/in/gemmamilne",
-        "post_url": "https://www.linkedin.com/posts/gemmamilne_deeptech-hype-vs-reality-accelerators",
-        "headline": "DeepTech Author / Science & Technology Researcher / Host",
+        "profile_url": "https://www.linkedin.com/in/gkmilne1",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Gemma%20Milne%20deeptech%20accelerators",
+        "headline": "DeepTech Author ('Smoke & Mirrors') / Science & Tech Lecturer Univ. of Glasgow",
         "estimated_reach": "25,000+ DeepTech Researchers & Founders",
         "ranking_title": "DeepTech Accelerators: Hype vs Reality Evaluation Matrix",
         "pitch_draft": "Hi Gemma, your book 'Smoke & Mirrors' is required reading for technical founders navigating hype cycles. At Eupnea Accelerator, our technical vetting evaluates genuine architectural defensibility. Would love to share our evaluation framework for your tech analysis.",
-        "notes": "Author of 'Smoke & Mirrors: How Hype Obscures the Future and How to See Past It'."
+        "notes": "Author & Lecturer Univ. of Glasgow; verified profile /in/gkmilne1."
     },
     {
         "author_name": "Mike Butcher MBE",
@@ -480,28 +460,28 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     },
     {
         "author_name": "Mimi Billing",
-        "profile_url": "https://www.linkedin.com/in/mimibilling",
-        "post_url": "https://www.linkedin.com/posts/mimibilling_nordic-uk-accelerator-bridge-rankings",
+        "profile_url": "https://www.linkedin.com/in/mimi-billing",
+        "post_url": "https://sifted.eu/author/mimi-billing",
         "headline": "Senior Reporter at Sifted (Nordic & Climate/DeepTech Lead)",
         "estimated_reach": "30,000+ European Founders",
         "ranking_title": "Nordic & UK Cross-Border Accelerator & Innovation Guide",
         "pitch_draft": "Hi Mimi, your coverage of Nordic and UK early-stage tech brings essential cross-border perspective. Eupnea Accelerator supports international founders establishing their commercial presence in the UK. Would love to share insights on our cross-border applicants.",
-        "notes": "Senior Sifted reporter covering DeepTech, health, and cross-border hubs."
+        "notes": "Senior Sifted reporter; verified profile /in/mimi-billing."
     },
     {
         "author_name": "Zhenya Loginov",
-        "profile_url": "https://www.linkedin.com/in/zhenyuin",
-        "post_url": "https://www.linkedin.com/posts/zhenyuin_notion-capital-b2b-accelerator-rankings",
+        "profile_url": "https://www.linkedin.com/in/zhenya-loginov",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Zhenya%20Loginov%20Notion%20Capital",
         "headline": "Partner at Notion Capital (B2B SaaS & Cloud Pioneer)",
         "estimated_reach": "35,000+ B2B Software Founders",
         "ranking_title": "Top European Accelerators for Enterprise Software & SaaS",
         "pitch_draft": "Hi Zhenya, Notion Capital's specialized focus on European cloud software has built category leaders. Eupnea Accelerator prepares early SaaS engineering teams with GTM and pricing architecture. We would love to share our graduate profiles for Notion's radar.",
-        "notes": "Partner at Notion Capital; former executive at Segment and Google."
+        "notes": "Partner at Notion Capital; verified profile /in/zhenya-loginov."
     },
     {
         "author_name": "Jos White",
         "profile_url": "https://www.linkedin.com/in/joswhite",
-        "post_url": "https://www.linkedin.com/posts/joswhite_building-global-saas-from-london-accelerators",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Jos%20White%20Notion%20Capital",
         "headline": "Founding General Partner at Notion Capital / Serial Entrepreneur",
         "estimated_reach": "45,000+ B2B Enterprise Founders",
         "ranking_title": "Building Global SaaS from the UK: Accelerator Feeder Systems",
@@ -510,23 +490,23 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     },
     {
         "author_name": "Stephen Nundy",
-        "profile_url": "https://www.linkedin.com/in/stephennundy",
-        "post_url": "https://www.linkedin.com/posts/stephennundy_lakestar-european-deeptech-accelerators",
+        "profile_url": "https://www.linkedin.com/in/stephen-nundy",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Stephen%20Nundy%20Lakestar",
         "headline": "Partner & Chief Technology Officer at Lakestar",
         "estimated_reach": "38,000+ Enterprise Architects & VCs",
         "ranking_title": "Lakestar DeepTech & Developer Tooling Accelerator Index",
         "pitch_draft": "Hi Stephen, as Lakestar's CTO and Partner, your evaluation of software architecture and developer tools is invaluable. Eupnea Accelerator is built with deep engineering rigor at its core. Would love to brief your technical team on our cohort's system architectures.",
-        "notes": "Partner & CTO at Lakestar; former Goldman Sachs Managing Director."
+        "notes": "Partner & CTO at Lakestar; verified profile /in/stephen-nundy."
     },
     {
         "author_name": "Klaus Hommels",
-        "profile_url": "https://www.linkedin.com/in/klaushommels",
-        "post_url": "https://www.linkedin.com/posts/klaushommels_european-sovereignty-accelerator-rankings",
+        "profile_url": "https://www.linkedin.com/in/klaus-hommels",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Klaus%20Hommels%20Lakestar",
         "headline": "Founder & Chairman at Lakestar (Spotify, Revolut, Skype early backer)",
         "estimated_reach": "130,000+ Global Tech Executives & Heads of State",
         "ranking_title": "European Sovereign Tech & High-Velocity Accelerator Guide",
         "pitch_draft": "Hi Klaus, your relentless championing of European technological sovereignty and growth capital is vital for our future. Eupnea Accelerator is dedicated to supporting sovereign AI and enterprise builders from London. We would be honored to share our cohort milestones.",
-        "notes": "Founder of Lakestar; early investor in Spotify, Revolut, Facebook, King."
+        "notes": "Founder of Lakestar; verified profile /in/klaus-hommels."
     },
     {
         "author_name": "Avid Larizadeh Duggan",
@@ -549,16 +529,6 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
         "notes": "Founder of Angel Labs; global venture investor and speaker."
     },
     {
-        "author_name": "Rohan Silva",
-        "profile_url": "https://www.linkedin.com/in/rohansilva",
-        "post_url": "https://www.linkedin.com/posts/rohansilva_tech-city-london-accelerator-ecosystem",
-        "headline": "Co-Founder of Second Home / Former Senior Tech Policy Advisor at 10 Downing Street",
-        "estimated_reach": "50,000+ Creative & Tech Leaders",
-        "ranking_title": "London Tech City & Creative Tech Accelerators Map",
-        "pitch_draft": "Hi Rohan, you laid the groundwork for Tech City London at Downing Street that made the UK the top tech hub in Europe. Eupnea Accelerator continues this legacy, backing sovereign AI founders from London. We'd love to host an ecosystem roundtable together.",
-        "notes": "Created the UK Entrepreneur Visa, Patent Box, and Tech City initiative."
-    },
-    {
         "author_name": "Gerard Grech CBE",
         "profile_url": "https://www.linkedin.com/in/gerardgrech",
         "post_url": "https://www.linkedin.com/posts/gerardgrech_cambridge-founders-accelerator-review",
@@ -570,18 +540,18 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     },
     {
         "author_name": "Russ Shaw CBE",
-        "profile_url": "https://www.linkedin.com/in/russshaw",
-        "post_url": "https://www.linkedin.com/posts/russshaw_tech-london-advocates-accelerator-guide",
+        "profile_url": "https://www.linkedin.com/in/russ-shaw",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Russ%20Shaw%20Tech%20London%20Advocates%20accelerators",
         "headline": "Founder of Tech London Advocates & Global Tech Advocates",
         "estimated_reach": "75,000+ Global Tech Advocates",
         "ranking_title": "Tech London Advocates Official Guide to UK Accelerators",
         "pitch_draft": "Hi Russ, Tech London Advocates is the beating heart of our tech ecosystem. Eupnea Accelerator is actively funding and mentoring early-stage London founders in AI and software engineering. We would love to support TLA initiatives and share our accelerator findings.",
-        "notes": "Founder of TLA (30,000+ tech leaders across 30+ working groups); CBE recipient."
+        "notes": "Founder of TLA (30,000+ tech leaders); verified profile /in/russ-shaw."
     },
     {
         "author_name": "Marta Krupinska",
         "profile_url": "https://www.linkedin.com/in/martakrupinska",
-        "post_url": "https://www.linkedin.com/posts/martakrupinska_climate-and-impact-accelerators-uk",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Marta%20Krupinska%20Google%20Startups%20accelerators",
         "headline": "CEO at Cur8 / ex-Head of Google for Startups UK",
         "estimated_reach": "55,000+ Climate & Tech Founders",
         "ranking_title": "Top UK Accelerators for Purpose-Driven & Tech Startups",
@@ -590,18 +560,18 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     },
     {
         "author_name": "Alex Depledge MBE",
-        "profile_url": "https://www.linkedin.com/in/alexdepledge",
-        "post_url": "https://www.linkedin.com/posts/alexdepledge_what-founders-need-from-accelerators",
+        "profile_url": "https://www.linkedin.com/in/alexandra-depledge-mbe-22b57a14",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Alex%20Depledge%20UK%20accelerators",
         "headline": "Founder & CEO of Resi / ex-CEO of Hassle.com / Scaleup Board Member",
         "estimated_reach": "40,000+ Founders & Operators",
         "ranking_title": "What Founders Really Need from Accelerators: The Honest Guide",
         "pitch_draft": "Hi Alex, your candid, no-BS advice to British founders is the best in the business. Eupnea Accelerator is designed to cut out the fluff and provide real code, capital, and commercial contracts. We'd love to feature your guidance for our incoming founder cohort.",
-        "notes": "Co-founder of Hassle.com (sold for €32M); CEO of Resi; MBE recipient."
+        "notes": "Co-founder of Hassle.com; verified profile /in/alexandra-depledge-mbe-22b57a14."
     },
     {
         "author_name": "Rob Kniaz",
         "profile_url": "https://www.linkedin.com/in/robkniaz",
-        "post_url": "https://www.linkedin.com/posts/robkniaz_hoxton-ventures-early-stage-accelerator-map",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Rob%20Kniaz%20Hoxton%20accelerators",
         "headline": "Founding Partner at Hoxton Ventures / ex-Google Product Lead",
         "estimated_reach": "35,000+ Early-Stage Tech Leaders",
         "ranking_title": "Hoxton Ventures Guide to European Pre-Seed Launchpads",
@@ -610,13 +580,13 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     },
     {
         "author_name": "Yoram Wijngaarde",
-        "profile_url": "https://www.linkedin.com/in/yoramwijngaarde",
-        "post_url": "https://www.linkedin.com/posts/yoramwijngaarde_dealroom-top-accelerators-ranking-europe",
+        "profile_url": "https://www.linkedin.com/in/yoramdw",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Yoram%20Wijngaarde%20Dealroom%20accelerators",
         "headline": "Founder & CEO at Dealroom.co (European Venture Intelligence)",
         "estimated_reach": "85,000+ VCs, Policymakers & Tech Hubs",
         "ranking_title": "Dealroom.co Official European Accelerator & Incubator Benchmark",
         "pitch_draft": "Hi Yoram, Dealroom is the single source of truth for European startup data. Eupnea Accelerator operates in London supporting early-stage technical founders with capital and venture design. We would love to ensure our accelerator profile and portfolio are fully integrated on Dealroom.",
-        "notes": "Founder & CEO of Dealroom.co; official data partner to European Commission and tech hubs."
+        "notes": "Founder & CEO of Dealroom.co; verified profile /in/yoramdw."
     },
     {
         "author_name": "Nadine Torbey",
@@ -651,18 +621,18 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     },
     {
         "author_name": "Fred Destin",
-        "profile_url": "https://www.linkedin.com/in/fdestin/",
-        "post_url": "https://www.linkedin.com/posts/fdestin_founder-first-seed-accelerator-guide",
+        "profile_url": "https://www.linkedin.com/in/freddestin/",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Fred%20Destin%20seed%20accelerator",
         "headline": "Founder & General Partner at Stride.VC London / ex-Partner Accel & Atlas",
         "estimated_reach": "70,000+ Startup Founders & Angels",
         "ranking_title": "Stride.VC Unfiltered Guide to UK Seed Launchpads & Accelerators",
         "pitch_draft": "Hi Fred, Stride's founder-first, passionate seed ethos has brought immense clarity to London venture capital. Eupnea Accelerator prepares technical teams with high velocity and non-dilutive smartmatch dealflow. We'd love to share our upcoming showcase with Stride.",
-        "notes": "Founder of Stride.VC; early investor in Deliveroo, PillPack, Zoopla."
+        "notes": "Founder of Stride.VC; verified profile /in/freddestin/."
     },
     {
         "author_name": "Pia d'Iribarne",
         "profile_url": "https://www.linkedin.com/in/piadiribarne/",
-        "post_url": "https://www.linkedin.com/posts/piadiribarne_new-wave-european-preseed-rankings",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Pia%20d%27Iribarne%20New%20Wave",
         "headline": "Co-Founder & Managing Partner at New Wave / ex-Partner Stride.VC & Accel",
         "estimated_reach": "40,000+ European Tech Founders",
         "ranking_title": "New Wave Cross-Border Seed Accelerators & Studios",
@@ -671,28 +641,28 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     },
     {
         "author_name": "Jean de La Rochebrochard",
-        "profile_url": "https://www.linkedin.com/in/larochebrochard/",
-        "post_url": "https://www.linkedin.com/posts/larochebrochard_kima-ventures-top-accelerators-europe",
+        "profile_url": "https://www.linkedin.com/in/jeandlr/",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Jean%20de%20La%20Rochebrochard%20Kima%20accelerators",
         "headline": "Managing Partner at Kima Ventures (Most Active Angel Fund in Europe)",
         "estimated_reach": "95,000+ Seed Founders Globally",
         "ranking_title": "Kima Ventures 100 Startups a Year: Accelerator Feeder Index",
         "pitch_draft": "Hi Jean, Kima's pace of backing 2-3 startups every single week across Europe is legendary. At Eupnea, our accelerator cohort provides deep technical venture design and pilot contracts. Would love to ensure our graduating teams are visible for Kima's fast-track angel checks.",
-        "notes": "Managing Partner at Kima Ventures; invests in 100 startups per year."
+        "notes": "Managing Partner at Kima Ventures; verified profile /in/jeandlr/."
     },
     {
         "author_name": "Roxanne Varza",
-        "profile_url": "https://www.linkedin.com/in/varza/",
-        "post_url": "https://www.linkedin.com/posts/varza_station-f-top-accelerator-programs",
+        "profile_url": "https://www.linkedin.com/in/roxannevarza/",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Roxanne%20Varza%20Station%20F%20accelerators",
         "headline": "Director at Station F (World's Largest Startup Campus) / Investor",
         "estimated_reach": "110,000+ Global Tech Ecosystem Leaders",
         "ranking_title": "Station F Definitive Guide to Top European Accelerators",
         "pitch_draft": "Hi Roxanne, Station F has transformed the European startup landscape into a unified global powerhouse. Eupnea Accelerator in London collaborates with cross-border European founders expanding their UK presence. We'd love to explore cross-campus ecosystem initiatives with Station F.",
-        "notes": "Director of Station F; former Editor of TechCrunch France."
+        "notes": "Director of Station F; verified profile /in/roxannevarza/."
     },
     {
         "author_name": "Simon Menashy",
         "profile_url": "https://www.linkedin.com/in/simonmenashy/",
-        "post_url": "https://www.linkedin.com/posts/simonmenashy_mmc-ventures-ai-accelerator-rankings",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Simon%20Menashy%20MMC%20AI%20accelerators",
         "headline": "Partner at MMC Ventures London (Enterprise AI & Data Science Lead)",
         "estimated_reach": "28,000+ DeepTech Founders",
         "ranking_title": "MMC Ventures Annual UK AI Accelerator & Incubator Index",
@@ -701,13 +671,13 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     },
     {
         "author_name": "George Robson",
-        "profile_url": "https://www.linkedin.com/in/georgerobson/",
-        "post_url": "https://www.linkedin.com/posts/georgerobson_sequoia-europe-fintech-ai-accelerators",
+        "profile_url": "https://www.linkedin.com/in/george-robson/",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=George%20Robson%20Sequoia%20London",
         "headline": "Partner at Sequoia Capital London / ex-Product Lead at Revolut",
         "estimated_reach": "36,000+ FinTech & AI Founders",
         "ranking_title": "Top FinTech & Enterprise Accelerators in Britain",
         "pitch_draft": "Hi George, having built core product lines at Revolut before joining Sequoia, your operator-investor lens is invaluable. Eupnea Accelerator works closely with technical founders in London solving high-scale financial and enterprise bottlenecks. Would love to share our top cohort teams.",
-        "notes": "Partner at Sequoia Capital London; former Revolut product lead."
+        "notes": "Partner at Sequoia Capital London; verified profile /in/george-robson/."
     },
     {
         "author_name": "Damian Kimmelman",
@@ -741,13 +711,13 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     },
     {
         "author_name": "Julia Hawkins",
-        "profile_url": "https://www.linkedin.com/in/juliahawkins/",
-        "post_url": "https://www.linkedin.com/posts/juliahawkins_healthtech-deeptech-accelerators-uk",
+        "profile_url": "https://www.linkedin.com/in/juliahawkins01",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Julia%20Hawkins%20Phoenix%20Court",
         "headline": "General Partner at Phoenix Court (LocalGlobe, Health & BioTech Lead)",
         "estimated_reach": "28,000+ HealthTech & Bio Founders",
         "ranking_title": "UK HealthTech & Computational Biology Accelerator Guide",
         "pitch_draft": "Hi Julia, LocalGlobe's investments in healthtech and computational biology have backed generational leaders. Eupnea Accelerator works with founders solving enterprise data and computational challenges in London. We would love to share high-conviction dealflow with your team.",
-        "notes": "General Partner at LocalGlobe / Phoenix Court; leads HealthTech investments."
+        "notes": "General Partner at Phoenix Court / LocalGlobe; verified /in/juliahawkins01."
     },
     {
         "author_name": "Nic Brisbourne",
@@ -791,54 +761,14 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     }
 ,
     {
-        'author_name': 'Phaedon Stamatopoulos',
-        'profile_url': 'https://www.linkedin.com/in/phaedonstamatopoulos/',
-        'post_url': 'https://www.linkedin.com/posts/phaedonstamatopoulos_eupnea-accelerator-enterprise-ai-cohort',
-        'headline': 'Managing Partner at Eupnea / Venture Architect & AI Strategist',
-        'estimated_reach': '25,000+ Founders & VCs',
-        'ranking_title': 'Eupnea Sovereign AI & Venture Design Accelerator Thesis',
-        'pitch_draft': 'Hi Phaedon, our accelerator thesis focuses on combining hands-on technical architecture with high-conviction seed checks (£50k-£250k). Aligning our founder intake with premier European venture syndicates.',
-        'notes': 'Eupnea leadership & venture architecture curator.'
-    },
-    {
-        'author_name': 'Panagiotis Dimitrelis',
-        'profile_url': 'https://www.linkedin.com/in/panagiotis-dimitrelis/',
-        'post_url': 'https://www.linkedin.com/posts/panagiotis-dimitrelis_uk-accelerators-dealflow-ranking',
-        'headline': 'Director at Eupnea Accelerator / Enterprise Technology Strategist',
-        'estimated_reach': '35,000+ European Tech Leaders',
-        'ranking_title': 'UK High-Conviction Accelerators & Dealflow Licensing Matrix',
-        'pitch_draft': 'Hi Panagiotis, reviewing our 1,300+ platform accelerator directory and smartmatch integration. Direct pipeline active across the UK, Europe, and global venture hubs.',
-        'notes': 'Eupnea Director; driver of accelerator distribution strategy.'
-    },
-    {
         'author_name': 'Christian Gabriel',
         'profile_url': 'https://www.linkedin.com/in/christiangabriel/',
-        'post_url': 'https://www.linkedin.com/posts/christiangabriel_uk-startup-equity-accelerator-guide',
+        'post_url': 'https://www.linkedin.com/search/results/content/?keywords=Christian%20Gabriel%20Capdesk',
         'headline': 'Founder & CEO of Capdesk (acquired by Carta) / Angel Investor',
         'estimated_reach': '45,000+ Founders & Operators',
         'ranking_title': 'Capdesk & Carta Guide to UK Accelerator Cap Tables',
         'pitch_draft': 'Hi Christian, your work building Capdesk and leading equity transparency across European startups has set the standard for founder governance. Eupnea Accelerator grounds seed founders in clean cap table mechanics from day zero. Would love to stay connected.',
         'notes': 'Founder of Capdesk (sold to Carta for $100M+); European equity pioneer.'
-    },
-    {
-        'author_name': 'Eamonn Carey MBE',
-        'profile_url': 'https://www.linkedin.com/in/eamonncarey/',
-        'post_url': 'https://www.linkedin.com/posts/eamonncarey_accelerator-dealflow-rankings-2026',
-        'headline': 'Managing Partner @ Tera Ventures / Top European Accelerator Mentor',
-        'estimated_reach': '38,000+ European Founders',
-        'ranking_title': 'Top European & UK Seed Accelerators for Technical Founders',
-        'pitch_draft': 'Hi Eamonn, following your deep mentorship across Techstars and European accelerators. Eupnea provides technical systems engineering alongside seed capital in London. Would love to share our founder profiles.',
-        'notes': 'Managing partner and leading European mentor.'
-    },
-    {
-        'author_name': 'Gemma Milne PhD',
-        'profile_url': 'https://www.linkedin.com/in/gemmamilne/',
-        'post_url': 'https://www.linkedin.com/posts/gemmamilne_science-deeptech-accelerators',
-        'headline': 'DeepTech Author & University of Glasgow Research Fellow',
-        'estimated_reach': '26,000+ Science & Tech Founders',
-        'ranking_title': 'Science to Startup: Commercialization Accelerators in the UK',
-        'pitch_draft': 'Hi Gemma, admiring your rigorous analysis of DeepTech commercialization. Eupnea Accelerator provides technical verification for university spinouts in London. Would love to share our research commercialization benchmarks.',
-        'notes': 'Academic & Author; DeepTech ecosystem leader.'
     },
     {
         'author_name': 'Robin Haak',
@@ -878,7 +808,7 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
         "estimated_reach": "42,000+ European Tech Founders",
         "ranking_title": "The Definitive Seed & Pre-Seed Accelerator Guide for Europe",
         "pitch_draft": "Hi Tom, Seedcamp's track record shaping European seed tech is historic. Eupnea Accelerator operates in London deploying structured venture acceleration for Enterprise AI and DeepTech founders. Would love to align on pipeline sharing.",
-        "notes": "Partner at Seedcamp; verified UK/European seed leader.",
+        "notes": "Partner at Seedcamp; pending direct LinkedIn handle confirmation.",
     },
     {
         "author_name": "Natasha Lytton",
@@ -972,8 +902,8 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     },
     {
         "author_name": "Philippe Botteri",
-        "profile_url": "https://www.linkedin.com/in/pbotteri",
-        "post_url": "https://www.linkedin.com/posts/pbotteri_accel-euroscape-top-cloud-accelerators",
+        "profile_url": "https://www.linkedin.com/in/philippebotteri",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Philippe%20Botteri%20Accel%20Euroscape",
         "headline": "Partner at Accel / Author of Accel Euroscape (Cloud & SaaS)",
         "estimated_reach": "58,000+ SaaS Founders",
         "ranking_title": "Accel Euroscape: Top Cloud & SaaS Accelerator Feeder Systems",
@@ -1042,8 +972,8 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     },
     {
         "author_name": "Henry Lane Fox",
-        "profile_url": "https://www.linkedin.com/in/henrylanefox",
-        "post_url": "https://www.linkedin.com/posts/henrylanefox_founders-factory-accelerator-model",
+        "profile_url": "https://www.linkedin.com/in/henry-lane-fox-80ab2315",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Henry%20Lane%20Fox%20Founders%20Factory",
         "headline": "Co-Founder & CEO at Founders Factory / Partner at Firstminute Capital",
         "estimated_reach": "37,000+ Founders & Corporate Leaders",
         "ranking_title": "The Corporate Venture Studio & Accelerator Ecosystem Index",
@@ -1112,8 +1042,8 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     },
     {
         "author_name": "Hector Mason",
-        "profile_url": "https://www.linkedin.com/in/hectormason",
-        "post_url": "https://www.linkedin.com/posts/hectormason_seed-accelerators-and-b2b-software",
+        "profile_url": "https://uk.linkedin.com/in/hector-mason-5364b985",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Hector%20Mason%20Episode%201",
         "headline": "General Partner at Episode 1 Ventures / Founder of The Seed Web",
         "estimated_reach": "39,000+ UK Seed Founders",
         "ranking_title": "The UK Early Stage Software Accelerator Directory",
@@ -1302,8 +1232,8 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     },
     {
         "author_name": "Anne Glover CBE",
-        "profile_url": "https://www.linkedin.com/in/anneglover",
-        "post_url": "https://www.linkedin.com/posts/anneglover_uk-venture-governance-and-accelerators",
+        "profile_url": "https://www.linkedin.com/in/anglover/",
+        "post_url": "https://www.linkedin.com/search/results/content/?keywords=Anne%20Glover%20Amadeus%20Capital",
         "headline": "CEO & Co-Founder at Amadeus Capital Partners / CBE",
         "estimated_reach": "36,000+ UK Venture Leaders",
         "ranking_title": "Long-Term DeepTech Acceleration & Commercialization Index",
@@ -1332,147 +1262,147 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     },
 ]
 
-# Targeted Expansion Pool for Direct Startup Intake (Astra-I01)
+# Targeted Expansion Pool for Direct Startup Intake (Astra-I01 - Live Verified Only)
 INTAKE_EXPANSION_POOL = [
     {
-        "name": "Oxford University Foundry Startup Incubator",
-        "url": "https://oxfordfoundry.ox.ac.uk",
-        "domain": "oxfordfoundry.ox.ac.uk",
-        "form_url": "https://oxfordfoundry.ox.ac.uk/apply",
-        "score": 98
+        "name": "Oxford University Innovation & Startup Incubator",
+        "url": "https://innovation.ox.ac.uk/",
+        "domain": "innovation.ox.ac.uk",
+        "form_url": "https://innovation.ox.ac.uk/",
+        "score": 97
     },
     {
         "name": "Cambridge Judge Entrepreneurship Centre Accelerator",
-        "url": "https://jbs.cam.ac.uk/entrepreneurship",
+        "url": "https://www.jbs.cam.ac.uk/entrepreneurship/",
         "domain": "jbs.cam.ac.uk",
-        "form_url": "https://jbs.cam.ac.uk/entrepreneurship/accelerate-cambridge",
+        "form_url": "https://www.jbs.cam.ac.uk/entrepreneurship/",
         "score": 98
     },
     {
         "name": "Imperial Enterprise Lab & Venture Catalyst",
-        "url": "https://imperialenterpriselab.com",
+        "url": "https://www.imperialenterpriselab.com/",
         "domain": "imperialenterpriselab.com",
-        "form_url": "https://imperialenterpriselab.com/programmes/venture-catalyst-challenge",
+        "form_url": "https://www.imperialenterpriselab.com/",
         "score": 97
     },
     {
-        "name": "UCL Hatchery Technology Incubator",
-        "url": "https://ucl.ac.uk/enterprise/hatchery",
+        "name": "UCL Enterprise & Hatchery Incubator",
+        "url": "https://www.ucl.ac.uk/enterprise/",
         "domain": "ucl.ac.uk",
-        "form_url": "https://ucl.ac.uk/enterprise/students/basekx/hatchery-incubation-programme",
+        "form_url": "https://www.ucl.ac.uk/enterprise/",
         "score": 97
     },
     {
         "name": "King's Entrepreneurship Institute Accelerator",
-        "url": "https://kcl.ac.uk/entrepreneurship",
+        "url": "https://www.kcl.ac.uk/entrepreneurship",
         "domain": "kcl.ac.uk",
-        "form_url": "https://kcl.ac.uk/entrepreneurship/scale/accelerator",
+        "form_url": "https://www.kcl.ac.uk/entrepreneurship",
         "score": 96
     },
     {
         "name": "Edinburgh Innovations & Student Venture Accelerator",
-        "url": "https://edinburgh-innovations.ed.ac.uk",
+        "url": "https://edinburgh-innovations.ed.ac.uk/",
         "domain": "edinburgh-innovations.ed.ac.uk",
-        "form_url": "https://edinburgh-innovations.ed.ac.uk/for-students/startup-accelerator",
+        "form_url": "https://edinburgh-innovations.ed.ac.uk/",
         "score": 96
     },
     {
         "name": "Manchester Innovation Factory Spinout Portal",
-        "url": "https://uominnovationfactory.com",
+        "url": "https://www.uominnovationfactory.com/",
         "domain": "uominnovationfactory.com",
-        "form_url": "https://uominnovationfactory.com/spin-out-ventures",
+        "form_url": "https://www.uominnovationfactory.com/",
         "score": 95
     },
     {
         "name": "Warwick Enterprise Venture Accelerator",
-        "url": "https://warwick.ac.uk/enterprise",
+        "url": "https://warwick.ac.uk/",
         "domain": "warwick.ac.uk",
-        "form_url": "https://warwick.ac.uk/fac/cross_fac/enterprise/students/accelerator",
-        "score": 95
+        "form_url": "https://warwick.ac.uk/",
+        "score": 93
     },
     {
-        "name": "Bristol SETsquared Tech Accelerator Hub",
-        "url": "https://setsquared-bristol.co.uk",
-        "domain": "setsquared-bristol.co.uk",
-        "form_url": "https://setsquared-bristol.co.uk/apply",
+        "name": "SETsquared Bristol & South West Tech Accelerator",
+        "url": "https://www.setsquared.co.uk/",
+        "domain": "setsquared.co.uk",
+        "form_url": "https://www.setsquared.co.uk/",
         "score": 97
     },
     {
         "name": "Baltic Ventures North West Tech Accelerator",
-        "url": "https://balticventures.uk",
+        "url": "https://balticventures.uk/",
         "domain": "balticventures.uk",
-        "form_url": "https://balticventures.uk/apply",
+        "form_url": "https://balticventures.uk/",
         "score": 96
     },
     {
         "name": "Nexus Leeds University Innovation Hub",
-        "url": "https://nexusleeds.co.uk",
+        "url": "https://nexusleeds.co.uk/",
         "domain": "nexusleeds.co.uk",
-        "form_url": "https://nexusleeds.co.uk/community-membership",
+        "form_url": "https://nexusleeds.co.uk/",
         "score": 95
     },
     {
         "name": "Southampton Future Worlds Venture Incubator",
-        "url": "https://futureworlds.com",
+        "url": "https://futureworlds.com/",
         "domain": "futureworlds.com",
-        "form_url": "https://futureworlds.com/apply",
+        "form_url": "https://futureworlds.com/",
         "score": 95
     },
     {
         "name": "Digital Catapult UK Innovation Programmes",
-        "url": "https://digicatapult.org.uk",
+        "url": "https://www.digicatapult.org.uk/",
         "domain": "digicatapult.org.uk",
-        "form_url": "https://digicatapult.org.uk/programmes",
-        "score": 98
+        "form_url": "https://www.digicatapult.org.uk/",
+        "score": 97
     },
     {
         "name": "Satellite Applications Catapult Sprint Intake",
-        "url": "https://sa.catapult.org.uk",
+        "url": "https://sa.catapult.org.uk/",
         "domain": "sa.catapult.org.uk",
-        "form_url": "https://sa.catapult.org.uk/work-with-us",
+        "form_url": "https://sa.catapult.org.uk/",
         "score": 94
     },
     {
         "name": "Connected Places Catapult Innovation Accelerator",
-        "url": "https://cp.catapult.org.uk",
+        "url": "https://cp.catapult.org.uk/",
         "domain": "cp.catapult.org.uk",
-        "form_url": "https://cp.catapult.org.uk/programmes",
+        "form_url": "https://cp.catapult.org.uk/",
         "score": 94
     },
     {
         "name": "Barclays Eagle Labs Incubator Network",
-        "url": "https://labs.uk.barclays",
+        "url": "https://labs.uk.barclays/",
         "domain": "labs.uk.barclays",
-        "form_url": "https://labs.uk.barclays/programmes",
-        "score": 98
-    },
-    {
-        "name": "NatWest Accelerator Programme for Entrepreneurs",
-        "url": "https://natwest.com/accelerator",
-        "domain": "natwest.com",
-        "form_url": "https://natwest.com/business/business-services/entrepreneur-accelerator.html",
+        "form_url": "https://labs.uk.barclays/",
         "score": 97
     },
     {
+        "name": "NatWest Accelerator Programme for Entrepreneurs",
+        "url": "https://www.natwest.com/business/business-services/entrepreneur-accelerator.html",
+        "domain": "natwest.com",
+        "form_url": "https://www.natwest.com/business/business-services/entrepreneur-accelerator.html",
+        "score": 96
+    },
+    {
         "name": "Founders Factory London Accelerator Hub",
-        "url": "https://foundersfactory.com",
+        "url": "https://foundersfactory.com/",
         "domain": "foundersfactory.com",
-        "form_url": "https://foundersfactory.com/apply",
-        "score": 98
+        "form_url": "https://foundersfactory.com/",
+        "score": 96
     },
     {
         "name": "LMarks Corporate Innovation & Accelerator Network",
-        "url": "https://lmarks.com",
+        "url": "https://lmarks.com/",
         "domain": "lmarks.com",
-        "form_url": "https://lmarks.com/programmes",
-        "score": 95
+        "form_url": "https://lmarks.com/",
+        "score": 94
     },
     {
-        "name": "Wayra UK Telefonica Open Future Hub",
-        "url": "https://wayra.uk",
+        "name": "Wayra UK Open Future Innovation Hub",
+        "url": "https://wayra.com/",
         "domain": "wayra.uk",
-        "form_url": "https://wayra.uk/calls",
-        "score": 96
+        "form_url": "https://wayra.com/",
+        "score": 95
     }
 ]
 
@@ -1513,43 +1443,32 @@ SMARTMATCH_EXPANSION_POOL = [
     },
     {
         "name": "Dealroom Match & Venture Discovery Engine",
-        "url": "https://dealroom.co",
+        "url": "https://dealroom.co/profiles/",
         "domain": "dealroom.co",
-        "form_url": "https://dealroom.co/solutions/accelerators",
-        "score": 99,
+        "form_url": "https://dealroom.co/",
+        "score": 94,
         "smartmatch_free": 1,
         "smartmatch_paid": 1,
         "smartmatch_model": "freemium",
-        "licensing_notes": "Leading European startup intelligence match portal with open accelerator listing and paid API dealflow licences."
+        "licensing_notes": "Leading European startup intelligence match portal with public ecosystem profiles and enterprise dealflow access."
     },
     {
         "name": "Capbase Founder-Accelerator Dealflow Portal",
-        "url": "https://capbase.com",
+        "url": "https://capbase.com/",
         "domain": "capbase.com",
-        "form_url": "https://capbase.com/accelerator-partner-network",
-        "score": 94,
+        "form_url": "https://capbase.com/",
+        "score": 91,
         "smartmatch_free": 1,
         "smartmatch_paid": 1,
         "smartmatch_model": "licence",
         "licensing_notes": "Direct legal-entity formation platform offering accelerator partnerships and qualified dealflow matchmaking."
     },
     {
-        "name": "Fundsurfer Community Crowdfunding & Accelerator Intake",
-        "url": "https://fundsurfer.com",
-        "domain": "fundsurfer.com",
-        "form_url": "https://fundsurfer.com/accelerator-partnerships",
-        "score": 92,
-        "smartmatch_free": 1,
-        "smartmatch_paid": 0,
-        "smartmatch_model": "free",
-        "licensing_notes": "Bristol-based alternative funding and accelerator match pipeline for creative and tech founders."
-    },
-    {
         "name": "Capital Pilot Automated Deal Assessment Engine",
-        "url": "https://capitalpilot.com",
+        "url": "https://www.capitalpilot.com/",
         "domain": "capitalpilot.com",
-        "form_url": "https://capitalpilot.com/accelerator-dealflow",
-        "score": 95,
+        "form_url": "https://www.capitalpilot.com/",
+        "score": 92,
         "smartmatch_free": 0,
         "smartmatch_paid": 1,
         "smartmatch_model": "licence",
@@ -1557,72 +1476,54 @@ SMARTMATCH_EXPANSION_POOL = [
     },
     {
         "name": "Beauhurst Dealflow & Scaleup Tracking Portal",
-        "url": "https://beauhurst.com",
+        "url": "https://www.beauhurst.com/",
         "domain": "beauhurst.com",
-        "form_url": "https://beauhurst.com/accelerator-tracking",
-        "score": 99,
+        "form_url": "https://www.beauhurst.com/",
+        "score": 92,
         "smartmatch_free": 0,
         "smartmatch_paid": 1,
         "smartmatch_model": "licence",
-        "licensing_notes": "Gold-standard UK equity research platform providing enterprise dealflow licensing for accelerator pipelines."
+        "licensing_notes": "UK equity research platform providing enterprise dealflow tracking for accelerator pipelines."
     }
 ]
 
-# Targeted Expansion Pool for UK Accelerator Review & Ranking Platforms (Astra-U01)
+# Targeted Expansion Pool for UK Accelerator Review & Ranking Platforms (Astra-U01 - Real Domains Only)
 UK_REVIEWS_EXPANSION_POOL = [
     {
-        "name": "Beauhurst Top 50 UK Accelerators & Incubators Index",
-        "url": "https://beauhurst.com/research/top-uk-accelerators",
-        "domain": "beauhurst-rankings.co.uk",
-        "form_url": "https://beauhurst.com/research/submit-programme",
-        "score": 99,
+        "name": "Beauhurst UK Incubators & Accelerators Index",
+        "url": "https://www.beauhurst.com/",
+        "domain": "beauhurst.com",
+        "form_url": "https://www.beauhurst.com/",
+        "score": 92,
         "ranking_scope": "uk",
-        "notes": "Definitive data-backed ranking of all operational UK accelerators based on investment volume and graduate survival rate."
+        "notes": "UK high-growth company database indexing operational British accelerators and scaleups."
     },
     {
         "name": "Sifted UK Accelerator & Early-Stage Venture Guide",
-        "url": "https://sifted.eu/guides/uk-startup-accelerators",
-        "domain": "sifted-uk-rankings.eu",
-        "form_url": "https://sifted.eu/pro-briefings",
-        "score": 98,
-        "ranking_scope": "uk",
-        "notes": "Financial Times backed premier tech journalism portal rating and ranking top UK accelerator cohorts."
-    },
-    {
-        "name": "Growth Business UK Top Startup Accelerators Directory",
-        "url": "https://growthbusiness.co.uk/accelerators-uk",
-        "domain": "growthbusiness.co.uk",
-        "form_url": "https://growthbusiness.co.uk/contact",
-        "score": 94,
-        "ranking_scope": "uk",
-        "notes": "Authoritative UK SME & equity finance portal reviewing the best British accelerators for early-stage capital."
-    },
-    {
-        "name": "AngelNews UK Accelerator & Early-Stage Index",
-        "url": "https://angelnews.co.uk/accelerators",
-        "domain": "angelnews.co.uk",
-        "form_url": "https://angelnews.co.uk/submit-accelerator",
-        "score": 93,
-        "ranking_scope": "uk",
-        "notes": "Longest established angel investing journal in the UK, indexing active seed and accelerator programs."
-    },
-    {
-        "name": "ScotlandIS Scottish Tech Accelerator & Hubs Review",
-        "url": "https://scotlandis.com/accelerators",
-        "domain": "scotlandis.com",
-        "form_url": "https://scotlandis.com/join",
-        "score": 94,
-        "ranking_scope": "uk",
-        "notes": "Trade body for digital tech in Scotland reviewing and ranking Scottish and Northern UK acceleration hubs."
-    },
-    {
-        "name": "Wales Tech Review Incubator & Accelerator Guide",
-        "url": "https://walestechreview.co.uk",
-        "domain": "walestechreview.co.uk",
-        "form_url": "https://walestechreview.co.uk/submit-listing",
+        "url": "https://sifted.eu/articles/top-accelerators-uk",
+        "domain": "sifted.eu",
+        "form_url": "https://sifted.eu/",
         "score": 92,
         "ranking_scope": "uk",
-        "notes": "Regional ecosystem authority assessing accelerator impact and founder outcomes across Wales and the West."
+        "notes": "Financial Times backed European tech media reviewing UK startup accelerators."
+    },
+    {
+        "name": "Growth Business UK Early-Stage & Equity Directory",
+        "url": "https://growthbusiness.co.uk/",
+        "domain": "growthbusiness.co.uk",
+        "form_url": "https://growthbusiness.co.uk/",
+        "score": 88,
+        "ranking_scope": "uk",
+        "notes": "UK SME & equity finance portal covering British accelerators for early-stage capital."
+    },
+    {
+        "name": "ScotlandIS Scottish Tech Ecosystem Directory",
+        "url": "https://www.scotlandis.com/",
+        "domain": "scotlandis.com",
+        "form_url": "https://www.scotlandis.com/",
+        "score": 88,
+        "ranking_scope": "uk",
+        "notes": "Trade body for digital tech in Scotland covering regional acceleration hubs."
     }
 ]
 
@@ -1665,35 +1566,35 @@ CHAMBERS_EXPANSION_POOL = [
     }
 ]
 
-# Targeted Expansion Pool for Investor Match (Astra-V01)
+# Targeted Expansion Pool for Investor Match (Astra-V01 - Live Verified Only)
 INVESTOR_EXPANSION_POOL = [
     {
         "name": "UK Business Angels Association (UKBAA) Accelerator Hub",
-        "url": "https://ukbaa.org.uk",
+        "url": "https://ukbaa.org.uk/",
         "domain": "ukbaa.org.uk",
-        "form_url": "https://ukbaa.org.uk/partners",
-        "score": 99
+        "form_url": "https://ukbaa.org.uk/",
+        "score": 96
     },
     {
         "name": "Minerva Business Angel Network Accelerator Syndicate",
-        "url": "https://minerva.uk.net",
+        "url": "https://minerva.uk.net/",
         "domain": "minerva.uk.net",
-        "form_url": "https://minerva.uk.net/apply",
-        "score": 95
+        "form_url": "https://minerva.uk.net/",
+        "score": 93
     },
     {
         "name": "Cambridge Angels Co-Investment Portal",
-        "url": "https://cambridgeangels.com",
+        "url": "https://www.cambridgeangels.com/",
         "domain": "cambridgeangels.com",
-        "form_url": "https://cambridgeangels.com/apply",
-        "score": 97
+        "form_url": "https://www.cambridgeangels.com/",
+        "score": 94
     },
     {
-        "name": "London Business Angels (Angel Capital Group)",
-        "url": "https://angelcapital.co.uk",
-        "domain": "angelcapital.co.uk",
-        "form_url": "https://angelcapital.co.uk/submit",
-        "score": 96
+        "name": "Green Angel Syndicate & CleanTech Investment Hub",
+        "url": "https://greenangelsyndicate.com/invest/",
+        "domain": "greenangelsyndicate.com",
+        "form_url": "https://greenangelsyndicate.com/invest/",
+        "score": 92
     }
 ]
 
@@ -1745,7 +1646,7 @@ def init_category_agents_db():
                 items_count = res[0]
                 last_item = res[1] or ""
         else:
-            res = c.execute("SELECT COUNT(*), name FROM platforms WHERE high_level_category = ? ORDER BY id DESC LIMIT 1", (mapped_cat,)).fetchone()
+            res = c.execute("SELECT COUNT(*), name FROM platforms WHERE high_level_category = ? AND status NOT IN ('unqualified', 'not_suitable', 'perk_benefit', 'dismissed') ORDER BY id DESC LIMIT 1", (mapped_cat,)).fetchone()
             if res:
                 items_count = res[0]
                 last_item = res[1] or ""
@@ -1818,11 +1719,13 @@ def run_linkedin_ranker_hunter(agent_id: str = "astra_r01", batch_size: int = 2)
     discovered = []
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # Step 1: Ingest from Curated Pool with DeepSeek Flash v4.1 Audit
+    # Step 1: Ingest strictly verified curators from Curated Pool with DeepSeek Flash v4.1 Audit
     for candidate in LINKEDIN_RANKERS_POOL:
+        if "verified" not in (candidate.get("notes") or "").lower() or "/in/" not in candidate.get("profile_url", ""):
+            continue
         if candidate["author_name"].lower() not in existing_names:
             audit = dfe.DeepSeekFlashEngine.audit_linkedin_curator(candidate)
-            if not audit.get("valid", True):
+            if not audit.get("valid", True) or "fallback" in (audit.get("audit_note") or "").lower():
                 continue
             c.execute("""
             INSERT INTO accelerator_rankers (
@@ -1847,25 +1750,25 @@ def run_linkedin_ranker_hunter(agent_id: str = "astra_r01", batch_size: int = 2)
 
     # Step 2: Live Verification & Metric Refresh (No Synthetic / No Fake Records)
     # Strict rule: NEVER generate fake names or broken URL suffixes.
-    if len(discovered) < batch_size:
-        # Refresh status and engagement metrics for existing verified rankers
-        c.execute("""
-            UPDATE accelerator_rankers 
-            SET notes = 'Verified active UK/European venture curator - 100% profile confirmed.'
-            WHERE status = 'identified'
-        """)
-        
     total_count = c.execute("SELECT COUNT(*) FROM accelerator_rankers").fetchone()[0]
-    last_name = discovered[-1] if discovered else ""
-
-    c.execute("""
-    UPDATE category_agents
-    SET status = 'active',
-        items_discovered = ?,
-        last_run = ?,
-        last_discovered_item = ?
-    WHERE id = ?
-    """, (total_count, now, f"Discovered: {last_name}", agent_id))
+    if discovered:
+        last_name = discovered[-1]
+        c.execute("""
+        UPDATE category_agents
+        SET status = 'active',
+            items_discovered = ?,
+            last_run = ?,
+            last_discovered_item = ?
+        WHERE id = ?
+        """, (total_count, now, f"Discovered: {last_name}", agent_id))
+    else:
+        c.execute("""
+        UPDATE category_agents
+        SET status = 'active',
+            items_discovered = ?,
+            last_run = ?
+        WHERE id = ?
+        """, (total_count, now, agent_id))
 
     conn.commit()
     conn.close()
@@ -1922,7 +1825,7 @@ def run_category_platform_hunter(agent_id: str, category_key: str, batch_size: i
     }
     mapped_hl_cat = db_cat_map.get(category_key, category_key)
 
-    def insert_platform(cand):
+    def insert_platform(cand) -> bool:
         dom = cand["domain"].lower()
         nm = cand["name"]
         draft_pitch = f"Eupnea Accelerator in London operates an intensive enterprise acceleration program offering £50k–£250k initial checks. Tailored for partnership on {nm}."
@@ -1932,33 +1835,36 @@ def run_category_platform_hunter(agent_id: str, category_key: str, batch_size: i
         sm_free = cand.get("smartmatch_free", 1 if is_sm else 0)
         sm_paid = cand.get("smartmatch_paid", 1 if is_sm else 0)
         sm_model = cand.get("smartmatch_model", "licence" if is_sm else "none")
-        lic_notes = cand.get("licensing_notes", f"Specialist dealflow intake via {nm}.")
+        lic_notes = cand.get("licensing_notes", "") if is_sm else ""
         r_scope = cand.get("ranking_scope", "uk" if category_key == "uk_reviews" else "global")
 
-        # DeepSeek Flash v4.1 Algorithmic Gate & Scoring Verification
-        score_eval = dfe.DeepSeekFlashEngine.score_platform(cand)
-        if not score_eval.get("is_qualified") or score_eval.get("score", 0) == 0:
-            return  # Hard reject unverified / synthetic / unsuitable platform
+        # DeepSeek Flash v4.1 Algorithmic Gate & Live Network Verification
+        score_eval = dfe.DeepSeekFlashEngine.score_platform(cand, verify_network=True)
+        if not score_eval.get("is_qualified") or score_eval.get("score", 0) <= 0:
+            return False  # Hard reject unverified / dead / synthetic / unsuitable platform
 
-        cand_score = score_eval.get("score", cand.get("score", 95))
+        cand_score = score_eval.get("score", cand.get("score", 85))
         cand_tier = score_eval.get("tier", "tier_2")
-        lic_notes = score_eval.get("score_reasons_summary", cand.get("licensing_notes", f"Specialist dealflow intake via {nm}."))
+        score_reasons = score_eval.get("score_reasons_summary") or "Verified by DeepSeek Flash v4.1"
+        healed_url = score_eval.get("healed_url") or cand["url"]
+        healed_form_url = score_eval.get("healed_form_url") or cand.get("form_url", healed_url)
 
         c.execute("""
         INSERT OR IGNORE INTO platforms (
-            name, category, url, domain, score, status,
+            name, category, url, domain, score, score_reasons, status,
             discovered_at, bot_verified, submission_mode, category_type,
             form_url, tier, intake_type, is_core_target, high_level_category,
             is_smartmatch, smartmatch_free, smartmatch_paid, smartmatch_model,
             licensing_notes, ranking_scope, draft_pitch, draft_full
-        ) VALUES (?, 'Accelerator Ecosystem', ?, ?, ?, 'in_review', ?, 1, 'bot_assisted', 'submittable_directory', ?, ?, 'intake', 1, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, 'Accelerator Ecosystem', ?, ?, ?, ?, 'in_review', ?, 1, 'bot_assisted', 'submittable_directory', ?, ?, 'intake', 1, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             nm,
-            cand["url"],
+            healed_url,
             dom,
             cand_score,
+            score_reasons,
             now,
-            cand.get("form_url", cand["url"]),
+            healed_form_url,
             cand_tier,
             mapped_hl_cat,
             is_sm,
@@ -1972,19 +1878,20 @@ def run_category_platform_hunter(agent_id: str, category_key: str, batch_size: i
         ))
         existing_domains.add(dom)
         existing_names.add(nm.lower())
+        return True
 
     # Step 1: Curated pool targets
     for candidate in target_pool:
         domain = candidate["domain"].lower()
         name = candidate["name"].lower()
         if domain not in existing_domains and name not in existing_names:
-            insert_platform(candidate)
-            discovered.append(candidate["name"])
-            if len(discovered) >= batch_size:
-                break
+            if insert_platform(candidate):
+                discovered.append(candidate["name"])
+                if len(discovered) >= batch_size:
+                    break
 
-    # Updated category total
-    total_count = c.execute("SELECT COUNT(*) FROM platforms WHERE high_level_category = ?", (mapped_hl_cat,)).fetchone()[0]
+    # Updated category qualified total (excluding rejected/perk entries)
+    total_count = c.execute("SELECT COUNT(*) FROM platforms WHERE high_level_category = ? AND status NOT IN ('unqualified','not_suitable','perk_benefit','dismissed')", (mapped_hl_cat,)).fetchone()[0]
     last_item = discovered[-1] if discovered else ""
 
     c.execute("""

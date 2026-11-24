@@ -29,6 +29,7 @@ for i in range(1, 91):
     os.makedirs(os.path.join(PROFILES_BASE_DIR, f"agent_{i:02d}"), exist_ok=True)
 
 import presence_scoring_engine as pse
+import deepseek_flash_engine as dfe
 
 DB_PATH = os.path.join(WORKSPACE_DIR, "presence_agent.db")
 
@@ -229,38 +230,38 @@ MANAGEMENT_AGENTS_DEF = [
     }
 ]
 
-# Real-world high-value accelerator & innovation portals for continuous expansion (Verified Accelerator & Program Hubs)
+# Real-world high-value accelerator & innovation portals for continuous expansion (Live-Verified Accelerator & Program Hubs)
 GLOBAL_DIRECTORY_EXPANSION_POOL = [
-    ("F6S Accelerators & Startup Programs Directory", "f6s.com", "Global Venture & Accelerator Hubs", 99, "https://www.f6s.com/programs/create"),
-    ("Gust Accelerator Network & Program Platform", "gust.com", "Global Venture & Accelerator Hubs", 98, "https://gust.com/accelerators/apply"),
-    ("OneValley Passport Accelerator Marketplace", "theonevalley.com", "Global Venture & Accelerator Hubs", 97, "https://www.theonevalley.com/join-as-partner"),
-    ("YouNoodle Startup Competition & Accelerator Intake", "younoodle.com", "Global Venture & Accelerator Hubs", 96, "https://younoodle.com/judging-and-intake-platform"),
-    ("VC4A Global Accelerator & Venture Programs Hub", "vc4a.com", "Global Venture & Accelerator Hubs", 95, "https://vc4a.com/publish-a-program"),
-    ("ProSeeder Accelerator & Deal Flow Intake Portal", "proseeder.com", "Global Venture & Accelerator Hubs", 94, "https://proseeder.com/solutions/accelerators"),
-    ("SkipsoLabs Innovation & Accelerator Exchange", "skipsolabs.com", "Global Venture & Accelerator Hubs", 93, "https://www.skipsolabs.com/open-calls"),
-    ("Innoget Open Innovation Accelerator Calls", "innoget.com", "Global Venture & Accelerator Hubs", 92, "https://www.innoget.com/post-challenge"),
-    ("Fundacity Accelerator & Syndicate Intake Engine", "fundacity.com", "Global Venture & Accelerator Hubs", 91, "https://fundacity.com/accelerators/register"),
-    ("Global Accelerator Network (GAN) Programs Hub", "gan.co", "Global Venture & Accelerator Hubs", 90, "https://www.gan.co/join"),
-    ("Agorize Global Accelerator & Startup Challenge Intake", "agorize.com", "Global Venture & Accelerator Hubs", 98, "https://www.agorize.com/en/challenges"),
-    ("ChallengeRocket Startup Competition & Accelerator Calls", "challengerocket.com", "Global Venture & Accelerator Hubs", 96, "https://challengerocket.com/challenges"),
-    ("Submittable Accelerator & Venture Grant Intake Portal", "submittable.com", "Global Venture & Accelerator Hubs", 97, "https://www.submittable.com/solutions/accelerators-grants"),
-    ("Bridge for Billions Global Incubator & Accelerator Platform", "bridgeforbillions.org", "Global Venture & Accelerator Hubs", 95, "https://www.bridgeforbillions.org/programs"),
-    ("Hello Tomorrow Deep Tech Accelerator & Global Challenge", "hello-tomorrow.org", "Global Venture & Accelerator Hubs", 96, "https://hello-tomorrow.org/global-challenge"),
-    ("Startupbootcamp Open Calls & Accelerator Directory", "startupbootcamp.org", "Global Venture & Accelerator Hubs", 95, "https://www.startupbootcamp.org/accelerator-programs"),
-    ("Founders Space Global Accelerator Cohort Intake", "foundersspace.com", "Global Venture & Accelerator Hubs", 94, "https://www.foundersspace.com/apply"),
-    ("Finnovating Global Open Innovation & Accelerator Platform", "finnovating.com", "Global Venture & Accelerator Hubs", 96, "https://finnovating.com/post-challenge"),
-    ("Vestbee CEE & European Venture Directory", "vestbee.com", "European Innovation & Regional Networks", 97, "https://www.vestbee.com/accelerators"),
-    ("OpenVC Global Venture & Ecosystem Directory", "openvc.app", "Global Venture & Accelerator Hubs", 96, "https://openvc.app/accelerators"),
+    ("F6S Accelerators & Startup Programs Directory", "f6s.com", "Global Venture & Accelerator Hubs", 99, "https://www.f6s.com/programs"),
+    ("Gust Accelerator Network & Program Platform", "gust.com", "Global Venture & Accelerator Hubs", 98, "https://gust.com/accelerators"),
+    ("OneValley Passport Accelerator Marketplace", "theonevalley.com", "Global Venture & Accelerator Hubs", 97, "https://www.onevalley.com/"),
+    ("PitGrowth Startup & Accelerator Directory", "pitgrowth.com", "Global Venture & Accelerator Hubs", 96, "https://pitgrowth.com/auth/register"),
+    ("StartupCorners Curated Accelerator Index", "startupcorners.com", "Global Venture & Accelerator Hubs", 95, "https://startupcorners.com/accelerators"),
+    ("Listed Startups Venture & Accelerator Hub", "listedstartups.com", "Global Venture & Accelerator Hubs", 95, "https://listedstartups.com/submit"),
+    ("YouNoodle Startup Competition & Accelerator Intake", "younoodle.com", "Global Venture & Accelerator Hubs", 95, "https://www.younoodle.com/"),
+    ("VC4A Global Accelerator & Venture Programs Hub", "vc4a.com", "Global Venture & Accelerator Hubs", 95, "https://vc4a.com/"),
+    ("Innoget Open Innovation Accelerator Calls", "innoget.com", "Global Venture & Accelerator Hubs", 92, "https://www.innoget.com/"),
+    ("Global Accelerator Network (GAN) Programs Hub", "gan.co", "Global Venture & Accelerator Hubs", 90, "https://www.gan.co/"),
+    ("Agorize Global Accelerator & Startup Challenge Intake", "agorize.com", "Global Venture & Accelerator Hubs", 94, "https://www.agorize.com/web/en/challenges"),
+    ("ChallengeRocket Startup Competition & Accelerator Calls", "challengerocket.com", "Global Venture & Accelerator Hubs", 92, "https://challengerocket.com/"),
+    ("Submittable Accelerator & Venture Grant Intake Portal", "submittable.com", "Global Venture & Accelerator Hubs", 94, "https://www.submittable.com/"),
+    ("Bridge for Billions Global Incubator & Accelerator Platform", "bridgeforbillions.org", "Global Venture & Accelerator Hubs", 94, "https://www.bridgeforbillions.org/programs/"),
+    ("Hello Tomorrow Deep Tech Accelerator & Global Challenge", "hello-tomorrow.org", "Global Venture & Accelerator Hubs", 94, "https://www.hello-tomorrow.org/challenge/hello-tomorrow-challenge"),
+    ("Startupbootcamp Open Calls & Accelerator Directory", "startupbootcamp.org", "Global Venture & Accelerator Hubs", 93, "https://startupbootcamp.org/"),
+    ("Founders Space Global Accelerator Cohort Intake", "foundersspace.com", "Global Venture & Accelerator Hubs", 91, "https://www.foundersspace.com/"),
+    ("Vestbee CEE & European Venture Directory", "vestbee.com", "European Innovation & Regional Networks", 93, "https://www.vestbee.com/accelerators"),
+    ("OpenVC Global Venture & Ecosystem Directory", "openvc.app", "Global Venture & Accelerator Hubs", 92, "https://www.openvc.app/"),
     ("Crunchbase Organizations & Accelerator Hub", "crunchbase.com", "B2B Consulting & Enterprise Networks", 95, "https://www.crunchbase.com/add-new"),
-    ("Dealroom.co European Tech Intelligence", "dealroom.co", "European Innovation & Regional Networks", 94, "https://dealroom.co/claim-profile"),
-    ("StartupBlink Global Ecosystem Portal", "startupblink.com", "Global Venture & Accelerator Hubs", 93, "https://www.startupblink.com/add-accelerator"),
-    ("Wellfound (formerly AngelList) Startup Directory", "wellfound.com", "Global Venture & Accelerator Hubs", 92, "https://wellfound.com/recruit/overview"),
-    ("Tracxn Incubators & Accelerators Hub", "tracxn.com", "Global Venture & Accelerator Hubs", 90, "https://tracxn.com/contact-us"),
-    ("PitchBook Venture & Accelerator Profile", "pitchbook.com", "Global Venture & Accelerator Hubs", 90, "https://pitchbook.com/data/contribute"),
-    ("BetaList Discover Early Startups & Programmes", "betalist.com", "Startup & Product Launchpads", 88, "https://betalist.com/submit"),
-    ("FoundersList Startup Programs & Communities", "founderslist.com", "Startup & Product Launchpads", 87, "https://founderslist.com/programs"),
-    ("Failory Incubators & Accelerators Directory", "failory.com", "Startup & Product Launchpads", 86, "https://www.failory.com/accelerators"),
-    ("Startups.co.uk National Incubators & Accelerators Directory", "startups.co.uk", "Global Venture & Accelerator Hubs", 86, "https://startups.co.uk/incubators-and-accelerators")
+    ("Dealroom.co European Tech Intelligence", "dealroom.co", "European Innovation & Regional Networks", 94, "https://dealroom.co/profiles/"),
+    ("StartupBlink Global Ecosystem Portal", "startupblink.com", "Global Venture & Accelerator Hubs", 93, "https://www.startupblink.com/"),
+    ("TheIncubatorPro Global Accelerator Index", "theincubatorpro.com", "Global Venture & Accelerator Hubs", 92, "https://theincubatorpro.com/accelerators/"),
+    ("Wellfound Startup & Ecosystem Directory", "wellfound.com", "Global Venture & Accelerator Hubs", 90, "https://wellfound.com/"),
+    ("Tracxn Incubators & Accelerators Hub", "tracxn.com", "Global Venture & Accelerator Hubs", 90, "https://tracxn.com/"),
+    ("PitchBook Venture & Accelerator Profile", "pitchbook.com", "Global Venture & Accelerator Hubs", 90, "https://pitchbook.com/"),
+    ("BetaList Discover Early Startups & Programmes", "betalist.com", "Startup & Product Launchpads", 88, "https://betalist.com/submissions/new"),
+    ("FoundersList Startup Programs & Communities", "founderslist.com", "Startup & Product Launchpads", 87, "https://founderslist.com/"),
+    ("Failory Incubators & Accelerators Directory", "failory.com", "Startup & Product Launchpads", 86, "https://www.failory.com/blog/startup-accelerators"),
+    ("Startups.co.uk National Funding & Accelerators Hub", "startups.co.uk", "Global Venture & Accelerator Hubs", 86, "https://startups.co.uk/funding/")
 ]
 
 def build_90_search_agents() -> List[Dict[str, Any]]:
@@ -437,25 +438,31 @@ def run_coordinated_orchestration_cycle():
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     for name, domain, category, score, form_url in GLOBAL_DIRECTORY_EXPANSION_POOL:
         if domain not in existing_domains and new_injections < 5:
+            cand_payload = {
+                "name": name, "domain": domain, "url": f"https://{domain}",
+                "form_url": form_url, "category": category, "score": score
+            }
+            score_eval = dfe.DeepSeekFlashEngine.score_platform(cand_payload, verify_network=True)
+            if not score_eval.get("is_qualified") or score_eval.get("score", 0) <= 0:
+                continue
+
             draft = pse.generate_eupnea_draft_listing(name, domain, category)
             investor_kw = ["angelmatch", "investorhunt", "angel", "seedblink", "crowdcube", "seedrs", "shizune", "vcsheet", "republic", "syndicate", "capital"]
-            intake_kw = ["f6s", "gust", "theonevalley", "younoodle", "vc4a", "proseeder", "skipso", "innoget", "fundacity", "gan.co", "agorize", "challengerocket", "submittable", "bridgeforbillions", "hello-tomorrow", "startupbootcamp", "foundersspace", "finnovating", "vestbee", "openvc", "incubatorlist", "roundfunded", "smartmatch", "dealflow"]
+            intake_kw = ["f6s", "gust", "theonevalley", "younoodle", "vc4a", "innoget", "gan.co", "agorize", "challengerocket", "submittable", "bridgeforbillions", "hello-tomorrow", "startupbootcamp", "foundersspace", "vestbee", "openvc", "incubatorlist", "roundfunded", "pitgrowth", "startupcorners", "listedstartups"]
             
             is_investor = any(k in domain or k in name.lower() for k in investor_kw)
             is_intake = any(k in domain or k in name.lower() for k in intake_kw) and not is_investor
 
+            tier = score_eval.get("tier", "tier_1" if (is_investor or is_intake) else "tier_2")
             if is_investor:
-                tier = "tier_1"
                 high_level_category = "Investor Match & Capital Networks"
                 intake_type = "investor_match"
                 intake_features = "Angel & VC Database, LP/Syndicate Sourcing, Investor Matchmaking & Capital Pipeline"
             elif is_intake:
-                tier = "tier_1"
                 high_level_category = "Direct Startup Engagement & Intake"
                 intake_type = "core_programme_intake"
                 intake_features = "Direct Programme Application Portal, Founder Intake Screening & Cohort Verification"
             else:
-                tier = "tier_2"
                 high_level_category = "Ecosystem Visibility & Program Discovery"
                 intake_type = "ecosystem_database"
                 intake_features = "Ecosystem Database Profile, Accelerator Tagging & SEO Discoverability"
@@ -463,8 +470,9 @@ def run_coordinated_orchestration_cycle():
                 INSERT INTO platforms (name, domain, url, form_url, category, score, score_reasons, draft_pitch, draft_full, tracking_url, status, discovered_at, bot_verified, category_type, submission_mode, tier, intake_type, is_core_target, intake_features, high_level_category)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'in_review', ?, 1, 'submittable_directory', 'Direct Portal', ?, ?, 1, ?, ?)
             """, (
-                name, domain, f"https://{domain}", form_url, category, score,
-                f"Verified Accelerator Hub (+35) | Direct Startup Application Engine (+30) | Founder Audience (+20) | Active Dealflow (+15)",
+                name, domain, score_eval.get("healed_url") or f"https://{domain}",
+                score_eval.get("healed_form_url") or form_url, category, score_eval["score"],
+                score_eval.get("score_reasons_summary") or "DeepSeek Flash v4.1 Verified Portal",
                 draft["draft_pitch"], draft["draft_full"], draft["tracking_url"], now_str,
                 tier, intake_type, intake_features, high_level_category
             ))
@@ -473,17 +481,18 @@ def run_coordinated_orchestration_cycle():
     if new_injections > 0:
         conn.commit()
 
-    # Fetch 90 candidate platforms prioritizing Direct Startup Engagement & Intake first
-    total_plat = c.execute("SELECT COUNT(*) FROM platforms WHERE is_core_target = 1").fetchone()[0]
+    # Fetch 90 qualified candidate platforms prioritizing Tier 1 & Direct Startup Engagement & Intake first
+    total_plat = c.execute("SELECT COUNT(*) FROM platforms WHERE is_core_target = 1 AND status NOT IN ('unqualified', 'not_suitable', 'dismissed', 'perk_benefit') AND score >= 70").fetchone()[0]
     offset = (_swarm_cycle_count * 90) % max(1, total_plat)
     platforms = [dict(r) for r in c.execute("""
-        SELECT id, name, domain, category, score, url, form_url, submitted_url, tracking_url, status
+        SELECT id, name, domain, category, score, url, form_url, submitted_url, tracking_url, status, high_level_category, tier
         FROM platforms
+        WHERE status NOT IN ('unqualified', 'not_suitable', 'dismissed', 'perk_benefit') AND score >= 70
         ORDER BY CASE 
-            WHEN high_level_category = 'Direct Startup Engagement & Intake' THEN 1 
             WHEN tier = 'tier_1' THEN 1 
-            WHEN tier = 'tier_2' THEN 2 
-            ELSE 3 
+            WHEN high_level_category = 'Direct Startup Engagement & Intake' THEN 2 
+            WHEN tier = 'tier_2' THEN 3 
+            ELSE 4 
         END, score DESC, id ASC
         LIMIT 90 OFFSET ?
     """, (offset,)).fetchall()]
@@ -491,9 +500,10 @@ def run_coordinated_orchestration_cycle():
     if len(platforms) < 90:
         wrap_needed = 90 - len(platforms)
         wrap_platforms = [dict(r) for r in c.execute("""
-            SELECT id, name, domain, category, score, url, form_url, submitted_url, tracking_url, status
+            SELECT id, name, domain, category, score, url, form_url, submitted_url, tracking_url, status, high_level_category, tier
             FROM platforms
-            ORDER BY id ASC
+            WHERE status NOT IN ('unqualified', 'not_suitable', 'dismissed', 'perk_benefit') AND score >= 70
+            ORDER BY CASE WHEN tier = 'tier_1' THEN 1 WHEN tier = 'tier_2' THEN 2 ELSE 3 END, score DESC, id ASC
             LIMIT ?
         """, (wrap_needed,)).fetchall()]
         platforms.extend(wrap_platforms)
@@ -526,29 +536,16 @@ def run_coordinated_orchestration_cycle():
         stage_num = squad_idx + 1
         latency = round((time.time() - t0) * 1000 + random.uniform(8.0, 22.0), 2)
 
-        # Run scoring criteria evaluation
-        features = {
-            "real_directory": True,
-            "clear_submit_path": True,
-            "target_audience": True,
-            "target_geography": any(k in squad.lower() or k in name.lower() for k in ["uk", "nordic", "dach", "europe", "western", "deeptech", "fintech", "cleantech", "directory", "hub", "tech"]),
-            "structured_fields": True,
-            "established_directory": cur_score >= 80,
-            "blog_news": False,
-            "list_roundup": False,
-            "no_way_to_list": False,
-            "software_product": False,
-            "wrong_geography": False,
-            "lead_farm": False
-        }
-        score_eval = pse.evaluate_platform_score(features)
-        final_score = max(score_eval["score"], cur_score)
+        # Run strict DeepSeek Flash v4.1 algorithmic pre-qualification & scoring
+        score_eval = dfe.DeepSeekFlashEngine.score_platform(target_platform, verify_network=False)
+        final_score = score_eval["score"] if score_eval.get("is_qualified") else 0
+        eval_classification = score_eval.get("tier", "tier_2").upper()
         draft = pse.generate_eupnea_draft_listing(name, domain, category)
 
         # Functional specialization task generation based on assigned Squad:
         if squad_idx == 0:
             # Squad Alpha: New Website Discovery & Rubric Rating (10 Agents)
-            current_task_text = f"🎯 [Browser: {browser_profile} | ALPHA #{squad_pos}] DISCOVERY & RATING: Scraping '{domain}' | Candidate directory mapped | Calculated Rubric: {final_score}/100 ({score_eval['classification']})."
+            current_task_text = f"🎯 [Browser: {browser_profile} | ALPHA #{squad_pos}] DEEPSEEK V4.1 GATE: Auditing '{domain}' | 4-Gate Rubric: {final_score}/100 ({eval_classification})."
             report = f"[{squad}] {agent_id}: Discovered '{name}' ({domain}). Computed prestige score: {final_score}/100. Handed off to Squad Beta for direct form extraction."
         elif squad_idx == 1:
             # Squad Beta: Direct Form Pathfinding & DOM Inputs (10 Agents)
@@ -591,7 +588,7 @@ def run_coordinated_orchestration_cycle():
             "target_domain": domain,
             "target_category": category,
             "computed_score": final_score,
-            "classification": score_eval["classification"],
+            "classification": eval_classification,
             "stage_num": stage_num,
             "current_task": current_task_text,
             "draft_pitch": draft["draft_pitch"],

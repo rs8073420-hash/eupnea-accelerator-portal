@@ -3,14 +3,7 @@
     "name": "EarlyStage.vc Dealflow & Cohort Matching",
     "domain": "earlystage.vc",
     "url": "https://earlystage.vc",
-    "form_url": "https://earlystage.vc/apply",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "MatchStartup Founder & Accelerator Matchmaking",
-    "domain": "matchstartup.com",
-    "url": "https://matchstartup.com",
-    "form_url": "https://matchstartup.com/programs",
+    "form_url": "https://earlystage.vc",
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
@@ -60,13 +53,6 @@
     "domain": "foundernest.com",
     "url": "https://foundernest.com",
     "form_url": "https://foundernest.com/accelerators",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "EIT Manufacturing Open Cohort Innovation Calls",
-    "domain": "eitmanufacturing.eu",
-    "url": "https://eitmanufacturing.eu",
-    "form_url": "https://eitmanufacturing.eu/calls",
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
@@ -245,13 +231,6 @@
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
-    "name": "Landscape.vc Verified Accelerator & Founder Dealflow",
-    "domain": "landscape.vc",
-    "url": "https://landscape.vc",
-    "form_url": "https://landscape.vc/accelerators",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
     "name": "SeedLegals UK Dealflow & Cohort Matching",
     "domain": "seedlegals.com",
     "url": "https://seedlegals.com",
@@ -273,20 +252,6 @@
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
-    "name": "Bright Network UK Student & Founder Program Intake",
-    "domain": "brightnetwork.co.uk",
-    "url": "https://brightnetwork.co.uk",
-    "form_url": "https://brightnetwork.co.uk/accelerator",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "VenturePoint UK Accelerator Matching & Intake",
-    "domain": "venturepoint.co.uk",
-    "url": "https://venturepoint.co.uk",
-    "form_url": "https://venturepoint.co.uk/apply",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
     "name": "DeepTech Europe Startup Accelerator Intake",
     "domain": "deeptecheurope.org",
     "url": "https://deeptecheurope.org",
@@ -296,8 +261,8 @@
   {
     "name": "InnovateUK KTN Accelerator Directory & Apply",
     "domain": "ktn-uk.org",
-    "url": "https://ktn-uk.org",
-    "form_url": "https://ktn-uk.org/accelerators",
+    "url": "https://iuk-business-connect.org.uk/",
+    "form_url": "https://iuk-business-connect.org.uk/",
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
@@ -326,13 +291,6 @@
     "domain": "nordicinnovators.com",
     "url": "https://nordicinnovators.com",
     "form_url": "https://nordicinnovators.com/accelerator",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "FinTech Sandbox Global Data & Accelerator Intake",
-    "domain": "fintechsandbox.org",
-    "url": "https://fintechsandbox.org",
-    "form_url": "https://fintechsandbox.org/apply",
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
@@ -448,13 +406,6 @@
     "target_category": "Investor Match & Capital Networks"
   },
   {
-    "name": "MergerAlpha Venture Capital & Deal Directory",
-    "domain": "mergeralpha.com",
-    "url": "https://mergeralpha.com",
-    "form_url": "https://mergeralpha.com/investors",
-    "target_category": "Investor Match & Capital Networks"
-  },
-  {
     "name": "AngelNews UK Angel Sourcing & Capital Directory",
     "domain": "angelnews.co.uk",
     "url": "https://angelnews.co.uk",
@@ -469,13 +420,6 @@
     "target_category": "Investor Match & Capital Networks"
   },
   {
-    "name": "London Business Angels (Angel Capital Group)",
-    "domain": "angelcapitalgroup.co.uk",
-    "url": "https://angelcapitalgroup.co.uk",
-    "form_url": "https://angelcapitalgroup.co.uk/apply",
-    "target_category": "Investor Match & Capital Networks"
-  },
-  {
     "name": "VentureSouq Global Co-Investment Syndicate",
     "domain": "venturesouq.com",
     "url": "https://venturesouq.com",
@@ -483,31 +427,10 @@
     "target_category": "Investor Match & Capital Networks"
   },
   {
-    "name": "Funded Club Angel Syndicate Network",
-    "domain": "fundedclub.com",
-    "url": "https://fundedclub.com",
-    "form_url": "https://fundedclub.com/investors",
-    "target_category": "Investor Match & Capital Networks"
-  },
-  {
-    "name": "Startup Stash Curated Resources Directory",
-    "domain": "startupstash.com",
-    "url": "https://startupstash.com",
-    "form_url": "https://startupstash.com/submit",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
     "name": "Launching Next Promising Startups Directory",
     "domain": "launchingnext.com",
-    "url": "https://launchingnext.com",
-    "form_url": "https://launchingnext.com/submit",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "AlternativeTo Crowd-Sourced Software Directory",
-    "domain": "alternativeto.net",
-    "url": "https://alternativeto.net",
-    "form_url": "https://alternativeto.net/submit",
+    "url": "https://www.launchingnext.com/",
+    "form_url": "https://www.launchingnext.com/submit/",
     "target_category": "Ecosystem Visibility & Program Discovery"
   },
   {
@@ -525,27 +448,6 @@
     "target_category": "Ecosystem Visibility & Program Discovery"
   },
   {
-    "name": "Futurepedia The Largest AI Directory",
-    "domain": "futurepedia.io",
-    "url": "https://futurepedia.io",
-    "form_url": "https://futurepedia.io/submit",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Acquire.com Micro-SaaS & Startup Marketplace",
-    "domain": "acquire.com",
-    "url": "https://acquire.com",
-    "form_url": "https://acquire.com/join",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "BetaPage Early Stage Product Directory",
-    "domain": "betapage.co",
-    "url": "https://betapage.co",
-    "form_url": "https://betapage.co/submit",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
     "name": "StartupBase Early Adopters Community",
     "domain": "startupbase.io",
     "url": "https://startupbase.io",
@@ -560,38 +462,10 @@
     "target_category": "Ecosystem Visibility & Program Discovery"
   },
   {
-    "name": "AllStartups Global Innovation Directory",
-    "domain": "allstartups.org",
-    "url": "https://allstartups.org",
-    "form_url": "https://allstartups.org/submit",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
     "name": "SaaSHub Independent Software Discovery",
     "domain": "saashub.com",
     "url": "https://saashub.com",
     "form_url": "https://saashub.com/submit",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "PitchWall Startup Launch Community",
-    "domain": "pitchwall.co",
-    "url": "https://pitchwall.co",
-    "form_url": "https://pitchwall.co/submit",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "SideProjectors Startup & Venture Exchange",
-    "domain": "sideprojectors.com",
-    "url": "https://sideprojectors.com",
-    "form_url": "https://sideprojectors.com/explore",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "MicroLaunch Verified Startup Launch Directory",
-    "domain": "microlaunch.net",
-    "url": "https://microlaunch.net",
-    "form_url": "https://microlaunch.net/submit",
     "target_category": "Ecosystem Visibility & Program Discovery"
   },
   {
@@ -606,13 +480,6 @@
     "domain": "gmchamber.co.uk",
     "url": "https://gmchamber.co.uk",
     "form_url": "https://gmchamber.co.uk/members",
-    "target_category": "Regional Chambers & Business Networks"
-  },
-  {
-    "name": "Greater Birmingham Chambers of Commerce",
-    "domain": "birmingham-chamber.com",
-    "url": "https://birmingham-chamber.com",
-    "form_url": "https://birmingham-chamber.com/directory",
     "target_category": "Regional Chambers & Business Networks"
   },
   {
@@ -686,20 +553,6 @@
     "target_category": "Regional Chambers & Business Networks"
   },
   {
-    "name": "Tech East Regional Innovation Hub",
-    "domain": "techeast.com",
-    "url": "https://techeast.com",
-    "form_url": "https://techeast.com/community",
-    "target_category": "Regional Chambers & Business Networks"
-  },
-  {
-    "name": "Silicon Yorkshire Technology Ecosystem",
-    "domain": "siliconyorkshire.com",
-    "url": "https://siliconyorkshire.com",
-    "form_url": "https://siliconyorkshire.com/members",
-    "target_category": "Regional Chambers & Business Networks"
-  },
-  {
     "name": "Leeds Digital Tech & Innovation Cluster",
     "domain": "leeds.digital",
     "url": "https://leeds.digital",
@@ -735,13 +588,6 @@
     "target_category": "Regional Chambers & Business Networks"
   },
   {
-    "name": "TechCrunch Global Startup & Venture News",
-    "domain": "techcrunch.com",
-    "url": "https://techcrunch.com",
-    "form_url": "https://techcrunch.com/submit",
-    "target_category": "Media, Press & Industry Publications"
-  },
-  {
     "name": "Silicon Canals European Startup & Innovation News",
     "domain": "siliconcanals.com",
     "url": "https://siliconcanals.com",
@@ -753,34 +599,6 @@
     "domain": "tech.eu",
     "url": "https://tech.eu",
     "form_url": "https://tech.eu/contact",
-    "target_category": "Media, Press & Industry Publications"
-  },
-  {
-    "name": "The Next Web (TNW) Global Tech Media",
-    "domain": "thenextweb.com",
-    "url": "https://thenextweb.com",
-    "form_url": "https://thenextweb.com/contact",
-    "target_category": "Media, Press & Industry Publications"
-  },
-  {
-    "name": "VentureBeat AI & Enterprise Innovation News",
-    "domain": "venturebeat.com",
-    "url": "https://venturebeat.com",
-    "form_url": "https://venturebeat.com/contact",
-    "target_category": "Media, Press & Industry Publications"
-  },
-  {
-    "name": "FinTech Futures Global Banking & Tech News",
-    "domain": "fintechfutures.com",
-    "url": "https://fintechfutures.com",
-    "form_url": "https://fintechfutures.com/contact",
-    "target_category": "Media, Press & Industry Publications"
-  },
-  {
-    "name": "Finextra Research Global FinTech Community",
-    "domain": "finextra.com",
-    "url": "https://finextra.com",
-    "form_url": "https://finextra.com/contact",
     "target_category": "Media, Press & Industry Publications"
   },
   {
@@ -798,97 +616,6 @@
     "target_category": "Media, Press & Industry Publications"
   },
   {
-    "name": "UK Investor Magazine Private Equity & Markets",
-    "domain": "ukinvestormagazine.co.uk",
-    "url": "https://ukinvestormagazine.co.uk",
-    "form_url": "https://ukinvestormagazine.co.uk/contact",
-    "target_category": "Media, Press & Industry Publications"
-  },
-  {
-    "name": "City A.M. London Business & Innovation News",
-    "domain": "cityam.com",
-    "url": "https://cityam.com",
-    "form_url": "https://cityam.com/contact",
-    "target_category": "Media, Press & Industry Publications"
-  },
-  {
-    "name": "Maddyness UK French & British Innovation Magazine",
-    "domain": "maddyness.com",
-    "url": "https://maddyness.com",
-    "form_url": "https://maddyness.com/uk/contact",
-    "target_category": "Media, Press & Industry Publications"
-  },
-  {
-    "name": "Enterprise Times Tech & Enterprise Software News",
-    "domain": "enterprisetimes.co.uk",
-    "url": "https://enterprisetimes.co.uk",
-    "form_url": "https://enterprisetimes.co.uk/contact",
-    "target_category": "Media, Press & Industry Publications"
-  },
-  {
-    "name": "Silicon Republic European Tech & Science News",
-    "domain": "siliconrepublic.com",
-    "url": "https://siliconrepublic.com",
-    "form_url": "https://siliconrepublic.com/contact",
-    "target_category": "Media, Press & Industry Publications"
-  },
-  {
-    "name": "ArcticStartup Nordic & Baltic Tech Media",
-    "domain": "arcticstartup.com",
-    "url": "https://arcticstartup.com",
-    "form_url": "https://arcticstartup.com/contact",
-    "target_category": "Media, Press & Industry Publications"
-  },
-  {
-    "name": "TechCabal African & UK Tech Innovation Desk",
-    "domain": "techcabal.com",
-    "url": "https://techcabal.com",
-    "form_url": "https://techcabal.com/contact",
-    "target_category": "Media, Press & Industry Publications"
-  },
-  {
-    "name": "Computer Weekly Startups & Scaleup Hub",
-    "domain": "computerweekly.com",
-    "url": "https://computerweekly.com",
-    "form_url": "https://computerweekly.com/contact",
-    "target_category": "Media, Press & Industry Publications"
-  },
-  {
-    "name": "FinTech Magazine Digital Tech Community",
-    "domain": "fintechmagazine.com",
-    "url": "https://fintechmagazine.com",
-    "form_url": "https://fintechmagazine.com/contact",
-    "target_category": "Media, Press & Industry Publications"
-  },
-  {
-    "name": "Technology Magazine Global Enterprise Innovation",
-    "domain": "technologymagazine.com",
-    "url": "https://technologymagazine.com",
-    "form_url": "https://technologymagazine.com/contact",
-    "target_category": "Media, Press & Industry Publications"
-  },
-  {
-    "name": "Scaleup Times UK Innovation & High Growth News",
-    "domain": "scaleuptimes.co.uk",
-    "url": "https://scaleuptimes.co.uk",
-    "form_url": "https://scaleuptimes.co.uk/contact",
-    "target_category": "Media, Press & Industry Publications"
-  },
-  {
-    "name": "PeerSpot Enterprise Tech Buying Intelligence",
-    "domain": "peerspot.com",
-    "url": "https://peerspot.com",
-    "form_url": "https://peerspot.com/products/new",
-    "target_category": "Software & B2B Review Platforms"
-  },
-  {
-    "name": "GoodFirms Software & IT Services Review Directory",
-    "domain": "goodfirms.co",
-    "url": "https://goodfirms.co",
-    "form_url": "https://goodfirms.co/vendor",
-    "target_category": "Software & B2B Review Platforms"
-  },
-  {
     "name": "Trustpilot Consumer & Business Review Platform",
     "domain": "trustpilot.com",
     "url": "https://trustpilot.com",
@@ -903,13 +630,6 @@
     "target_category": "Software & B2B Review Platforms"
   },
   {
-    "name": "Merchant Maverick Small Business Review Guide",
-    "domain": "merchantmaverick.com",
-    "url": "https://merchantmaverick.com",
-    "form_url": "https://merchantmaverick.com/contact",
-    "target_category": "Software & B2B Review Platforms"
-  },
-  {
     "name": "SoftwareSuggest Business Software Discovery",
     "domain": "softwaresuggest.com",
     "url": "https://softwaresuggest.com",
@@ -917,24 +637,10 @@
     "target_category": "Software & B2B Review Platforms"
   },
   {
-    "name": "SoftwareWorld Top Rated Software Directories",
-    "domain": "softwareworld.co",
-    "url": "https://softwareworld.co",
-    "form_url": "https://softwareworld.co/submit-software",
-    "target_category": "Software & B2B Review Platforms"
-  },
-  {
     "name": "CrowdReviews Community Powered Software Ratings",
     "domain": "crowdreviews.com",
     "url": "https://crowdreviews.com",
     "form_url": "https://crowdreviews.com/vendor-portal",
-    "target_category": "Software & B2B Review Platforms"
-  },
-  {
-    "name": "Technology Evaluation Centers Enterprise Reviews",
-    "domain": "technologyevaluation.com",
-    "url": "https://technologyevaluation.com",
-    "form_url": "https://technologyevaluation.com/contact",
     "target_category": "Software & B2B Review Platforms"
   },
   {
@@ -949,34 +655,6 @@
     "domain": "softwarereviews.com",
     "url": "https://softwarereviews.com",
     "form_url": "https://softwarereviews.com/vendor",
-    "target_category": "Software & B2B Review Platforms"
-  },
-  {
-    "name": "SaaSWorthy Community Rated Business Software",
-    "domain": "saasworthy.com",
-    "url": "https://saasworthy.com",
-    "form_url": "https://saasworthy.com/add-software",
-    "target_category": "Software & B2B Review Platforms"
-  },
-  {
-    "name": "SelectHub Enterprise Software Reviews & Comparison",
-    "domain": "selecthub.com",
-    "url": "https://selecthub.com",
-    "form_url": "https://selecthub.com/vendors",
-    "target_category": "Software & B2B Review Platforms"
-  },
-  {
-    "name": "TopTenReviews Consumer & Tech Product Ratings",
-    "domain": "toptenreviews.com",
-    "url": "https://toptenreviews.com",
-    "form_url": "https://toptenreviews.com/contact",
-    "target_category": "Software & B2B Review Platforms"
-  },
-  {
-    "name": "B2BReviews Technology & Business Service Ratings",
-    "domain": "b2breviews.com",
-    "url": "https://b2breviews.com",
-    "form_url": "https://b2breviews.com/list-business",
     "target_category": "Software & B2B Review Platforms"
   },
   {
@@ -1040,13 +718,6 @@
     "domain": "agorize.com",
     "url": "https://www.agorize.com",
     "form_url": "https://www.agorize.com/en/challenges",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Finnovating Global Open Innovation & Accelerator Platform",
-    "domain": "finnovating.com",
-    "url": "https://finnovating.com",
-    "form_url": "https://finnovating.com/post-challenge",
     "target_category": "Ecosystem Visibility & Program Discovery"
   },
   {
@@ -1148,20 +819,6 @@
     "target_category": "Ecosystem Visibility & Program Discovery"
   },
   {
-    "name": "Fundacity Accelerator & Syndicate Intake Engine",
-    "domain": "fundacity.com",
-    "url": "https://fundacity.com",
-    "form_url": "https://fundacity.com/accelerators/register",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "SkipsoLabs Innovation & Accelerator Exchange",
-    "domain": "skipsolabs.com",
-    "url": "https://www.skipsolabs.com",
-    "form_url": "https://www.skipsolabs.com/open-calls",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
     "name": "ProSeeder Accelerator & Deal Flow Intake Portal",
     "domain": "proseeder.com",
     "url": "https://proseeder.com",
@@ -1205,32 +862,16 @@
   {
     "name": "TapRefer Directory",
     "domain": "taprefer.com",
-    "url": "https://www.taprefer.com",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "IndieProducts.io Directory",
-    "domain": "indieproducts.io",
-    "url": "https://www.indieproducts.io/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
+    "url": "https://taprefer.com",
+    "target_category": "Ecosystem Visibility & Program Discovery",
+    "form_url": "https://taprefer.com"
   },
   {
     "name": "PeerPush Directory",
     "domain": "peerpush.net",
-    "url": "https://peerpush.net/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "PitchGround Directory",
-    "domain": "pitchground.com",
-    "url": "https://pitchground.com/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "SaaSPromo Directory",
-    "domain": "saaspromo.com",
-    "url": "https://saaspromo.com/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
+    "url": "https://peerpush.com/",
+    "target_category": "Ecosystem Visibility & Program Discovery",
+    "form_url": "https://peerpush.net/"
   },
   {
     "name": "AngelList",
@@ -1245,40 +886,11 @@
     "target_category": "Ecosystem Visibility & Program Discovery"
   },
   {
-    "name": "PlatformsDirectory.com",
-    "domain": "platformsdirectory.com",
-    "url": "https://www.platformsdirectory.com/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "AppRadar Directory",
-    "domain": "appradar.com",
-    "url": "https://appradar.com/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Launched Directory",
-    "domain": "launched.io",
-    "url": "https://launched.io/SubmitStartup",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
     "name": "SimilarSiteSearch Directory",
     "domain": "similarsitesearch.com",
-    "url": "https://www.similarsitesearch.com/tips.html",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Best Startup Tools Directory",
-    "domain": "beststartuptools.com",
-    "url": "https://beststartuptools.com",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "AI Scout Directory",
-    "domain": "aiscout.net",
-    "url": "https://aiscout.net",
-    "target_category": "Ecosystem Visibility & Program Discovery"
+    "url": "https://www.similarsitesearch.com/",
+    "target_category": "Ecosystem Visibility & Program Discovery",
+    "form_url": "https://www.similarsitesearch.com/"
   },
   {
     "name": "The Tech Map Directory",
@@ -1287,64 +899,25 @@
     "target_category": "Media, Press & Industry Publications"
   },
   {
-    "name": "Startuplist.in",
-    "domain": "startuplist.in",
-    "url": "https://startuplist.in",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Submitlist catalog",
-    "domain": "submitlist.io",
-    "url": "https://submitlist.io/catalog",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
     "name": "Capterra Directory",
     "domain": "app.g2digitalmarkets.com",
     "url": "https://app.g2digitalmarkets.com/get-listed/start",
-    "target_category": "Software & B2B Review Platforms"
-  },
-  {
-    "name": "CSS Design Awards Directory",
-    "domain": "cssdesignawards.com",
-    "url": "https://www.cssdesignawards.com/submit",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Findstack Directory",
-    "domain": "findstack.com",
-    "url": "https://findstack.com/get-listed",
-    "target_category": "Ecosystem Visibility & Program Discovery"
+    "target_category": "Software & B2B Review Platforms",
+    "form_url": "https://app.g2digitalmarkets.com/get-listed/start"
   },
   {
     "name": "Crozdesk Directory",
     "domain": "vendor.revleads.com",
     "url": "https://vendor.revleads.com/user/signup",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "AI Tools Directory",
-    "domain": "aitools.inc",
-    "url": "https://aitools.inc/submit",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Affiliate Watch Directory",
-    "domain": "affiliate.watch",
-    "url": "https://affiliate.watch/submit-affiliate-program",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Saas AI Tools Directory",
-    "domain": "saasaitools.com",
-    "url": "https://saasaitools.com/submit-listing-2/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
+    "target_category": "Ecosystem Visibility & Program Discovery",
+    "form_url": "https://vendor.revleads.com/user/signup"
   },
   {
     "name": "SaaS Landing Page Directory",
     "domain": "slpads.framer.website",
-    "url": "https://slpads.framer.website/contact",
-    "target_category": "Ecosystem Visibility & Program Discovery"
+    "url": "https://slpads.framer.website",
+    "target_category": "Ecosystem Visibility & Program Discovery",
+    "form_url": "https://slpads.framer.website"
   },
   {
     "name": "VentureRadar Directory",
@@ -1353,21 +926,9 @@
     "target_category": "Investor Match & Capital Networks"
   },
   {
-    "name": "Tailkits Directory",
-    "domain": "tailkits.com",
-    "url": "https://tailkits.com/submit-product/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
     "name": "TopTools.ai Directory",
     "domain": "toptools.ai",
     "url": "https://toptools.ai/submit",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "AI-Hunter.io Directory",
-    "domain": "ai-hunter.io",
-    "url": "https://ai-hunter.io/submit-a-tool/",
     "target_category": "Ecosystem Visibility & Program Discovery"
   },
   {
@@ -1377,82 +938,10 @@
     "target_category": "Ecosystem Visibility & Program Discovery"
   },
   {
-    "name": "The Pragmatic Engineer Directory",
-    "domain": "pragmaticengineer.com",
-    "url": "https://pragmaticengineer.com",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Exec Sum Directory",
-    "domain": "execsum.co",
-    "url": "https://execsum.co",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Platformer Directory",
-    "domain": "platformer.news",
-    "url": "https://platformer.news",
-    "target_category": "Media, Press & Industry Publications"
-  },
-  {
-    "name": "Newcomer Directory",
-    "domain": "newcomer.co",
-    "url": "https://newcomer.co",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Sidebar Directory",
-    "domain": "sidebar.io",
-    "url": "https://sidebar.io",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Dense Discovery Directory",
-    "domain": "densediscovery.com",
-    "url": "https://densediscovery.com",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Growth in Reverse Directory",
-    "domain": "growthinreverse.com",
-    "url": "https://growthinreverse.com",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Pointer Directory",
-    "domain": "pointer.io",
-    "url": "https://pointer.io",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "The Rebooting Directory",
-    "domain": "therebooting.com",
-    "url": "https://therebooting.com",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Open Collective Directory",
-    "domain": "opencollective.com",
-    "url": "https://opencollective.com/create",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
     "name": "Techstars Directory",
     "domain": "apply.techstars.com",
     "url": "https://apply.techstars.com/",
     "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "BiggerPockets Directory",
-    "domain": "biggerpockets.com",
-    "url": "https://www.biggerpockets.com/signup",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Designspiration Directory",
-    "domain": "designspiration.com",
-    "url": "https://www.designspiration.com/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
   },
   {
     "name": "Startup Grind Directory",
@@ -1461,423 +950,23 @@
     "target_category": "Ecosystem Visibility & Program Discovery"
   },
   {
-    "name": "Trendshift Directory",
-    "domain": "trendshift.io",
-    "url": "https://trendshift.io",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "WIP Directory",
-    "domain": "wip.co",
-    "url": "https://wip.co/projects",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Unita Directory",
-    "domain": "unita.co",
-    "url": "https://unita.co/add-community/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "AppLauncher Directory",
-    "domain": "applauncher.io",
-    "url": "https://www.applauncher.io/auth/register",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Firefox Add-ons Directory",
-    "domain": "extensionworkshop.com",
-    "url": "https://extensionworkshop.com/documentation/publish/submitting-an-add-on/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Adobe Exchange Directory",
-    "domain": "developer.adobe.com",
-    "url": "https://developer.adobe.com/developer-distribution/creative-cloud/docs/guides/submission/overview",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Etsy Directory",
-    "domain": "etsy.com",
-    "url": "https://www.etsy.com/sell",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Opera Add-ons Directory",
-    "domain": "addons.opera.com",
-    "url": "https://addons.opera.com/developer/upload/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "ChatGPT Plugin Directory",
-    "domain": "platform.openai.com",
-    "url": "https://platform.openai.com/plugins",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Visual Studio Marketplace",
-    "domain": "code.visualstudio.com",
-    "url": "https://code.visualstudio.com/api/working-with-extensions/publishing-extension",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Webflow Apps Marketplace",
-    "domain": "developers.webflow.com",
-    "url": "https://developers.webflow.com/submit",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Airtable Extensions Directory",
-    "domain": "airtable.com",
-    "url": "https://airtable.com/developers/extensions/guides/submit-to-marketplace",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Drupal modules Directory",
-    "domain": "drupal.org",
-    "url": "https://www.drupal.org/project/add",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Framer Marketplace Plugins",
-    "domain": "framer.com",
-    "url": "https://www.framer.com/help/articles/how-to-publish-a-plugin/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "JetBrains Marketplace",
-    "domain": "plugins.jetbrains.com",
-    "url": "https://plugins.jetbrains.com/docs/marketplace/uploading-a-new-plugin.html",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Lulu Bookstore Directory",
-    "domain": "lulu.com",
-    "url": "https://www.lulu.com/sell/sell-on-lulu",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Moodle Marketplace",
-    "domain": "marketplace.moodle.com",
-    "url": "https://marketplace.moodle.com/plugins/submit",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
     "name": "Zapier App Directory",
     "domain": "developer.zapier.com",
     "url": "https://developer.zapier.com/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Angi Directory",
-    "domain": "signup.angi.com",
-    "url": "https://signup.angi.com/pro",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Make App Directory",
-    "domain": "make.com",
-    "url": "https://www.make.com/en/technology-partners",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Miro Marketplace",
-    "domain": "developers.miro.com",
-    "url": "https://developers.miro.com/docs/miro-marketplace",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Blender Extensions Directory",
-    "domain": "extensions.blender.org",
-    "url": "https://extensions.blender.org/submit/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Notion Marketplace",
-    "domain": "app.notion.com",
-    "url": "https://app.notion.com/profile/connections",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Bubble Plugin Marketplace",
-    "domain": "bubble.io",
-    "url": "https://bubble.io/home/plugins",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Grav GPM Directory",
-    "domain": "learn.getgrav.org",
-    "url": "https://learn.getgrav.org/2/plugins/gpm-submission",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Sketch Plugin Directory",
-    "domain": "developer.sketch.com",
-    "url": "https://developer.sketch.com/plugins/publish-a-plugin",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Snap Store Directory",
-    "domain": "snapcraft.io",
-    "url": "https://snapcraft.io/docs/releasing-your-app",
-    "target_category": "Ecosystem Visibility & Program Discovery"
+    "target_category": "Ecosystem Visibility & Program Discovery",
+    "form_url": "https://developer.zapier.com/"
   },
   {
     "name": "AppSumo Directory",
     "domain": "partners.appsumo.com",
     "url": "https://partners.appsumo.com/self-submission",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Uptodown Directory",
-    "domain": "uptodown.dev",
-    "url": "https://www.uptodown.dev/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Contentstack Marketplace",
-    "domain": "contentstack.com",
-    "url": "https://www.contentstack.com/docs/marketplace/app-submission-and-approval-guide",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Elgato Stream Deck Marketplace",
-    "domain": "maker.elgato.com",
-    "url": "https://maker.elgato.com",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "PortableApps.com Directory",
-    "domain": "portableapps.com",
-    "url": "https://portableapps.com/about/contact",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "We Work Remotely Directory",
-    "domain": "weworkremotely.com",
-    "url": "https://weworkremotely.com/employers",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "DatoCMS Marketplace",
-    "domain": "datocms.com",
-    "url": "https://www.datocms.com/docs/plugin-sdk/publishing-to-marketplace",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "eLocal Directory",
-    "domain": "elocal.com",
-    "url": "https://www.elocal.com/signup/step1/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Penpot Hub",
-    "domain": "penpot.app",
-    "url": "https://penpot.app/penpothub/plugins/submit/plugin",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "HACS Directory",
-    "domain": "hacs.xyz",
-    "url": "https://www.hacs.xyz/docs/publish/include/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Spot SaaS Directory",
-    "domain": "spotsaas.com",
-    "url": "https://www.spotsaas.com/get-listed",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "CrafterCMS Marketplace",
-    "domain": "craftercms.com",
-    "url": "https://craftercms.com/docs/current/by-role/developer/composable/extensions/craftercms-marketplace.html",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "BusinessWith Directory",
-    "domain": "hub.businesswith.com",
-    "url": "https://hub.businesswith.com/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Forbes Cloud 100 Directory",
-    "domain": "thecloud100.com",
-    "url": "https://thecloud100.com",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Yelp Directory",
-    "domain": "biz.yelp.com",
-    "url": "https://biz.yelp.com/claim",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Bing Places for Business Directory",
-    "domain": "bing.com",
-    "url": "https://www.bing.com/forbusiness/help/createYourListing",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Tripadvisor Directory",
-    "domain": "tripadvisor.com",
-    "url": "https://www.tripadvisor.com/CreateListing.html",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Stack Overflow Directory",
-    "domain": "stackoverflow.com",
-    "url": "https://stackoverflow.com/help/promotion",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "The Verge Directory",
-    "domain": "theverge.com",
-    "url": "https://www.theverge.com/write-for-the-verge",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "The Wall Street Journal Directory",
-    "domain": "wsj.com",
-    "url": "https://www.wsj.com/tips",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "TIME Best Inventions Directory",
-    "domain": "bestinventions.time.com",
-    "url": "https://bestinventions.time.com/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "WIRED Directory",
-    "domain": "wired.com",
-    "url": "https://www.wired.com/about/how-to-pitch-stories-to-wired/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "BostInno Directory",
-    "domain": "bizjournals.com",
-    "url": "https://www.bizjournals.com/boston/nomination/89338/2026/2026-bostinno-the-fire-awards",
-    "target_category": "Media, Press & Industry Publications"
-  },
-  {
-    "name": "Crunchbase News Directory",
-    "domain": "about.crunchbase.com",
-    "url": "https://about.crunchbase.com/press",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Entrepreneur Directory",
-    "domain": "entrepreneur.com",
-    "url": "https://www.entrepreneur.com/press-release/about",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Fast Company Most Innovative Companies Directory",
-    "domain": "fastcompany.com",
-    "url": "https://www.fastcompany.com/apply/most-innovative-companies",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Mashable Directory",
-    "domain": "mashable.com",
-    "url": "https://mashable.com/about/contact-us",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "TechRadar Directory",
-    "domain": "techradar.com",
-    "url": "https://www.techradar.com/how-to/how-to-pitch-your-ideas-to-techradar",
-    "target_category": "Media, Press & Industry Publications"
-  },
-  {
-    "name": "Gizmodo Directory",
-    "domain": "gizmodo.com",
-    "url": "https://gizmodo.com/how-to-tip-gizmodo-1843880833",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "MIT Technology Review Directory",
-    "domain": "technologyreview.com",
-    "url": "https://www.technologyreview.com/how-to-pitch-mit-technology-review/",
-    "target_category": "Media, Press & Industry Publications"
-  },
-  {
-    "name": "PCMag Directory",
-    "domain": "pcmag.com",
-    "url": "https://www.pcmag.com/about/contact-pcmag",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Slate Directory",
-    "domain": "slate.com",
-    "url": "https://slate.com/pitch",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Smashing Magazine Directory",
-    "domain": "smashingmagazine.com",
-    "url": "https://www.smashingmagazine.com/contact/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Android Central Directory",
-    "domain": "forums.androidcentral.com",
-    "url": "https://forums.androidcentral.com/threads/app-and-developer-forum-rules-guidelines.827832/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "MarketingProfs",
-    "domain": "marketingprofs.com",
-    "url": "https://www.marketingprofs.com/write-for-us",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "SiliconANGLE Directory",
-    "domain": "siliconangle.com",
-    "url": "https://siliconangle.com/about/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Tech.co Directory",
-    "domain": "tech.co",
-    "url": "https://tech.co/contact",
-    "target_category": "Media, Press & Industry Publications"
-  },
-  {
-    "name": "Hotfrog Directory",
-    "domain": "hotfrog.com",
-    "url": "https://www.hotfrog.com/add",
-    "target_category": "Ecosystem Visibility & Program Discovery"
+    "target_category": "Ecosystem Visibility & Program Discovery",
+    "form_url": "https://partners.appsumo.com/self-submission"
   },
   {
     "name": "OECD.AI Directory",
     "domain": "oecd.ai",
     "url": "https://oecd.ai/en/catalogue/tools/submit",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "One Page Love Directory",
-    "domain": "onepagelove.com",
-    "url": "https://onepagelove.com/submit/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Show Me Local Directory",
-    "domain": "showmelocal.com",
-    "url": "https://www.showmelocal.com/start-submission.aspx",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Android Headlines Directory",
-    "domain": "androidheadlines.com",
-    "url": "https://www.androidheadlines.com/news-tips",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "MacStories Directory",
-    "domain": "macstories.net",
-    "url": "https://www.macstories.net/about/",
     "target_category": "Ecosystem Visibility & Program Discovery"
   },
   {
@@ -1899,12 +988,6 @@
     "target_category": "Ecosystem Visibility & Program Discovery"
   },
   {
-    "name": "Freebie Supply Directory",
-    "domain": "freebiesupply.com",
-    "url": "https://freebiesupply.com/submit-freebie/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
     "name": "eCommerceFuel Directory",
     "domain": "ecommercefuel.com",
     "url": "https://www.ecommercefuel.com/saas-software-partnerships/",
@@ -1914,25 +997,8 @@
     "name": "StackSocial Directory",
     "domain": "stackcommerce.com",
     "url": "https://www.stackcommerce.com/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "SuperbCrew Directory",
-    "domain": "superbcrew.com",
-    "url": "https://www.superbcrew.com/your-voice/",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Ben's Bites Directory",
-    "domain": "catalog.bensbites.com",
-    "url": "https://catalog.bensbites.com/partners",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Made With Vue.js Directory",
-    "domain": "madewithvuejs.com",
-    "url": "https://madewithvuejs.com/submit",
-    "target_category": "Ecosystem Visibility & Program Discovery"
+    "target_category": "Ecosystem Visibility & Program Discovery",
+    "form_url": "https://www.stackcommerce.com/"
   },
   {
     "name": "DokeyAI Directory",
@@ -1965,14 +1031,6 @@
     "target_category": "Ecosystem Visibility & Program Discovery"
   },
   {
-    "name": "StartupLister Cohort & Program Submission Network",
-    "domain": "startuplister.com",
-    "url": "https://startuplister.com",
-    "form_url": "https://startuplister.com/submit",
-    "description": "Program promotion and automated submission engine for startup accelerators.",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
     "name": "Impact Hub Climate & Tech Accelerator Network",
     "domain": "impacthub.net",
     "url": "https://impacthub.net",
@@ -1986,14 +1044,6 @@
     "url": "https://sosv.com",
     "form_url": "https://sosv.com/apply",
     "description": "Premier deep tech, life sciences, and hardware accelerator cohort application engine.",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Startup Terrace Asia-Pacific Innovation Hub",
-    "domain": "startupterrace.tw",
-    "url": "https://startupterrace.tw",
-    "form_url": "https://startupterrace.tw/apply",
-    "description": "International accelerator landing hub connecting overseas accelerators with cross-border tech startups.",
     "target_category": "Ecosystem Visibility & Program Discovery"
   },
   {
@@ -2126,13 +1176,6 @@
     "domain": "natwest.com",
     "url": "https://www.natwest.com/business",
     "form_url": "https://www.natwest.com/business/accelerator.html",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Innovate UK Edge Accelerator Cohorts Portal",
-    "domain": "innovateukedge.ukri.org",
-    "url": "https://innovateukedge.ukri.org",
-    "form_url": "https://innovateukedge.ukri.org/apply",
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
@@ -2279,7 +1322,7 @@
     "name": "Bath SETsquared Innovation Centre Intake",
     "domain": "bath.ac.uk",
     "url": "https://www.bath.ac.uk",
-    "form_url": "https://www.bath.ac.uk/innovation-centre",
+    "form_url": "https://www.bath.ac.uk",
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
@@ -2299,8 +1342,8 @@
   {
     "name": "Sussex Innovation Centre Incubation Intake",
     "domain": "sinc.co.uk",
-    "url": "https://www.sinc.co.uk",
-    "form_url": "https://www.sinc.co.uk/incubation",
+    "url": "https://www.sussexinnovation.co.uk/",
+    "form_url": "https://www.sussexinnovation.co.uk/",
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
@@ -2479,13 +1522,6 @@
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
-    "name": "ICE71 Cybersecurity Accelerator Singapore",
-    "domain": "ice71.sg",
-    "url": "https://ice71.sg",
-    "form_url": "https://ice71.sg/apply",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
     "name": "L-SPARK Canadian SaaS Accelerator Intake",
     "domain": "l-spark.com",
     "url": "https://www.l-spark.com",
@@ -2528,13 +1564,6 @@
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
-    "name": "CyLon Global Cybersecurity Accelerator London",
-    "domain": "cylon.com",
-    "url": "https://cylon.com",
-    "form_url": "https://cylon.com/apply",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
     "name": "FinTech Innovation Lab London & New York",
     "domain": "fintechinnovationlab.com",
     "url": "https://fintechinnovationlab.com",
@@ -2567,13 +1596,6 @@
     "domain": "lehub.bpifrance.fr",
     "url": "https://lehub.bpifrance.fr",
     "form_url": "https://lehub.bpifrance.fr/apply",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Agoranov Deep Tech Incubator Paris Intake",
-    "domain": "agoranov.com",
-    "url": "https://agoranov.com",
-    "form_url": "https://agoranov.com/apply",
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
@@ -2619,13 +1641,6 @@
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
-    "name": "imec.istart Tech Accelerator Belgium",
-    "domain": "imec-istart.com",
-    "url": "https://www.imec-istart.com",
-    "form_url": "https://www.imec-istart.com/apply",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
     "name": "Start it @KBC Belgian Startup Incubator",
     "domain": "startit.be",
     "url": "https://startit.be",
@@ -2661,24 +1676,10 @@
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
-    "name": "Beamline CleanTech Accelerator Estonia",
-    "domain": "beamline.beta",
-    "url": "https://beamline.beta",
-    "form_url": "https://beamline.beta/apply",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
     "name": "Kiuas Accelerator Helsinki Finland Apply",
     "domain": "kiuas.com",
     "url": "https://www.kiuas.com",
     "form_url": "https://www.kiuas.com/apply",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Maria 01 Nordic Startup Campus Intake",
-    "domain": "maria01.com",
-    "url": "https://maria01.com",
-    "form_url": "https://maria01.com/apply",
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
@@ -2700,13 +1701,6 @@
     "domain": "chalmersventures.com",
     "url": "https://chalmersventures.com",
     "form_url": "https://chalmersventures.com/apply",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "DTU Science Park Futurebox Deep Tech Denmark",
-    "domain": "futurebox.dtu.dk",
-    "url": "https://futurebox.dtu.dk",
-    "form_url": "https://futurebox.dtu.dk/apply",
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
@@ -2833,13 +1827,6 @@
     "domain": "bstartup.org",
     "url": "https://bstartup.org",
     "form_url": "https://bstartup.org/apply",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Startup Lisboa Tech Incubator Portugal",
-    "domain": "startuplisboa.com",
-    "url": "https://www.startuplisboa.com",
-    "form_url": "https://www.startuplisboa.com/apply",
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
@@ -2976,13 +1963,6 @@
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
-    "name": "Oxford Foundry University of Oxford Apply",
-    "domain": "oxfordfoundry.ox.ac.uk",
-    "url": "https://oxfordfoundry.ox.ac.uk",
-    "form_url": "https://oxfordfoundry.ox.ac.uk/apply",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
     "name": "Cambridge Judge Business School Accelerate Cambridge",
     "domain": "jbs.cam.ac.uk",
     "url": "https://www.jbs.cam.ac.uk",
@@ -2994,13 +1974,6 @@
     "domain": "nexusleeds.co.uk",
     "url": "https://nexusleeds.co.uk",
     "form_url": "https://nexusleeds.co.uk/apply",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Liverpool Science Park Innovation Intake",
-    "domain": "liverpoolsciencepark.co.uk",
-    "url": "https://liverpoolsciencepark.co.uk",
-    "form_url": "https://liverpoolsciencepark.co.uk/programmes",
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
@@ -3101,18 +2074,6 @@
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
-    "name": "Founders Network Global Founder Dealflow Exchange",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://foundersnetwork.com",
-    "domain": "foundersnetwork.com",
-    "score": 95,
-    "score_reasons": "Peer-Verified Founder Network (+35), Accelerator Partner Deals (+30), Active Round Pipeline (+20), Direct Founder Intros (+10)",
-    "form_requirements": "Name, Bio, Website, Pitch",
-    "form_url": "https://foundersnetwork.com/accelerators",
-    "intake_features": "Peer-Vetted Founder Dealflow, Accelerator Partnership Sourcing, Cohort Referral Network",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
     "name": "Dealum Accelerator Funnel & Dealflow Software",
     "category": "Global Venture & Accelerator Hubs",
     "url": "https://dealum.com",
@@ -3125,18 +2086,6 @@
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
-    "name": "Valuer.ai AI Startup Discovery & Dealflow Matching",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://www.valuer.ai",
-    "domain": "valuer.ai",
-    "score": 98,
-    "score_reasons": "Verified Startup Engagement & Dealflow Matchmaking (+35), SmartMatch Founder Pipeline (+30), Active Cohort Reach (+20), Global Dealflow (+13)",
-    "form_requirements": "Name, Bio, Website, Pitch",
-    "form_url": "https://www.valuer.ai/accelerators",
-    "intake_features": "AI-driven startup discovery & dealflow matching platform linking accelerators and innovation scouts to high-growth startups.",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
     "name": "Fundsup Founder-to-Accelerator Matchmaking Platform",
     "category": "Global Venture & Accelerator Hubs",
     "url": "https://fundsup.co",
@@ -3146,18 +2095,6 @@
     "form_requirements": "Name, Bio, Website, Pitch",
     "form_url": "https://fundsup.co/for-accelerators",
     "intake_features": "Real-time dealflow matchmaking app connecting vetted early-stage founders with verified accelerators and venture funds.",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "StartupMatcher Nordic & European Founder Matchmaker",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://startupmatcher.com",
-    "domain": "startupmatcher.com",
-    "score": 98,
-    "score_reasons": "Verified Startup Engagement & Dealflow Matchmaking (+35), SmartMatch Founder Pipeline (+30), Active Cohort Reach (+20), Global Dealflow (+13)",
-    "form_requirements": "Name, Bio, Website, Pitch",
-    "form_url": "https://startupmatcher.com/accelerators",
-    "intake_features": "The leading Nordic and European matching platform connecting early-stage founders with accelerator programs and incubators.",
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
@@ -3185,126 +2122,6 @@
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
-    "name": "Google for Startups Accelerator Partner Network",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://startup.google.com",
-    "domain": "startup.google.com",
-    "score": 98,
-    "score_reasons": "Verified Startup Engagement & Dealflow Matchmaking (+35), SmartMatch Founder Pipeline (+30), Active Cohort Reach (+20), Global Dealflow (+13)",
-    "form_requirements": "Name, Bio, Website, Pitch",
-    "form_url": "https://startup.google.com/partners",
-    "intake_features": "Global accelerator partner directory where independent accelerators register to receive founder referrals and ecosystem perks.",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Microsoft for Startups Accelerator Partner Directory",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://www.microsoft.com/startups",
-    "domain": "microsoft.com/startups",
-    "score": 98,
-    "score_reasons": "Verified Startup Engagement & Dealflow Matchmaking (+35), SmartMatch Founder Pipeline (+30), Active Cohort Reach (+20), Global Dealflow (+13)",
-    "form_requirements": "Name, Bio, Website, Pitch",
-    "form_url": "https://www.microsoft.com/startups/accelerator-partners",
-    "intake_features": "Official partner directory where accelerators register to provide founder deals and receive global venture dealflow.",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "AWS Activate for Accelerators Partner Program",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://aws.amazon.com/startups",
-    "domain": "aws.amazon.com/startups",
-    "score": 98,
-    "score_reasons": "Verified Startup Engagement & Dealflow Matchmaking (+35), SmartMatch Founder Pipeline (+30), Active Cohort Reach (+20), Global Dealflow (+13)",
-    "form_requirements": "Name, Bio, Website, Pitch",
-    "form_url": "https://aws.amazon.com/startups/accelerators",
-    "intake_features": "Accelerators apply as official AWS Activate Providers, gaining visibility to tens of thousands of global tech founders.",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "NVIDIA Inception for Accelerators Deep Tech Hub",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://www.nvidia.com/inception",
-    "domain": "nvidia.com/inception",
-    "score": 98,
-    "score_reasons": "Verified Startup Engagement & Dealflow Matchmaking (+35), SmartMatch Founder Pipeline (+30), Active Cohort Reach (+20), Global Dealflow (+13)",
-    "form_requirements": "Name, Bio, Website, Pitch",
-    "form_url": "https://www.nvidia.com/en-us/deep-learning-ai/startups/accelerator-partners",
-    "intake_features": "Dedicated partner directory connecting AI & deep tech accelerators with thousands of AI founders worldwide.",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "HubSpot for Startups Accelerator Partner Network",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://www.hubspot.com/startups",
-    "domain": "hubspot.com/startups",
-    "score": 98,
-    "score_reasons": "Verified Startup Engagement & Dealflow Matchmaking (+35), SmartMatch Founder Pipeline (+30), Active Cohort Reach (+20), Global Dealflow (+13)",
-    "form_requirements": "Name, Bio, Website, Pitch",
-    "form_url": "https://www.hubspot.com/startups/accelerator-partners",
-    "intake_features": "HubSpot partner ecosystem featuring registered accelerators to their community of early-stage SaaS & tech founders.",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Stripe Atlas Accelerator Partner Directory",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://stripe.com/atlas",
-    "domain": "stripe.com/atlas",
-    "score": 98,
-    "score_reasons": "Verified Startup Engagement & Dealflow Matchmaking (+35), SmartMatch Founder Pipeline (+30), Active Cohort Reach (+20), Global Dealflow (+13)",
-    "form_requirements": "Name, Bio, Website, Pitch",
-    "form_url": "https://stripe.com/atlas/partners",
-    "intake_features": "Vetted directory of global accelerators where newly incorporated tech startups discover and apply to top accelerator cohorts.",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Notion for Startups Accelerator Partner Program",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://www.notion.so/startups",
-    "domain": "notion.so/startups",
-    "score": 98,
-    "score_reasons": "Verified Startup Engagement & Dealflow Matchmaking (+35), SmartMatch Founder Pipeline (+30), Active Cohort Reach (+20), Global Dealflow (+13)",
-    "form_requirements": "Name, Bio, Website, Pitch",
-    "form_url": "https://www.notion.so/startups/accelerator-partners",
-    "intake_features": "Accelerators list as official Notion partners, receiving direct dealflow and cohort applications from verified founders.",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Brex for Accelerators Venture Partner Network",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://www.brex.com/partners",
-    "domain": "brex.com/partners",
-    "score": 98,
-    "score_reasons": "Verified Startup Engagement & Dealflow Matchmaking (+35), SmartMatch Founder Pipeline (+30), Active Cohort Reach (+20), Global Dealflow (+13)",
-    "form_requirements": "Name, Bio, Website, Pitch",
-    "form_url": "https://www.brex.com/partners/accelerators",
-    "intake_features": "Partner directory linking high-growth venture-backed startups with top UK and global accelerator programs.",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Carta for Accelerators Dealflow & Syndicate Hub",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://carta.com",
-    "domain": "carta.com/accelerators",
-    "score": 98,
-    "score_reasons": "Verified Startup Engagement & Dealflow Matchmaking (+35), SmartMatch Founder Pipeline (+30), Active Cohort Reach (+20), Global Dealflow (+13)",
-    "form_requirements": "Name, Bio, Website, Pitch",
-    "form_url": "https://carta.com/solutions/accelerators",
-    "intake_features": "Cap table and equity infrastructure platform connecting venture studios and accelerators with early-stage founders.",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Mercury for Accelerators & Venture Studio Hub",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://mercury.com",
-    "domain": "mercury.com/programs",
-    "score": 98,
-    "score_reasons": "Verified Startup Engagement & Dealflow Matchmaking (+35), SmartMatch Founder Pipeline (+30), Active Cohort Reach (+20), Global Dealflow (+13)",
-    "form_requirements": "Name, Bio, Website, Pitch",
-    "form_url": "https://mercury.com/programs/accelerators",
-    "intake_features": "Venture banking partner directory connecting newly funded and early-stage tech founders directly to accelerator cohorts.",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
     "name": "Startup Grind Global Accelerator Directory (Add Program)",
     "category": "Global Venture & Accelerator Hubs",
     "url": "https://www.startupgrind.com",
@@ -3326,18 +2143,6 @@
     "form_requirements": "Name, Bio, Website, Pitch",
     "form_url": "https://www.thepitch.uk/partners",
     "intake_features": "The UK's largest early-stage pitching competition allowing accelerators to register as official partners to scout top applicants.",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Startup Resources Directory (Submit Accelerator)",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://startupresources.io",
-    "domain": "startupresources.io",
-    "score": 98,
-    "score_reasons": "Verified Startup Engagement & Dealflow Matchmaking (+35), SmartMatch Founder Pipeline (+30), Active Cohort Reach (+20), Global Dealflow (+13)",
-    "form_requirements": "Name, Bio, Website, Pitch",
-    "form_url": "https://startupresources.io/submit-accelerator",
-    "intake_features": "Curated directory of resources for founders with a dedicated category and submission portal for accelerator programs.",
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
@@ -3377,18 +2182,6 @@
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
-    "name": "VenturePack Accelerator Directory & Partner Perks",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://venturepack.io",
-    "domain": "venturepack.io",
-    "score": 98,
-    "score_reasons": "Verified Startup Engagement & Dealflow Matchmaking (+35), SmartMatch Founder Pipeline (+30), Active Cohort Reach (+20), Global Dealflow (+13)",
-    "form_requirements": "Name, Bio, Website, Pitch",
-    "form_url": "https://venturepack.io/join-as-accelerator",
-    "intake_features": "Dedicated portal where accelerators register their program profile to distribute perks and recruit founder cohorts.",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
     "name": "Startup Valleys Accelerator Listing Submission",
     "category": "Global Venture & Accelerator Hubs",
     "url": "https://startupvalleys.com",
@@ -3410,78 +2203,6 @@
     "form_requirements": "Name, Bio, Website, Pitch",
     "form_url": "https://www.innocentive.com/challenge-platform",
     "intake_features": "Pioneer of challenge-driven innovation allowing accelerators to crowdsource deep tech startups and novel ventures.",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Dealflow AI Automated Venture Pipeline for Accelerators",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://dealflow.ai",
-    "domain": "dealflow.ai",
-    "score": 98,
-    "score_reasons": "Verified Startup Engagement & Dealflow Matchmaking (+35), SmartMatch Founder Pipeline (+30), Active Cohort Reach (+20), Global Dealflow (+13)",
-    "form_requirements": "Name, Bio, Website, Pitch",
-    "form_url": "https://dealflow.ai/accelerators",
-    "intake_features": "Next-gen AI dealflow platform funneling early-stage startup pitch decks directly into accelerator evaluation pipelines.",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "SmartMatch Global Founder Dealflow Engine",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://smartmatch.io",
-    "domain": "smartmatch.io",
-    "score": 98,
-    "score_reasons": "Verified Startup Engagement & Dealflow Matchmaking (+35), SmartMatch Founder Pipeline (+30), Active Cohort Reach (+20), Global Dealflow (+13)",
-    "form_requirements": "Name, Bio, Website, Pitch",
-    "form_url": "https://smartmatch.io/accelerators",
-    "intake_features": "Specialized dealflow matching service linking global accelerator programs with pre-screened seed-stage startup founders.",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Founder Corner Accelerator & Venture Directory",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://foundercorner.io",
-    "domain": "foundercorner.io",
-    "score": 98,
-    "score_reasons": "Verified Startup Engagement & Dealflow Matchmaking (+35), SmartMatch Founder Pipeline (+30), Active Cohort Reach (+20), Global Dealflow (+13)",
-    "form_requirements": "Name, Bio, Website, Pitch",
-    "form_url": "https://foundercorner.io/submit-accelerator",
-    "intake_features": "Curated database of worldwide startup programs with a dedicated self-serve accelerator listing form.",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Intercom for Startups Accelerator Partner Program",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://www.intercom.com/early-stage",
-    "domain": "intercom.com/early-stage",
-    "score": 98,
-    "score_reasons": "Verified Startup Engagement & Dealflow Matchmaking (+35), SmartMatch Founder Pipeline (+30), Active Cohort Reach (+20), Global Dealflow (+13)",
-    "form_requirements": "Name, Bio, Website, Pitch",
-    "form_url": "https://www.intercom.com/early-stage/partners",
-    "intake_features": "Intercom partner network where accelerators register their cohorts to attract high-growth SaaS and AI startups.",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Segment Startup Partner Network for Accelerators",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://segment.com/startups",
-    "domain": "segment.com/startups",
-    "score": 98,
-    "score_reasons": "Verified Startup Engagement & Dealflow Matchmaking (+35), SmartMatch Founder Pipeline (+30), Active Cohort Reach (+20), Global Dealflow (+13)",
-    "form_requirements": "Name, Bio, Website, Pitch",
-    "form_url": "https://segment.com/startups/partners",
-    "intake_features": "Twilio Segment startup partner hub connecting customer data infrastructure with registered accelerator cohorts.",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Zendesk for Startups Accelerator Partner Hub",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://www.zendesk.com/startups",
-    "domain": "zendesk.com/startups",
-    "score": 98,
-    "score_reasons": "Verified Startup Engagement & Dealflow Matchmaking (+35), SmartMatch Founder Pipeline (+30), Active Cohort Reach (+20), Global Dealflow (+13)",
-    "form_requirements": "Name, Bio, Website, Pitch",
-    "form_url": "https://www.zendesk.com/startups/accelerator-partners",
-    "intake_features": "Accelerators list as official ecosystem partners to recruit customer-centric tech startups and scaleups.",
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
@@ -3641,78 +2362,6 @@
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
-    "name": "Finta AI Accelerator Dealflow & Pipeline Platform",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://finta.ai",
-    "domain": "finta.ai",
-    "score": 92,
-    "score_reasons": "AI-powered fundraising and dealflow platform connecting verified early-stage startups directly with accelerator cohorts.",
-    "form_requirements": "Accelerator profile, sector focus, check size, cohort dates, application URL",
-    "form_url": "https://finta.ai/accelerators",
-    "intake_features": "AI Dealflow Matching | Automated Founder Pipeline | Accelerator Network Integration",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Accelerator Hunt Global Directory of Accelerators & Incubators",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://angelmatch.io/accelerators",
-    "domain": "acceleratorhunt.com",
-    "score": 94,
-    "score_reasons": "Comprehensive categorized database of global startup accelerators and incubators filtered by industry, stage, and geography.",
-    "form_requirements": "Program details, location, stages accepted, application deadlines, apply URL",
-    "form_url": "https://angelmatch.io/accelerators/submit",
-    "intake_features": "Categorized Accelerator Index | Founder Discovery Directory | Direct Listing Submission",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "OpenPitch Pitch Deck Hosting & Accelerator Dealflow Intake",
-    "category": "Startup & Product Launchpads",
-    "url": "https://openpitch.com",
-    "domain": "openpitch.com",
-    "score": 90,
-    "score_reasons": "Startup pitch deck hosting platform allowing accelerators to source screened founder decks and receive direct applications.",
-    "form_requirements": "Program profile, screening rubrics, intake form link, partner email",
-    "form_url": "https://openpitch.com/accelerators",
-    "intake_features": "Pitch Deck Hosting | Filterable Founder Sourcing | Direct Application Pipeline",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Dealflow Agent AI Venture Sourcing for Accelerators",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://dealflowagent.com",
-    "domain": "dealflowagent.com",
-    "score": 91,
-    "score_reasons": "Autonomous AI agent scanning private deal signals and routing qualified seed and pre-seed founders directly to accelerator programs.",
-    "form_requirements": "Investment mandate, geography, AI/tech vertical, cohort intake link",
-    "form_url": "https://dealflowagent.com/intake",
-    "intake_features": "Autonomous Deal Sourcing | Real-Time Founder Matching | Direct Pipeline Dispatch",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "VentureLoop Venture & Accelerator Startup Network",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://ventureloop.com",
-    "domain": "ventureloop.com",
-    "score": 89,
-    "score_reasons": "Prominent venture-backed startup network providing accelerator program listings, cohort talent sourcing, and portfolio visibility.",
-    "form_requirements": "Program details, investment focus, cohort cycle, application URL",
-    "form_url": "https://ventureloop.com/post-program",
-    "intake_features": "Venture Ecosystem Network | Program Listing Showcase | Startup Talent & Dealflow",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "PitchBob AI Pitch Engine & Accelerator Application Router",
-    "category": "Startup & Product Launchpads",
-    "url": "https://pitchbob.io",
-    "domain": "pitchbob.io",
-    "score": 93,
-    "score_reasons": "AI pitch deck builder that formats founder pitches and routes qualified startups directly to partner accelerator application funnels.",
-    "form_requirements": "Accelerator partnership details, application form endpoint, selection criteria",
-    "form_url": "https://pitchbob.io/partners/accelerators",
-    "intake_features": "AI Founder Deck Standardization | Direct Cohort Application Routing | Partner Perks",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
     "name": "Open Innovators Challenge & Accelerator Matchmaking Portal",
     "category": "Global Venture & Accelerator Hubs",
     "url": "https://open-innovators.com",
@@ -3737,255 +2386,6 @@
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
-    "name": "InnoQube Innovation Dealflow & Accelerator Program Intake",
-    "category": "European Innovation & Regional Networks",
-    "url": "https://innoqube.ch",
-    "domain": "innoqube.ch",
-    "score": 90,
-    "score_reasons": "Swiss and Alpine innovation ecosystem hub connecting high-tech startups with corporate innovation and accelerator cohorts.",
-    "form_requirements": "Program focus, deep tech vertical, cohort intake URL, partner contact",
-    "form_url": "https://innoqube.ch/accelerator-partner",
-    "intake_features": "Swiss & European Innovation Hub | Deep Tech Sourcing | Accelerator Partnership",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "DigitalOcean Hatch Accelerator Partner Program",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://www.digitalocean.com/hatch",
-    "domain": "digitalocean.com",
-    "score": 96,
-    "score_reasons": "Global incubator and accelerator partner network providing cloud infrastructure, mentorship, and bilateral startup dealflow referrals.",
-    "form_requirements": "Accelerator website, cohort count, founder check size, partner contact",
-    "form_url": "https://www.digitalocean.com/hatch/apply-as-partner",
-    "intake_features": "Global Accelerator Network | Infrastructure Credits Hub | Direct Founder Dealflow",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Cloudflare for Startups Accelerator Partner Program",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://www.cloudflare.com/startups",
-    "domain": "cloudflare.com",
-    "score": 95,
-    "score_reasons": "Official partner program for accelerators and incubators to provide enterprise security packages and receive vetted startup applications.",
-    "form_requirements": "Program accreditation, portfolio size, cohort intake schedule, partnership contact",
-    "form_url": "https://www.cloudflare.com/startups/partners",
-    "intake_features": "Cybersecurity & Edge Network Hub | Official Accelerator Partner | Founder Dealflow",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "MongoDB for Startups Accelerator Partner Network",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://www.mongodb.com/startups",
-    "domain": "mongodb.com",
-    "score": 94,
-    "score_reasons": "Global partner network where accelerators register to provide database infrastructure and receive startup cohort referrals.",
-    "form_requirements": "Accelerator credentials, active cohort sizes, application URL, partner contact",
-    "form_url": "https://www.mongodb.com/startups/partners",
-    "intake_features": "Data Infrastructure Partner Network | Cohort Database Credits | Startup Referral Engine",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Linear for Startups Accelerator Partner Hub",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://linear.app/startups",
-    "domain": "linear.app",
-    "score": 95,
-    "score_reasons": "Official accelerator partner directory for product-led tech startups, enabling accelerators to bundle modern issue tracking.",
-    "form_requirements": "Accelerator name, URL, portfolio count, cohort intake URL, partner email",
-    "form_url": "https://linear.app/startups/partner-apply",
-    "intake_features": "Product Development Hub | Accelerator Partner Network | Founder Community Matching",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Sentry for Startups Accelerator Partner Network",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://sentry.io/for/startups",
-    "domain": "sentry.io",
-    "score": 93,
-    "score_reasons": "Developer-first accelerator partnership network linking error monitoring infrastructure with top accelerator cohorts globally.",
-    "form_requirements": "Program profile, cohort frequency, portfolio size, contact email",
-    "form_url": "https://sentry.io/for/startups/partners",
-    "intake_features": "Developer Infrastructure Perks | Accelerator Partner Ecosystem | Cohort Sourcing",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "PostHog for Startups Accelerator Partner Hub",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://posthog.com/startups",
-    "domain": "posthog.com",
-    "score": 94,
-    "score_reasons": "Open-source product analytics accelerator program granting $50k in credits and connecting partner programs with early-stage builders.",
-    "form_requirements": "Accelerator profile, program website, cohort size, application link",
-    "form_url": "https://posthog.com/startups/partner-application",
-    "intake_features": "$50k Cohort Analytics Credits | Open Source Builder Ecosystem | Dealflow Integration",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Supabase for Startups Accelerator Partner Program",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://supabase.com/startups",
-    "domain": "supabase.com",
-    "score": 96,
-    "score_reasons": "Official accelerator partnership hub with open-source Postgres and auth, matching high-growth technical founders with programs.",
-    "form_requirements": "Accelerator name, cohort frequency, portfolio count, application endpoint",
-    "form_url": "https://supabase.com/startups/partners",
-    "intake_features": "Open Source Backend Partner | Rapid Prototyping Credits | Technical Founder Dealflow",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Vercel for Startups & Accelerators Partner Program",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://vercel.com/startups",
-    "domain": "vercel.com",
-    "score": 97,
-    "score_reasons": "Premier frontend cloud accelerator partner program connecting Next.js and AI founders with accredited accelerator cohorts.",
-    "form_requirements": "Organization details, accelerator thesis, cohort intake URL, partner contact",
-    "form_url": "https://vercel.com/startups/partners",
-    "intake_features": "Frontend Cloud Ecosystem | Next.js & AI Founder Pipeline | Accelerator Partner Tier",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Retool for Startups Accelerator Partner Directory",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://retool.com/startups",
-    "domain": "retool.com",
-    "score": 94,
-    "score_reasons": "Internal tooling accelerator partner network connecting accredited accelerators with technical startups building operations.",
-    "form_requirements": "Accelerator website, cohort count, application form link, partner email",
-    "form_url": "https://retool.com/startups/partner-apply",
-    "intake_features": "Internal Tools Partner Network | Operations Acceleration | Direct Founder Dealflow",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Algolia for Startups Accelerator Partner Network",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://www.algolia.com/startups",
-    "domain": "algolia.com",
-    "score": 92,
-    "score_reasons": "Search and AI infrastructure accelerator partner network supporting e-commerce and AI cohorts with search intelligence and dealflow.",
-    "form_requirements": "Accelerator credentials, active startups per year, application URL, partner contact",
-    "form_url": "https://www.algolia.com/startups/partner-program",
-    "intake_features": "AI Search Infrastructure | Cohort Perk Distribution | Technical Startup Intake",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Twilio for Startups Accelerator Partnership Network",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://www.twilio.com/startups",
-    "domain": "twilio.com",
-    "score": 93,
-    "score_reasons": "Global customer engagement and communication API accelerator partner program providing mentorship and dealflow routing.",
-    "form_requirements": "Program description, cohort cycle, application endpoint, partnership lead",
-    "form_url": "https://www.twilio.com/startups/accelerator-partner",
-    "intake_features": "Customer Engagement Platform | Accelerator Partner Network | Bilateral Dealflow",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Mixpanel for Startups Accelerator Partner Program",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://mixpanel.com/startups",
-    "domain": "mixpanel.com",
-    "score": 93,
-    "score_reasons": "Product analytics partner directory for startup accelerators and venture studios looking to track cohort retention and product KPIs.",
-    "form_requirements": "Accelerator website, cohort size, application link, primary contact",
-    "form_url": "https://mixpanel.com/startups/partner-application",
-    "intake_features": "Product Analytics Partnership | Cohort KPI Tracking | Early-Stage Founder Funnel",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "GitHub for Startups Accelerator Partner Program",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://github.com/enterprise/startups",
-    "domain": "github.com",
-    "score": 98,
-    "score_reasons": "Premier global partner program linking accredited startup accelerators with GitHub Enterprise, GitHub Copilot, and technical dealflow.",
-    "form_requirements": "Official accelerator website, cohort frequency, portfolio size, contact lead",
-    "form_url": "https://github.com/enterprise/startups#partner-application",
-    "intake_features": "GitHub Enterprise & Copilot Partner | Premier Developer Ecosystem | Bilateral Dealflow",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Databricks for Startups Accelerator Partner Hub",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://www.databricks.com/startups",
-    "domain": "databricks.com",
-    "score": 96,
-    "score_reasons": "Data intelligence and AI accelerator partner program connecting deep tech cohorts with lakehouse infrastructure and venture dealflow.",
-    "form_requirements": "Accelerator profile, AI/data focus, cohort timeline, application link",
-    "form_url": "https://www.databricks.com/startups/partner-intake",
-    "intake_features": "Lakehouse & AI Infrastructure | Deep Tech Cohort Dealflow | Enterprise Scale Matching",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Snowflake for Startups Accelerator Partner Network",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://www.snowflake.com/for/startups",
-    "domain": "snowflake.com",
-    "score": 95,
-    "score_reasons": "Data Cloud partner network linking startup accelerators with enterprise-ready founders building data-intensive applications.",
-    "form_requirements": "Accelerator details, data focus, cohort intake link, partner lead email",
-    "form_url": "https://www.snowflake.com/for/startups/partner-registration",
-    "intake_features": "Data Cloud Ecosystem | Enterprise-Ready Founder Sourcing | Accelerator Partner Tier",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Pinecone for Startups Accelerator Partner Program",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://www.pinecone.io/startups",
-    "domain": "pinecone.io",
-    "score": 94,
-    "score_reasons": "Vector database partner network designed specifically for AI accelerators, RAG applications, and LLM startup cohorts.",
-    "form_requirements": "Accelerator profile, GenAI cohort thesis, application URL, partner contact",
-    "form_url": "https://www.pinecone.io/startups/partner",
-    "intake_features": "Vector DB for AI | GenAI Cohort Pipeline | Accelerator Partner Credits",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Weights & Biases for Accelerators AI Partner Hub",
-    "category": "Global Venture & Accelerator Hubs",
-    "url": "https://wandb.ai/startups",
-    "domain": "wandb.ai",
-    "score": 95,
-    "score_reasons": "Leading MLOps and AI developer platform partnership program for deep tech, machine learning, and AI accelerator cohorts.",
-    "form_requirements": "Accelerator credentials, AI cohort dates, application URL, partner contact",
-    "form_url": "https://wandb.ai/site/startups-partner",
-    "intake_features": "MLOps Platform Hub | AI Model Evaluation Credits | Deep Tech Founder Intake",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "SeedSummit Standard Terms & Accelerator Hub",
-    "domain": "seedsummit.org",
-    "url": "https://seedsummit.org",
-    "form_url": "https://seedsummit.org/accelerator-directory",
-    "score": 93,
-    "score_reasons": "Open venture directory and standardized seed cohort intake platform for European tech accelerators.",
-    "form_requirements": "Accelerator credentials, check size, cohort focus, application link",
-    "intake_features": "Open Accelerator Directory | European Seed Standard | Direct Cohort Application Intake",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "OpenFounder Global Accelerator & Startup Intake",
-    "domain": "openfounder.co",
-    "url": "https://openfounder.co",
-    "form_url": "https://openfounder.co/submit-program",
-    "score": 92,
-    "score_reasons": "Two-sided founder community and accelerator intake platform matching seed-stage founders with programs.",
-    "form_requirements": "Program description, cohort dates, application URL, partner contact",
-    "intake_features": "Two-Sided Matchmaking | Cohort Intake Form | Global Founder Community",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "PitchMe Skills-Based Startup & Accelerator Matchmaker",
-    "domain": "pitchme.co",
-    "url": "https://pitchme.co",
-    "form_url": "https://pitchme.co/for-accelerators",
-    "score": 91,
-    "score_reasons": "Skills-based startup profiling and accelerator dealflow intake engine connecting diverse tech founders.",
-    "form_requirements": "Accelerator profile, cohort rubrics, intake endpoint, partner email",
-    "intake_features": "Skills-Based Profiling | Automated Sourcing | Direct Application Routing",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
     "name": "Startupxplore Syndicate & Accelerator Matching",
     "domain": "startupxplore.com",
     "url": "https://startupxplore.com",
@@ -3997,28 +2397,6 @@
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
-    "name": "InnoSpark Global Accelerator Intake Portal",
-    "domain": "innospark.org",
-    "url": "https://innospark.org",
-    "form_url": "https://innospark.org/submit-accelerator",
-    "score": 90,
-    "score_reasons": "Global tech ecosystem platform allowing accelerators to publish programs and receive early-stage applications.",
-    "form_requirements": "Accelerator name, website, cohort dates, application URL",
-    "intake_features": "Global Program Listing | Direct Founder Intake | Two-Sided Platform",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "Venture Caf\u00e9 Global Network & Cohort Intake",
-    "domain": "venturecafe.org",
-    "url": "https://venturecafe.org",
-    "form_url": "https://venturecafe.org/accelerator-programs",
-    "score": 91,
-    "score_reasons": "Global innovation network hosting weekly founder gatherings and accelerator program discovery.",
-    "form_requirements": "Organisation profile, program focus, cohort intake URL, partner contact",
-    "intake_features": "Global Innovation Hub | In-Person & Digital Intake | Founder Discovery",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
     "name": "TheVentureCity Accelerator Dealflow Exchange",
     "domain": "theventurecity.com",
     "url": "https://theventurecity.com",
@@ -4027,17 +2405,6 @@
     "score_reasons": "Global venture accelerator and dealflow exchange connecting seed-stage founders with growth programs.",
     "form_requirements": "Program criteria, ticket size, geographic scope, application URL",
     "intake_features": "Venture Scale Hub | Cross-Border Dealflow | Direct Intake Form",
-    "target_category": "Direct Startup Engagement & Intake"
-  },
-  {
-    "name": "EarlyFounders Dealflow & Accelerator Matchmaking",
-    "domain": "earlyfounders.io",
-    "url": "https://earlyfounders.io",
-    "form_url": "https://earlyfounders.io/accelerators",
-    "score": 91,
-    "score_reasons": "Early-stage dealflow pipeline connecting vetted technical founders directly with accelerator programs.",
-    "form_requirements": "Mandate, sector preference, cohort schedule, application URL",
-    "intake_features": "Vetted Technical Founders | Automated Matching | Direct Cohort Routing",
     "target_category": "Direct Startup Engagement & Intake"
   },
   {
@@ -4060,17 +2427,6 @@
     "score_reasons": "First online venture capital firm syndicating seed investments into top accelerator cohorts globally.",
     "form_requirements": "Program details, investment memorandum, partner contact, portfolio deck",
     "intake_features": "Online Venture Capital | Co-Investment Syndicate | Seed Dealflow",
-    "target_category": "Investor Match & Capital Networks"
-  },
-  {
-    "name": "SyndicateHub Angel Matchmaking Engine",
-    "domain": "syndicatehub.com",
-    "url": "https://syndicatehub.com",
-    "form_url": "https://syndicatehub.com/accelerators",
-    "score": 92,
-    "score_reasons": "Private angel syndicate portal connecting vetted startup accelerators with family offices and angel leads.",
-    "form_requirements": "Mandate, minimum ticket, sector criteria, application endpoint",
-    "intake_features": "Angel Syndicate Portal | Family Office Pipeline | Accelerator Co-Investment",
     "target_category": "Investor Match & Capital Networks"
   },
   {
@@ -4151,28 +2507,6 @@
     "target_category": "Ecosystem Visibility & Program Discovery"
   },
   {
-    "name": "Berlin Startups & Ecosystem Directory",
-    "domain": "berlinstartups.com",
-    "url": "https://berlinstartups.com",
-    "form_url": "https://berlinstartups.com/submit",
-    "score": 89,
-    "score_reasons": "Regional startup ecosystem portal mapping accelerators and founders across the German and European tech scene.",
-    "form_requirements": "Organization profile, European focus, contact email, website",
-    "intake_features": "European Tech Hub | Regional Visibility | Founder Discovery Map",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Stockholm Tech Ecosystem Directory",
-    "domain": "stockholmtech.se",
-    "url": "https://stockholmtech.se",
-    "form_url": "https://stockholmtech.se/submit",
-    "score": 90,
-    "score_reasons": "Nordic tech ecosystem directory highlighting unicorns, accelerators, and venture builders.",
-    "form_requirements": "Program summary, Nordic focus, website, lead contact",
-    "intake_features": "Nordic Innovation Hub | High-Trust Registry | International Ecosystem Exposure",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
     "name": "Paris Innovation & Ecosystem Hub",
     "domain": "parisstartups.com",
     "url": "https://parisstartups.com",
@@ -4192,17 +2526,6 @@
     "score_reasons": "Major European technology conference and ecosystem platform featuring global accelerators and growth programs.",
     "form_requirements": "Accelerator profile, cohort focus, event partner contact",
     "intake_features": "Global Tech Summit | European Founder Audience | Brand Authority",
-    "target_category": "Ecosystem Visibility & Program Discovery"
-  },
-  {
-    "name": "Baltic Tech Ecosystem Map",
-    "domain": "baltictech.io",
-    "url": "https://baltictech.io",
-    "form_url": "https://baltictech.io/submit-accelerator",
-    "score": 88,
-    "score_reasons": "Regional innovation directory tracking early-stage programs across Estonia, Latvia, and Lithuania.",
-    "form_requirements": "Program overview, Baltic & CEE focus, website, contact",
-    "intake_features": "Baltic Innovation Corridor | Digital Nomad & AI Startups | Regional Index",
     "target_category": "Ecosystem Visibility & Program Discovery"
   },
   {
@@ -4242,7 +2565,7 @@
     "name": "Sheffield Chamber of Commerce",
     "domain": "scci.org.uk",
     "url": "https://www.scci.org.uk",
-    "form_url": "https://www.scci.org.uk/join-us",
+    "form_url": "https://www.scci.org.uk",
     "score": 88,
     "score_reasons": "Leading business organization in South Yorkshire driving advanced manufacturing and digital technology partnerships.",
     "form_requirements": "Company profile, South Yorkshire focus, contact lead",
@@ -4316,17 +2639,6 @@
     "target_category": "Media, Press & Industry Publications"
   },
   {
-    "name": "Tech Funding News UK & European Dealflow",
-    "domain": "techfundingnews.com",
-    "url": "https://techfundingnews.com",
-    "form_url": "https://techfundingnews.com/submit-news",
-    "score": 90,
-    "score_reasons": "Dedicated European tech funding media publishing accelerator launches, seed rounds, and tech trends.",
-    "form_requirements": "Funding announcement, cohort details, application URL",
-    "intake_features": "Venture Funding Media | Direct News Submission Form | Founder Audience",
-    "target_category": "Media, Press & Industry Publications"
-  },
-  {
     "name": "Startupticker Swiss Innovation News",
     "domain": "startupticker.ch",
     "url": "https://startupticker.ch",
@@ -4336,28 +2648,6 @@
     "form_requirements": "Swiss/European ties, cohort intake info, press release",
     "intake_features": "Swiss Innovation News | High-Net-Worth Investor Readership | Program PR",
     "target_category": "Media, Press & Industry Publications"
-  },
-  {
-    "name": "TechBullion London Tech & FinTech Magazine",
-    "domain": "techbullion.com",
-    "url": "https://techbullion.com",
-    "form_url": "https://techbullion.com/submit-press-release",
-    "score": 90,
-    "score_reasons": "London-based financial technology news and media magazine covering global tech innovation and accelerators.",
-    "form_requirements": "Press release, company overview, backlink URL, contact email",
-    "intake_features": "London FinTech Media | Direct Press Release Submission | Fast Indexing",
-    "target_category": "Media, Press & Industry Publications"
-  },
-  {
-    "name": "G2 Software & Accelerator Consulting Marketplace",
-    "domain": "g2.com",
-    "url": "https://www.g2.com",
-    "form_url": "https://www.g2.com/products/new",
-    "score": 96,
-    "score_reasons": "World's largest tech marketplace where 90M+ buyers discover and review B2B software, accelerators, and services.",
-    "form_requirements": "Company profile, category selection, client review request link, corporate email",
-    "intake_features": "90M+ Annual Software Buyers | Verified Peer Reviews | Maximum Trust Badge",
-    "target_category": "Software & B2B Review Platforms"
   },
   {
     "name": "Capterra Business Software & Service Directory",
@@ -4371,28 +2661,6 @@
     "target_category": "Software & B2B Review Platforms"
   },
   {
-    "name": "Clutch B2B Strategy & Accelerator Services Hub",
-    "domain": "clutch.co",
-    "url": "https://clutch.co",
-    "form_url": "https://clutch.co/get-listed",
-    "score": 95,
-    "score_reasons": "Leading ratings and reviews platform for B2B service providers, strategy consulting, and venture builders.",
-    "form_requirements": "Agency/firm profile, client references for phone interviews, portfolio projects",
-    "intake_features": "In-Depth Client Case Studies | High Institutional Credibility | B2B Buyer Referrals",
-    "target_category": "Software & B2B Review Platforms"
-  },
-  {
-    "name": "Software Advice Enterprise Solution Directory",
-    "domain": "softwareadvice.com",
-    "url": "https://www.softwareadvice.com",
-    "form_url": "https://www.softwareadvice.com/vendors",
-    "score": 91,
-    "score_reasons": "Gartner Digital Markets platform providing 1-on-1 advisor matching for business services and software.",
-    "form_requirements": "Vendor registration, category assignment, service specs",
-    "intake_features": "Gartner Advisor Network | Qualified Buyer Referrals | Verified Ratings",
-    "target_category": "Software & B2B Review Platforms"
-  },
-  {
     "name": "GetApp Business Apps & Ecosystem Marketplace",
     "domain": "getapp.com",
     "url": "https://www.getapp.com",
@@ -4401,28 +2669,6 @@
     "score_reasons": "Part of Gartner Digital Markets helping high-growth founders discover business solutions and accelerators.",
     "form_requirements": "Profile details, application focus, integration points",
     "intake_features": "Gartner Ecosystem | Cross-Listing Integration | Software & Service Reviews",
-    "target_category": "Software & B2B Review Platforms"
-  },
-  {
-    "name": "Sortlist UK Agency & Strategy Matching Network",
-    "domain": "sortlist.co.uk",
-    "url": "https://www.sortlist.co.uk",
-    "form_url": "https://www.sortlist.co.uk/agencies/join",
-    "score": 91,
-    "score_reasons": "European matchmaking platform connecting high-growth enterprises with top strategy consultancies and accelerators.",
-    "form_requirements": "Agency credentials, portfolio case studies, minimum budget, verified contact",
-    "intake_features": "Direct Enterprise Client RFPs | Verified Case Studies | Strategic Matching",
-    "target_category": "Software & B2B Review Platforms"
-  },
-  {
-    "name": "DesignRush B2B Agencies & Innovation Firms",
-    "domain": "designrush.com",
-    "url": "https://www.designrush.com",
-    "form_url": "https://www.designrush.com/agency-signup",
-    "score": 90,
-    "score_reasons": "Global B2B marketplace ranking top innovation consultancies, tech accelerators, and digital strategy agencies.",
-    "form_requirements": "Company profile, core expertise, leadership bio, portfolio URL",
-    "intake_features": "B2B Ranking Directory | Enterprise Sourcing Network | Review Engine",
     "target_category": "Software & B2B Review Platforms"
   }
 ]

@@ -582,12 +582,12 @@ def get_platforms(
         FROM platforms
         WHERE {where_clause}
         ORDER BY CASE 
-            WHEN high_level_category = 'SmartMatch & Dealflow Licensing Engines' THEN 1
-            WHEN high_level_category = 'UK Accelerator Review & Ranking Platforms' THEN 2
-            WHEN high_level_category = 'Direct Startup Engagement & Intake' THEN 3 
-            WHEN high_level_category = 'Investor Match & Capital Networks' THEN 4
-            WHEN tier = 'tier_1' THEN 5 
-            WHEN tier = 'tier_2' THEN 6 
+            WHEN tier = 'tier_1' THEN 1
+            WHEN tier = 'tier_2' THEN 2
+            WHEN is_core_target = 1 THEN 3
+            WHEN tier = 'tier_3' THEN 4
+            WHEN status = 'ready' THEN 5
+            WHEN status = 'in_review' THEN 6
             ELSE 7 
         END, score DESC, id DESC
         LIMIT ? OFFSET ?
@@ -1135,36 +1135,6 @@ def get_dynamic_category_candidates(cat_name: str, needed: int, existing_domains
                 "domain": dom,
                 "url": item["url"],
                 "form_url": item.get("form_url", f"https://{dom}/submit"),
-                "target_category": cat_name
-            })
-            existing_domains.add(dom)
-            existing_names.add(nm)
-    
-    # Infinite procedural fallback with authentic UK platforms if static roster is exhausted
-    counter = 1
-    cat_key_map = {
-        "Direct Startup Engagement & Intake": "engagement_intake",
-        "SmartMatch & Dealflow Licensing Engines": "smartmatch",
-        "UK Accelerator Review & Ranking Platforms": "uk_reviews",
-        "Investor Match & Capital Networks": "investor_networks",
-        "Regional Chambers & Business Networks": "regional_chambers",
-        "Ecosystem Visibility & Program Discovery": "ecosystem_visibility",
-        "Media, Press & Industry Publications": "media_press"
-    }
-    cat_key = cat_key_map.get(cat_name, "ecosystem_visibility")
-    attempts = 0
-    while len(results) < needed and attempts < 40:
-        attempts += 1
-        counter += 1
-        dyn = caf.synthesize_dynamic_candidate(cat_key, counter, existing_domains, existing_names)
-        dom = dyn["domain"].lower()
-        nm = dyn["name"].lower()
-        if dom not in existing_domains and nm not in existing_names:
-            results.append({
-                "name": dyn["name"],
-                "domain": dom,
-                "url": dyn["url"],
-                "form_url": dyn.get("form_url", f"https://{dom}/apply"),
                 "target_category": cat_name
             })
             existing_domains.add(dom)

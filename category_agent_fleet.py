@@ -1797,80 +1797,11 @@ def get_category_agents_roster() -> List[Dict[str, Any]]:
 
 def synthesize_dynamic_candidate(category_key: str, seed_index: int, existing_domains: set, existing_names: set) -> Dict[str, Any]:
     """
-    Intelligent algorithmic generator that produces high-conviction, authentic UK & European
-    platforms when static curated seeds have been ingested. Guarantees infinite expansion.
+    DEPRECATED per Sree Audit (November 2026).
+    Synthetic/algorithmic domain generation is strictly disabled to prevent
+    hallucinated, dead, or scam-flagged intake URLs. Only verified directories are permitted.
     """
-    uk_regions = ["London", "Manchester", "Cambridge", "Oxford", "Edinburgh", "Bristol", "Birmingham", "Leeds", "Glasgow", "Cardiff", "Newcastle", "Belfast", "Southampton", "Sheffield", "Nottingham"]
-    tech_sectors = ["Enterprise AI", "DeepTech", "FinTech", "HealthTech", "CleanTech", "B2B SaaS", "CyberSecurity", "Industrial IoT", "Life Sciences", "Venture Studio"]
-    org_types = ["Innovation Hub", "Venture Catalyst", "Technology Accelerator", "Incubator Network", "Founders Collective", "Enterprise Scaleup Lab", "Commercialization Hub"]
-
-    reg = random.choice(uk_regions)
-    sec = random.choice(tech_sectors)
-    typ = random.choice(org_types)
-    num = seed_index + 1
-
-    clean_sec = sec.lower().replace(" ", "").replace("-", "")
-    clean_reg = reg.lower().replace(" ", "")
-
-    if category_key == "engagement_intake":
-        name = f"{reg} {sec} {typ} (Cohort {2026 + (num % 2)})"
-        domain = f"{clean_reg}-{clean_sec}-intake-{num}.co.uk"
-        url = f"https://{domain}"
-        form_url = f"https://{domain}/apply"
-        score = random.randint(92, 98)
-        return {"name": name, "domain": domain, "url": url, "form_url": form_url, "score": score}
-
-    elif category_key == "smartmatch":
-        sm_names = ["DealMatch AI", "VentureSync", "FoundersRoute", "CapMatch Engine", "DealflowHub", "VentureBridge", "SmartIntake UK", "SyndicateRoute"]
-        sm_base = random.choice(sm_names)
-        name = f"{sm_base} {sec} SmartMatch Portal #{num}"
-        domain = f"{sm_base.lower().replace(' ', '')}-{clean_sec}-{num}.io"
-        url = f"https://{domain}"
-        form_url = f"https://{domain}/partner-accelerator"
-        score = random.randint(93, 99)
-        return {
-            "name": name, "domain": domain, "url": url, "form_url": form_url, "score": score,
-            "smartmatch_free": random.choice([0, 1]), "smartmatch_paid": 1,
-            "smartmatch_model": random.choice(["freemium", "licence", "dual_hybrid"]),
-            "licensing_notes": f"Two-sided {sec} dealflow licence providing direct verified intake pipelines for UK accelerators."
-        }
-
-    elif category_key == "uk_reviews":
-        media_names = ["UK Tech Index", "British Venture Review", "The Founder Journal", "Venture Pulse UK", "SME Capital Review", "Angel & Accelerator Monitor"]
-        med_base = random.choice(media_names)
-        name = f"{med_base} - {reg} {sec} Accelerator Rankings ({2026})"
-        domain = f"{med_base.lower().replace(' ', '').replace('&', 'and')}-{clean_reg}-{num}.co.uk"
-        url = f"https://{domain}"
-        form_url = f"https://{domain}/nominate-programme"
-        score = random.randint(91, 97)
-        return {
-            "name": name, "domain": domain, "url": url, "form_url": form_url, "score": score,
-            "ranking_scope": "uk", "notes": f"Independent UK analyst review and cohort rankings covering {reg} {sec} innovation ecosystems."
-        }
-
-    elif category_key == "investor_networks":
-        name = f"{reg} {sec} Angel Syndicate & Co-Investment Match #{num}"
-        domain = f"{clean_reg}-{clean_sec}-angels-{num}.org.uk"
-        url = f"https://{domain}"
-        form_url = f"https://{domain}/syndicate-intake"
-        score = random.randint(90, 96)
-        return {"name": name, "domain": domain, "url": url, "form_url": form_url, "score": score}
-
-    elif category_key == "regional_chambers":
-        name = f"{reg} Regional Chamber of Commerce Tech Innovation Cluster #{num}"
-        domain = f"{clean_reg}-chamber-innovation-{num}.co.uk"
-        url = f"https://{domain}"
-        form_url = f"https://{domain}/accelerator-directory"
-        score = random.randint(90, 95)
-        return {"name": name, "domain": domain, "url": url, "form_url": form_url, "score": score}
-
-    else:
-        name = f"UK {sec} Venture Ecosystem Directory #{num}"
-        domain = f"uk-{clean_sec}-ecosystem-{num}.co.uk"
-        url = f"https://{domain}"
-        form_url = f"https://{domain}/submit"
-        score = random.randint(90, 95)
-        return {"name": name, "domain": domain, "url": url, "form_url": form_url, "score": score}
+    return {}
 
 def run_linkedin_ranker_hunter(agent_id: str = "astra_r01", batch_size: int = 2) -> Dict[str, Any]:
     """
@@ -2037,18 +1968,6 @@ def run_category_platform_hunter(agent_id: str, category_key: str, batch_size: i
             discovered.append(candidate["name"])
             if len(discovered) >= batch_size:
                 break
-
-    # Step 2: Algorithmic synthesis fallback if needed (guarantees non-zero expansion!)
-    if len(discovered) < batch_size:
-        seed_offset = c.execute("SELECT COUNT(*) FROM platforms WHERE high_level_category = ?", (mapped_hl_cat,)).fetchone()[0]
-        attempts = 0
-        while len(discovered) < batch_size and attempts < 30:
-            attempts += 1
-            seed_offset += 1
-            dyn_cand = synthesize_dynamic_candidate(category_key, seed_offset, existing_domains, existing_names)
-            if dyn_cand["domain"].lower() not in existing_domains and dyn_cand["name"].lower() not in existing_names:
-                insert_platform(dyn_cand)
-                discovered.append(dyn_cand["name"])
 
     # Updated category total
     total_count = c.execute("SELECT COUNT(*) FROM platforms WHERE high_level_category = ?", (mapped_hl_cat,)).fetchone()[0]

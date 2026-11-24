@@ -215,7 +215,7 @@ def score_platform_record(platform: Dict[str, Any]) -> Dict[str, Any]:
             "score": base_score,
             "tier": "tier_1",
             "is_qualified": True,
-            "status": "ready",
+            "status": "in_review",
             "reasons": [note],
             "score_reasons_summary": note
         }
@@ -227,7 +227,7 @@ def score_platform_record(platform: Dict[str, Any]) -> Dict[str, Any]:
             "score": base_score,
             "tier": "tier_2",
             "is_qualified": True,
-            "status": "ready",
+            "status": "in_review",
             "reasons": [note],
             "score_reasons_summary": note
         }
@@ -269,7 +269,7 @@ def score_platform_record(platform: Dict[str, Any]) -> Dict[str, Any]:
         "score": eval_res["score"],
         "tier": platform.get("tier", "tier_3"),
         "is_qualified": eval_res["is_qualified"],
-        "status": "ready" if eval_res["is_qualified"] else "in_review",
+        "status": "in_review",
         "reasons": eval_res["reasons"],
         "score_reasons_summary": eval_res["score_reasons_summary"]
     }

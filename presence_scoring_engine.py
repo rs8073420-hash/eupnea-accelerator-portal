@@ -1,10 +1,11 @@
 """
 Eupnea v2 Presence Agent - Official Scoring & Pre-Qualification Engine
-Revised strictly according to Sree Audit & PDF Brief Standards (November 2026).
+Powered strictly by DeepSeek Flash v4.1 Sovereign Reasoning Engine.
+Specification: "Web Presence and Listing Creation AI Agent Brief (October 2026)" + Sree Audit Standards.
 
 Pre-Qualification Four-Gate Pass/Fail Standard:
-1. Gate 1: Working Website & Domain Health (Domain resolves, normal load, no security warnings or synthetic suffixes).
-2. Gate 2: Verifiable Organisation (Known legal company, real address, team, contact details; not an anonymous shell or scam).
+1. Gate 1: Website Health & DNS Integrity (Domain resolves, normal load, no security warnings or synthetic suffixes).
+2. Gate 2: Verifiable Organisation (Known legal company, real address, team, contact details; not an anonymous shell).
 3. Gate 3: Programme Registration & Application Intake (Visible "Apply", "Register Programme", or "List Accelerator").
 4. Gate 4: Public Visibility & Prospecting (Public programme profile viewable without login, founder discovery searchable).
 
@@ -18,53 +19,16 @@ Tier Architecture:
 
 from typing import Dict, Any, List, Tuple
 import re
+import deepseek_flash_engine as dfe
 
-# ==============================================================================
-# TIER 1 & TIER 2 BENCHMARK DIRECTORIES
-# ==============================================================================
-TIER_1_BENCHMARKS = {
-    "f6s.com": (99, "Tier 1: Host dedicated accelerator programme profile + built-in application forms + founder network."),
-    "gust.com": (98, "Tier 1: Verified accelerator network, customizable application forms, investor/founder prospecting."),
-    "theonevalley.com": (97, "Tier 1: Passport accelerator marketplace, direct founder discovery, public programme pages."),
-    "pitgrowth.com": (96, "Tier 1: Accelerator pitch growth portal, dedicated programme profiles, direct application intake."),
-    "startupcorners.com": (95, "Tier 1: Curated accelerator directory, public founder discovery, verified programme intake.")
-}
+ENGINE_NAME = dfe.ENGINE_VERSION
 
-TIER_2_BENCHMARKS = {
-    "crunchbase.com": (95, "Tier 2: Global enterprise tech intelligence, authority visibility, structured accelerator profile."),
-    "dealroom.co": (94, "Tier 2: European tech intelligence, verified ecosystem visibility, public accelerator directory."),
-    "startupblink.com": (93, "Tier 2: Global startup ecosystem ranking map, public accelerator directory."),
-    "theincubatorpro.com": (92, "Tier 2: Global directory of accelerators & incubators, founder discovery search."),
-    "listedstartups.com": (91, "Tier 2: Verified venture launchpad & accelerator directory with public programme listings.")
-}
+# Re-export benchmarks for external inspections
+TIER_1_BENCHMARKS = {k: (v["score"], v["reasoning"]) for k, v in dfe.DEEPSEEK_TIER_1_GROUNDING.items()}
+TIER_2_BENCHMARKS = {k: (v["score"], v["reasoning"]) for k, v in dfe.DEEPSEEK_TIER_2_GROUNDING.items()}
+UNSUITABLE_DOMAINS = dfe.DEEPSEEK_HARD_REJECT_DOMAINS
+PERK_DOMAINS = dfe.DEEPSEEK_PERK_DOMAINS
 
-UNSUITABLE_DOMAINS = {
-    "venturematch.tech": "Matching platform, not built for dedicated accelerator profile creation or application intake.",
-    "incubatorhub.global": "Unverified generic name without verifiable organisation or dedicated programme listing.",
-    "startupradar.eu": "Investor intelligence data tool, cannot host accelerator programme page or collect applications.",
-    "earlyintake.com": "Unverified entity, does not provide dedicated programme registration or founder intake.",
-    "globalaccelerator.io": "Unrelated service, not an accelerator promotion or intake channel.",
-    "foundersnetwork.eu": "Paid private membership community, no public accelerator programme listing.",
-    "startupmatcher.eu": "Talent and job recruitment board, not accelerator programme listing.",
-    "startupmatcher.com": "Talent and job recruitment board, not accelerator programme listing.",
-    "scaleupchampions.eu": "Fixed consortium project, no open accelerator programme profile creation.",
-    "eic-scaling.eu": "EU-backed institutional selection programme, not an open accelerator discovery directory.",
-    "venturecafe.org": "Physical event space and community network, no accelerator directory or application page.",
-    "innospark.org": "Unverified portal, does not offer programme profile creation or application intake.",
-    "pitchme.co": "Skills-based talent recruitment and candidate matching platform, not accelerator listing.",
-    "openfounder.co": "Unverified directory, does not host public accelerator profiles or intake.",
-    "seedsummit.org": "Standard term sheet resource and event brand, not an accelerator discovery channel."
-}
-
-PERK_DOMAINS = {
-    "github.com": "Cohort benefit only (GitHub for Startups cloud credits, up to $21,000). Not an intake channel.",
-    "zendesk.com": "Cohort benefit only (Zendesk for Startups customer support credits). Not an intake channel.",
-    "segment.com": "Cohort benefit only (Segment analytics credits). Not an intake channel."
-}
-
-# ==============================================================================
-# SCORING CRITERIA ARITHMETIC (BACKWARD COMPATIBLE & SREE COMPLIANT)
-# ==============================================================================
 POSITIVE_CRITERIA = {
     "real_directory": (30, "Real directory or programme page (+30)"),
     "clear_submit_path": (15, "A clear way to submit or apply (+15)"),
@@ -91,63 +55,13 @@ NEGATIVE_CRITERIA = {
 }
 
 def is_synthetic_domain(domain: str) -> bool:
-    """Checks if a domain matches mass-generated or synthetic patterns."""
-    if not domain:
-        return True
-    dom = domain.lower().strip()
-    if "-intake-" in dom:
-        return True
-    if dom.startswith("v2-"):
-        return True
-    if "network-ecosystem-visibility" in dom:
-        return True
-    if re.search(r'-\d+\.(co\.uk|org\.uk|io)$', dom):
-        return True
-    return False
+    """Delegates synthetic pattern detection to DeepSeek Flash v4.1 engine."""
+    is_synth, _ = dfe.DeepSeekFlashEngine.detect_synthetic_pattern(domain, domain)
+    return is_synth
 
 def validate_prequalification_gates(platform: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Executes the Four Pre-Qualification Gates mandated by Sree Audit:
-    Gate 1: Working website & health.
-    Gate 2: Verifiable organisation.
-    Gate 3: Programme registration & intake.
-    Gate 4: Public visibility.
-    """
-    domain = (platform.get("domain") or "").lower().strip()
-    url = (platform.get("url") or "").lower().strip()
-    name = (platform.get("name") or "").strip()
-
-    failed_gates = []
-
-    # Check synthetic patterns
-    if is_synthetic_domain(domain) or is_synthetic_domain(url):
-        failed_gates.append("Gate 1 (Website Health): Synthetic mass-generated domain pattern.")
-
-    # Check unsuitable platforms list
-    for uns_dom, uns_reason in UNSUITABLE_DOMAINS.items():
-        if uns_dom in domain or uns_dom in url:
-            failed_gates.append(f"Gate 3 (Programme Intake): Unsuitable platform - {uns_reason}")
-
-    # Check perk platforms
-    for perk_dom, perk_reason in PERK_DOMAINS.items():
-        if perk_dom in domain and "startups" in (platform.get("category", "") + name).lower():
-            return {
-                "passed": False,
-                "is_perk": True,
-                "tier": "cohort_perk",
-                "score": 0,
-                "reason": perk_reason,
-                "failed_gates": ["Perk Channel: Excluded from accelerator application intake queue."]
-            }
-
-    # Pass/Fail determination
-    passed = len(failed_gates) == 0
-    return {
-        "passed": passed,
-        "is_perk": False,
-        "failed_gates": failed_gates,
-        "domain": domain
-    }
+    """Delegates 4-gate prequalification audit to DeepSeek Flash v4.1 engine."""
+    return dfe.DeepSeekFlashEngine.evaluate_prequalification_gates(platform)
 
 def evaluate_platform_score(criteria: Dict[str, bool]) -> Dict[str, Any]:
     """
@@ -174,8 +88,6 @@ def evaluate_platform_score(criteria: Dict[str, bool]) -> Dict[str, Any]:
                 has_hard_reject = True
                 hard_rejects_triggered.append(label)
 
-    # Hard Reject Rule per Sree Audit & PDF Brief:
-    # Any platform triggering a hard reject must be clamped strictly to 0
     if has_hard_reject:
         score = 0
         is_qualified = False
@@ -202,77 +114,9 @@ def evaluate_platform_score(criteria: Dict[str, bool]) -> Dict[str, Any]:
 
 def score_platform_record(platform: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Comprehensive scoring function that evaluates pre-qualification gates and assigns
-    calibrated scores based on Tier 1 / Tier 2 benchmarks or category evaluation.
+    Primary platform scoring router: strictly utilizes DeepSeek Flash v4.1 Sovereign Engine.
     """
-    domain = (platform.get("domain") or "").lower().strip()
-    clean_domain = domain.replace("www.", "")
-
-    # Check Tier 1 benchmarks
-    if clean_domain in TIER_1_BENCHMARKS:
-        base_score, note = TIER_1_BENCHMARKS[clean_domain]
-        return {
-            "score": base_score,
-            "tier": "tier_1",
-            "is_qualified": True,
-            "status": "in_review",
-            "reasons": [note],
-            "score_reasons_summary": note
-        }
-
-    # Check Tier 2 benchmarks
-    if clean_domain in TIER_2_BENCHMARKS:
-        base_score, note = TIER_2_BENCHMARKS[clean_domain]
-        return {
-            "score": base_score,
-            "tier": "tier_2",
-            "is_qualified": True,
-            "status": "in_review",
-            "reasons": [note],
-            "score_reasons_summary": note
-        }
-
-    # Run Pre-Qualification Gates
-    gate_check = validate_prequalification_gates(platform)
-    if not gate_check["passed"]:
-        if gate_check.get("is_perk"):
-            return {
-                "score": 0,
-                "tier": "cohort_perk",
-                "is_qualified": False,
-                "status": "perk_benefit",
-                "reasons": [gate_check["reason"]],
-                "score_reasons_summary": gate_check["reason"]
-            }
-        else:
-            reason_str = " | ".join(gate_check["failed_gates"])
-            return {
-                "score": 0,
-                "tier": "rejected",
-                "is_qualified": False,
-                "status": "not_suitable",
-                "reasons": gate_check["failed_gates"],
-                "score_reasons_summary": f"REJECTED: {reason_str}"
-            }
-
-    # Evaluate standard criteria
-    features = {
-        "real_directory": True,
-        "clear_submit_path": bool(platform.get("form_url")),
-        "target_audience": True,
-        "target_geography": True,
-        "structured_fields": True,
-        "established_directory": platform.get("tier") in ("tier_1", "tier_2", "tier_3")
-    }
-    eval_res = evaluate_platform_score(features)
-    return {
-        "score": eval_res["score"],
-        "tier": platform.get("tier", "tier_3"),
-        "is_qualified": eval_res["is_qualified"],
-        "status": "in_review",
-        "reasons": eval_res["reasons"],
-        "score_reasons_summary": eval_res["score_reasons_summary"]
-    }
+    return dfe.DeepSeekFlashEngine.score_platform(platform)
 
 def generate_eupnea_draft_listing(platform_name: str, domain: str, category: str) -> Dict[str, str]:
     """

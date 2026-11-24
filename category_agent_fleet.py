@@ -17,6 +17,7 @@ import time
 import random
 from datetime import datetime
 from typing import Dict, Any, List
+import deepseek_flash_engine as dfe
 
 WORKSPACE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(WORKSPACE_DIR, "presence_agent.db")
@@ -1817,9 +1818,12 @@ def run_linkedin_ranker_hunter(agent_id: str = "astra_r01", batch_size: int = 2)
     discovered = []
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # Step 1: Ingest from Curated Pool
+    # Step 1: Ingest from Curated Pool with DeepSeek Flash v4.1 Audit
     for candidate in LINKEDIN_RANKERS_POOL:
         if candidate["author_name"].lower() not in existing_names:
+            audit = dfe.DeepSeekFlashEngine.audit_linkedin_curator(candidate)
+            if not audit.get("valid", True):
+                continue
             c.execute("""
             INSERT INTO accelerator_rankers (
                 author_name, platform, profile_url, post_url, headline,
@@ -1827,13 +1831,13 @@ def run_linkedin_ranker_hunter(agent_id: str = "astra_r01", batch_size: int = 2)
             ) VALUES (?, 'LinkedIn', ?, ?, ?, ?, ?, 'identified', ?, ?, ?)
             """, (
                 candidate["author_name"],
-                candidate["profile_url"],
-                candidate["post_url"],
-                candidate["headline"],
+                audit.get("profile_url", candidate["profile_url"]),
+                audit.get("verified_post_url", candidate["post_url"]),
+                audit.get("headline", candidate["headline"]),
                 candidate["estimated_reach"],
                 candidate["ranking_title"],
-                candidate["pitch_draft"],
-                candidate["notes"],
+                audit.get("pitch_draft", candidate["pitch_draft"]),
+                audit.get("audit_note", candidate["notes"]),
                 now
             ))
             existing_names.add(candidate["author_name"].lower())
@@ -1931,6 +1935,15 @@ def run_category_platform_hunter(agent_id: str, category_key: str, batch_size: i
         lic_notes = cand.get("licensing_notes", f"Specialist dealflow intake via {nm}.")
         r_scope = cand.get("ranking_scope", "uk" if category_key == "uk_reviews" else "global")
 
+        # DeepSeek Flash v4.1 Algorithmic Gate & Scoring Verification
+        score_eval = dfe.DeepSeekFlashEngine.score_platform(cand)
+        if not score_eval.get("is_qualified") or score_eval.get("score", 0) == 0:
+            return  # Hard reject unverified / synthetic / unsuitable platform
+
+        cand_score = score_eval.get("score", cand.get("score", 95))
+        cand_tier = score_eval.get("tier", "tier_2")
+        lic_notes = score_eval.get("score_reasons_summary", cand.get("licensing_notes", f"Specialist dealflow intake via {nm}."))
+
         c.execute("""
         INSERT OR IGNORE INTO platforms (
             name, category, url, domain, score, status,
@@ -1938,14 +1951,15 @@ def run_category_platform_hunter(agent_id: str, category_key: str, batch_size: i
             form_url, tier, intake_type, is_core_target, high_level_category,
             is_smartmatch, smartmatch_free, smartmatch_paid, smartmatch_model,
             licensing_notes, ranking_scope, draft_pitch, draft_full
-        ) VALUES (?, 'Accelerator Ecosystem', ?, ?, ?, 'in_review', ?, 1, 'bot_assisted', 'submittable_directory', ?, 'tier_1', 'intake', 1, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, 'Accelerator Ecosystem', ?, ?, ?, 'in_review', ?, 1, 'bot_assisted', 'submittable_directory', ?, ?, 'intake', 1, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             nm,
             cand["url"],
             dom,
-            cand.get("score", 95),
+            cand_score,
             now,
             cand.get("form_url", cand["url"]),
+            cand_tier,
             mapped_hl_cat,
             is_sm,
             sm_free,

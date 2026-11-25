@@ -177,6 +177,17 @@ class CriteriaWeightsUpdateRequest(BaseModel):
     weights: Dict[str, int]
     recalculate: bool = True
 
+class BespokeSearchRequest(BaseModel):
+    prompt: str
+
+class BespokeSavePlatformRequest(BaseModel):
+    name: str
+    domain: str
+    homepage_url: str
+    accelerator_page_url: Optional[str] = ""
+    brief_description: Optional[str] = ""
+    category: Optional[str] = "Bespoke Discovery"
+
 # ================================================================================
 # AUTH & USER ENDPOINTS
 # ================================================================================
@@ -1958,6 +1969,98 @@ def trigger_orchestration_cycle():
         return res
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+# ================================================================================
+# BESPOKE NATURAL LANGUAGE SEARCH ENDPOINTS
+# ================================================================================
+import bespoke_search_engine as bse
+
+@app.get("/api/bespoke-search/examples")
+def api_bespoke_examples():
+    return {"examples": bse.BESPOKE_EXAMPLES}
+
+@app.get("/api/bespoke-search/history")
+def api_bespoke_history():
+    return {"history": bse.get_bespoke_search_history(limit=8, db_path=DB_PATH)}
+
+@app.post("/api/bespoke-search")
+def api_run_bespoke_search(req: BespokeSearchRequest):
+    if not req.prompt or len(req.prompt.strip()) < 5:
+        raise HTTPException(status_code=400, detail="Please enter a descriptive one-sentence search query.")
+    try:
+        return bse.execute_bespoke_search(req.prompt, db_path=DB_PATH)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Bespoke search error: {str(e)}")
+
+@app.post("/api/bespoke-search/save-platform")
+def api_save_bespoke_platform(req: BespokeSavePlatformRequest):
+    dom = (req.domain or "").lower().replace("www.", "").strip()
+    if not dom or "." not in dom:
+        raise HTTPException(status_code=400, detail="Invalid domain.")
+    conn = get_db()
+    c = conn.cursor()
+    existing = c.execute("SELECT id, status FROM platforms WHERE domain = ?", (dom,)).fetchone()
+    if existing:
+        conn.close()
+        return {"success": True, "already_exists": True, "platform_id": existing["id"], "status": existing["status"], "message": f"{dom} is already in Eupnea Index."}
+
+    cand_payload = {
+        "name": req.name or dom,
+        "domain": dom,
+        "url": req.homepage_url or f"https://{dom}/",
+        "form_url": req.accelerator_page_url or req.homepage_url or f"https://{dom}/",
+        "category": req.category or "Direct Startup Engagement & Intake",
+        "notes": req.brief_description or "",
+    }
+    score_eval = ghe.GeminiHydrogenEngine.score_platform(cand_payload, verify_network=True, use_llm=False)
+    now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    pitch = (
+        f"Eupnea is a UK management consulting firm and startup accelerator headquartered in London "
+        f"(£50k-£250k seed capital, executive mentorship, 12-week venture programme). "
+        f"Discover more at https://www.eupnea.co.uk/?utm_source={dom.replace('.', '_')}&utm_medium=directory"
+    )
+    status_val = "in_review"
+    tier_val = score_eval.get("tier") if score_eval.get("tier") in ("tier_1", "tier_2", "tier_3") else "tier_2"
+    score_val = max(72, int(score_eval.get("score") or 75))
+    c.execute(
+        """
+        INSERT INTO platforms (
+            name, category, url, domain, score, score_reasons, draft_pitch, draft_full, tracking_url,
+            status, discovered_at, bot_verified, category_type, form_url, tier, intake_type,
+            is_core_target, intake_features, high_level_category, portal_link_ok, portal_http_status,
+            form_link_ok, form_http_status, link_error, link_checked_at, is_registration_hub, criteria_breakdown
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'submittable_directory', ?, ?, 'core_programme_intake', 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            req.name or dom,
+            "Startup Accelerator Portal",
+            score_eval.get("healed_url") or cand_payload["url"],
+            dom,
+            score_val,
+            req.brief_description or score_eval.get("score_reasons_summary") or "Added via Bespoke Search.",
+            pitch,
+            pitch,
+            f"https://www.eupnea.co.uk/?utm_source={dom.replace('.', '_')}&utm_medium=directory&utm_campaign=bespoke_search",
+            status_val,
+            now_str,
+            score_eval.get("healed_form_url") or cand_payload["form_url"],
+            tier_val,
+            "Startup Accelerator Registration & Discovery",
+            "Direct Startup Engagement & Intake",
+            int(score_eval.get("portal_link_ok", 1)),
+            int(score_eval.get("portal_http_status") or 200),
+            int(score_eval.get("form_link_ok", 1)),
+            int(score_eval.get("form_http_status") or 200),
+            score_eval.get("link_error") or "",
+            now_str,
+            int(score_eval.get("is_registration_hub", 1)),
+            json.dumps(score_eval.get("criteria_breakdown") or []),
+        ),
+    )
+    new_id = c.lastrowid
+    conn.commit()
+    conn.close()
+    return {"success": True, "already_exists": False, "platform_id": new_id, "message": f"Added {req.name or dom} to Review Queue."}
 
 # ================================================================================
 # LIVE DATABASE BROWSER ENDPOINTS (Direct SQLite Connection in Browser)

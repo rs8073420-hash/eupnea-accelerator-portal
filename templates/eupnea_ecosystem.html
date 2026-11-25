@@ -1784,6 +1784,13 @@
           </div>
           <span id="nav-review-badge" class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200">Queue</span>
         </button>
+        <button onclick="switchRoom('bespoke')" id="nav-btn-bespoke" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer">
+          <div class="flex items-center gap-3">
+            <i data-lucide="search" class="w-4 h-4 text-sky-700"></i>
+            <span>Bespoke Search</span>
+          </div>
+          <span class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-sky-50 text-sky-800 border border-sky-200 font-semibold">Live</span>
+        </button>
         <button onclick="switchRoom('team')" id="nav-btn-team" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
           <i data-lucide="users" class="w-4 h-4 text-indigo-600"></i>
           <span>Team</span>
@@ -2716,6 +2723,141 @@
           </div>
         </div>
 
+      </div>
+
+      <!-- ==================================================================== -->
+      <!-- ROOM 5B: BESPOKE PLATFORM SEARCH (One-Sentence Custom Discovery) -->
+      <!-- ==================================================================== -->
+      <div id="room-bespoke" class="hidden p-6 space-y-6 fade-in">
+        <!-- Query Builder Card -->
+        <div class="glass-card rounded-2xl p-6 border border-slate-200 bg-white shadow-xs">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 pb-4 border-b border-slate-200">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-semibold uppercase bg-sky-50 text-sky-800 border border-sky-200">Custom Discovery</span>
+                <h3 class="font-syne font-bold text-lg text-slate-900">Bespoke Platform Search</h3>
+              </div>
+              <p class="text-xs text-slate-600 max-w-3xl leading-relaxed">
+                Describe your search in one sentence: target count, recency window, platform type, industry sector, startup registration capability, and the details you need in results. Powered by Gemini 4 Hydrogen query parsing and live link verification.
+              </p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <button onclick="loadBespokeExample(0)" class="px-3 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-xs font-medium text-slate-700 cursor-pointer">
+                Load Aerospace Example
+              </button>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <label for="bespoke-query-input" class="block text-xs font-semibold text-slate-800 uppercase tracking-wider font-mono">
+              Describe Your Search in One Sentence
+            </label>
+            <textarea id="bespoke-query-input" rows="3" placeholder='e.g. Find 20 new startup platforms, created in the last 3 months, that list startup accelerator programs for startups in the Aerospace sector, only platforms where startups can register with startup accelerators. Show in the results for each platform, a brief description, their main homepage and their webpage for accelerators.' class="w-full rounded-xl border border-slate-300 bg-slate-50/70 focus:bg-white p-3.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-600 focus:ring-2 focus:ring-sky-100 leading-relaxed"></textarea>
+
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+              <div class="flex items-center gap-2">
+                <button onclick="runBespokeSearch()" id="bespoke-run-btn" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors">
+                  <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                  <span>Run Bespoke Search</span>
+                </button>
+                <button onclick="clearBespokeSearch()" class="px-3 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-medium text-slate-600 cursor-pointer">
+                  Clear
+                </button>
+              </div>
+              <span id="bespoke-status-text" class="text-xs font-mono text-slate-500">
+                Ready — probes live homepages &amp; accelerator registration links automatically.
+              </span>
+            </div>
+          </div>
+
+          <!-- Effective Prompt Formula Guide (4 Columns) -->
+          <div class="mt-5 pt-4 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <span class="font-mono text-[10px] font-bold uppercase text-sky-800 block mb-1">1. Volume &amp; Recency</span>
+              <p class="text-slate-600 leading-snug">Specify quantity and age window, e.g. <em>"Find 20 new platforms, created in the last 3 months..."</em></p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <span class="font-mono text-[10px] font-bold uppercase text-indigo-800 block mb-1">2. Sector &amp; Geography</span>
+              <p class="text-slate-600 leading-snug">Name the vertical and region, e.g. <em>"...Aerospace sector startups"</em> or <em>"UK &amp; European FinTech"</em>.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <span class="font-mono text-[10px] font-bold uppercase text-emerald-800 block mb-1">3. Registration Filter</span>
+              <p class="text-slate-600 leading-snug">State intake requirements, e.g. <em>"...only platforms where startups can register with accelerators."</em></p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <span class="font-mono text-[10px] font-bold uppercase text-amber-800 block mb-1">4. Required Output</span>
+              <p class="text-slate-600 leading-snug">Ask for structured fields: <em>"Show brief description, main homepage, and accelerator webpage."</em></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Effective Bespoke Search Examples Shelf -->
+        <div class="glass-card rounded-2xl p-5 border border-slate-200 bg-white shadow-xs">
+          <div class="flex items-center justify-between gap-2 mb-3">
+            <h4 class="font-syne font-bold text-sm text-slate-900">Effective Bespoke Search Examples (Click to Load)</h4>
+            <span class="text-[11px] font-mono text-slate-500">One-click query templates</span>
+          </div>
+          <div id="bespoke-examples-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <!-- Injected via JS from /api/bespoke-search/examples -->
+          </div>
+        </div>
+
+        <!-- Parsed Query Criteria Strip -->
+        <div id="bespoke-parsed-bar" class="hidden glass-card rounded-2xl p-4 border border-sky-200 bg-sky-50/40">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+            <span class="font-mono text-[11px] font-bold uppercase text-sky-900">Parsed Search Criteria</span>
+            <span id="bespoke-engine-badge" class="font-mono text-[10px] px-2 py-0.5 rounded bg-white border border-sky-200 text-sky-800 font-semibold">Gemini 4 Hydrogen Query Parser</span>
+          </div>
+          <div id="bespoke-parsed-chips" class="flex flex-wrap items-center gap-2 text-xs font-mono"></div>
+        </div>
+
+        <!-- Results Table Card -->
+        <div class="glass-card rounded-2xl p-5 border border-slate-200 bg-white shadow-xs">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-200">
+            <div class="flex items-center gap-3 flex-wrap">
+              <h4 class="font-syne font-bold text-base text-slate-900">Search Results</h4>
+              <span id="bespoke-result-count" class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-slate-100 text-slate-800 border border-slate-200">0 platforms</span>
+              <span id="bespoke-new-count" class="hidden px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">0 new web discoveries</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="exportBespokeCsv()" id="bespoke-export-btn" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-xs font-medium text-slate-700 cursor-pointer disabled:opacity-40" disabled>
+                Export CSV
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto border border-slate-200 rounded-xl">
+            <table class="w-full text-left text-xs">
+              <thead class="font-mono uppercase text-[10px] text-slate-600 bg-slate-50 border-b border-slate-200">
+                <tr>
+                  <th class="py-3 px-4 w-56">Platform &amp; Match</th>
+                  <th class="py-3 px-4">Brief Description</th>
+                  <th class="py-3 px-4 w-52">Main Homepage</th>
+                  <th class="py-3 px-4 w-60">Webpage for Accelerators</th>
+                  <th class="py-3 px-4 w-44 text-right">Registration &amp; Queue</th>
+                </tr>
+              </thead>
+              <tbody id="bespoke-results-tbody" class="divide-y divide-slate-200 bg-white">
+                <tr>
+                  <td colspan="5" class="py-10 px-4 text-center text-slate-500 text-xs">
+                    Enter a one-sentence bespoke search query above or select an example template to run live discovery.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Recent Bespoke Searches History -->
+        <div class="glass-card rounded-2xl p-5 border border-slate-200 bg-white shadow-xs">
+          <div class="flex items-center justify-between gap-2 mb-3">
+            <h4 class="font-syne font-bold text-sm text-slate-900">Recent Bespoke Searches</h4>
+            <button onclick="loadBespokeHistory()" class="text-xs font-medium text-sky-700 hover:underline cursor-pointer">Refresh History</button>
+          </div>
+          <div id="bespoke-history-list" class="space-y-2 text-xs">
+            <p class="text-slate-500">No saved bespoke searches yet.</p>
+          </div>
+        </div>
       </div>
 
       <!-- ==================================================================== -->
@@ -4296,7 +4438,7 @@
     // Switch Room in Workspace
     function switchRoom(room) {
       currentRoom = room;
-      ['dashboard', 'presence', 'review', 'team', 'database', 'orchestration'].forEach(r => {
+      ['dashboard', 'presence', 'review', 'bespoke', 'team', 'database', 'orchestration'].forEach(r => {
         const el = document.getElementById(`room-${r}`);
         const btn = document.getElementById(`nav-btn-${r}`);
         if (el) el.classList.add('hidden');
@@ -4316,6 +4458,7 @@
         dashboard: 'Dashboard',
         presence: 'Presence Directory Index',
         review: 'Listing Review Queue',
+        bespoke: 'Bespoke Platform Search',
         team: 'Team & Governance',
         database: 'Database Inspector',
         orchestration: 'Operations & Channel Pipeline'
@@ -4326,6 +4469,7 @@
       if (room === 'dashboard') loadDashboardStats();
       if (room === 'presence') loadPresencePlatforms();
       if (room === 'review') loadReviewQueue();
+      if (room === 'bespoke') initBespokeSearchRoom();
       if (room === 'team') loadTeamMembers();
       if (room === 'database') loadDbTables();
       if (room === 'orchestration') loadOrchestrationFleet();
@@ -7112,6 +7256,299 @@
           if (window.lucide) window.lucide.createIcons();
         }
       }
+    }
+
+    // ========================================================================
+    // BESPOKE NATURAL-LANGUAGE PLATFORM SEARCH WORKSPACE
+    // ========================================================================
+    let bespokeExamplesCache = [];
+    let bespokeHistoryCache = [];
+    let bespokeLastResults = [];
+
+    async function initBespokeSearchRoom() {
+      await Promise.all([loadBespokeExamples(), loadBespokeHistory()]);
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    async function loadBespokeExamples() {
+      const grid = document.getElementById('bespoke-examples-grid');
+      if (!grid) return;
+      try {
+        if (bespokeExamplesCache.length === 0) {
+          const res = await fetch('/api/bespoke-search/examples');
+          const data = await res.json();
+          bespokeExamplesCache = data.examples || [];
+        }
+        grid.innerHTML = bespokeExamplesCache.map((ex, idx) => `
+          <div class="p-3.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-white hover:border-sky-300 transition-colors flex flex-col justify-between gap-2">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-1">
+                <span class="font-semibold text-slate-900 text-xs">${escapeHtml(ex.title)}</span>
+                <span class="font-mono text-[9px] px-1.5 py-0.5 rounded bg-sky-50 text-sky-800 border border-sky-200 shrink-0">${escapeHtml(ex.tag)}</span>
+              </div>
+              <p class="text-[11px] text-slate-600 line-clamp-3 leading-relaxed">${escapeHtml(ex.prompt)}</p>
+            </div>
+            <div class="pt-2 border-t border-slate-200 flex items-center justify-end gap-2">
+              <button onclick="loadBespokeExample(${idx})" class="text-[11px] font-medium text-sky-700 hover:underline cursor-pointer">Use Query</button>
+              <button onclick="loadBespokeExample(${idx}, true)" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-semibold cursor-pointer">Load &amp; Run</button>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error('Failed loading bespoke examples:', err);
+      }
+    }
+
+    function loadBespokeExample(idx, autoRun = false) {
+      const ex = bespokeExamplesCache[idx];
+      const box = document.getElementById('bespoke-query-input');
+      if (ex && box) {
+        box.value = ex.prompt;
+        if (autoRun) runBespokeSearch();
+      }
+    }
+
+    function clearBespokeSearch() {
+      const box = document.getElementById('bespoke-query-input');
+      if (box) box.value = '';
+      const bar = document.getElementById('bespoke-parsed-bar');
+      if (bar) bar.classList.add('hidden');
+      const status = document.getElementById('bespoke-status-text');
+      if (status) status.innerText = 'Ready — enter a custom search sentence above.';
+    }
+
+    async function runBespokeSearch() {
+      const box = document.getElementById('bespoke-query-input');
+      const prompt = (box ? box.value : '').trim();
+      if (prompt.length < 5) {
+        showToast('Please enter a one-sentence description of what platforms to find.', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('bespoke-run-btn');
+      const status = document.getElementById('bespoke-status-text');
+      const tbody = document.getElementById('bespoke-results-tbody');
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<span class="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></span><span>Searching Live Portals...</span>`;
+      }
+      if (status) status.innerText = 'Parsing query parameters, searching live web directories, and checking accelerator pages...';
+      if (tbody) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-10 px-4 text-center text-slate-600 font-mono text-xs">Searching live web sources and probing homepage &amp; accelerator URLs...</td></tr>`;
+      }
+
+      try {
+        const res = await fetch('/api/bespoke-search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Search failed');
+
+        renderBespokePayload(data);
+        showToast(`Bespoke search finished: ${data.total_found} verified platforms returned.`, 'success');
+        loadBespokeHistory();
+      } catch (err) {
+        console.error('Bespoke search error:', err);
+        showToast('Bespoke search failed: ' + err.message, 'error');
+        if (tbody) {
+          tbody.innerHTML = `<tr><td colspan="5" class="py-8 px-4 text-center text-rose-700 text-xs">${escapeHtml(err.message)}</td></tr>`;
+        }
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = `<i data-lucide="search" class="w-3.5 h-3.5"></i><span>Run Bespoke Search</span>`;
+          if (window.lucide) window.lucide.createIcons();
+        }
+      }
+    }
+
+    function renderBespokePayload(data) {
+      const parsed = data.parsed_params || {};
+      const results = data.results || [];
+      bespokeLastResults = results;
+
+      const bar = document.getElementById('bespoke-parsed-bar');
+      const chips = document.getElementById('bespoke-parsed-chips');
+      const engineBadge = document.getElementById('bespoke-engine-badge');
+      if (bar && chips) {
+        bar.classList.remove('hidden');
+        if (engineBadge && parsed.engine_mode) engineBadge.innerText = parsed.engine_mode;
+        const sectors = (parsed.sector_labels || []).join(', ') || 'General';
+        const geos = (parsed.geography || []).join(', ') || 'Global';
+        chips.innerHTML = `
+          <span class="px-2 py-1 rounded bg-white border border-sky-200 text-slate-800">Target Count: <strong>${parsed.requested_count || 15}</strong></span>
+          <span class="px-2 py-1 rounded bg-white border border-sky-200 text-slate-800">Recency: <strong>${escapeHtml(parsed.recency_label || 'Any')}</strong></span>
+          <span class="px-2 py-1 rounded bg-white border border-sky-200 text-slate-800">Sector: <strong>${escapeHtml(sectors)}</strong></span>
+          <span class="px-2 py-1 rounded bg-white border border-sky-200 text-slate-800">Geography: <strong>${escapeHtml(geos)}</strong></span>
+          <span class="px-2 py-1 rounded bg-white border border-sky-200 text-slate-800">Registration Gate: <strong>${parsed.require_registration ? 'Required' : 'Optional'}</strong></span>
+        `;
+      }
+
+      const cntEl = document.getElementById('bespoke-result-count');
+      if (cntEl) cntEl.innerText = `${results.length} platform${results.length === 1 ? '' : 's'}`;
+      const newCntEl = document.getElementById('bespoke-new-count');
+      const newCount = data.new_discoveries_count != null ? data.new_discoveries_count : results.filter(r => !r.already_in_index).length;
+      if (newCntEl) {
+        newCntEl.classList.remove('hidden');
+        newCntEl.innerText = `${newCount} new live discoveries`;
+      }
+      const status = document.getElementById('bespoke-status-text');
+      if (status) status.innerText = `Completed: ${results.length} link-verified platforms matched (${newCount} outside main index).`;
+
+      const expBtn = document.getElementById('bespoke-export-btn');
+      if (expBtn) expBtn.disabled = results.length === 0;
+
+      const tbody = document.getElementById('bespoke-results-tbody');
+      if (!tbody) return;
+      if (results.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-10 px-4 text-center text-slate-500 text-xs">No live verified platforms matched all constraints. Try widening recency or sector keywords.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = results.map((r, idx) => {
+        const homeCell = r.homepage_ok
+          ? `<a href="${escapeHtml(r.homepage_url)}" target="_blank" rel="noopener" class="text-sky-700 hover:underline font-mono text-[11px] font-medium break-all">${escapeHtml(r.homepage_url)}</a><div class="text-[10px] font-mono text-emerald-700 mt-0.5">HTTP ${r.homepage_http_status || 200} OK</div>`
+          : `<span class="text-slate-400 font-mono text-[11px]">Unreachable (disabled)</span>`;
+
+        const accelCell = r.accelerator_page_ok
+          ? `<a href="${escapeHtml(r.accelerator_page_url)}" target="_blank" rel="noopener" class="text-emerald-800 hover:underline font-mono text-[11px] font-medium break-all">${escapeHtml(r.accelerator_page_url)}</a><div class="text-[10px] font-mono text-emerald-700 mt-0.5">Verified (HTTP ${r.accelerator_http_status || 200})</div>`
+          : `<span class="text-rose-700 font-mono text-[11px]">No working accelerator subpage verified</span>`;
+
+        const regBadge = r.supports_registration
+          ? `<span class="inline-block px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono text-[10px] font-semibold">Startup Registration Yes</span>`
+          : `<span class="inline-block px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 font-mono text-[10px]">Info / Directory</span>`;
+
+        const matchedChips = (r.matched_terms || []).slice(0, 3).map(t =>
+          `<span class="px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-800 border border-indigo-200 font-mono text-[9px]">${escapeHtml(t)}</span>`
+        ).join('');
+
+        const actionBtn = r.already_in_index
+          ? `<span class="inline-block px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 font-mono text-[10px] font-semibold">In Main Index</span>`
+          : `<button onclick="saveBespokePlatform(${idx}, this)" class="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-semibold cursor-pointer">+ Add to Queue</button>`;
+
+        return `
+          <tr class="hover:bg-slate-50 align-top">
+            <td class="py-3.5 px-4">
+              <div class="font-syne font-bold text-slate-900 text-xs leading-snug">${escapeHtml(r.name)}</div>
+              <div class="font-mono text-[10px] text-slate-500 mt-0.5">${escapeHtml(r.domain)} · Fit ${r.match_score || 0}%</div>
+              <div class="flex flex-wrap items-center gap-1 mt-1.5">
+                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 font-mono text-[9px]">${escapeHtml(r.recency_note || 'Live')}</span>
+                ${matchedChips}
+              </div>
+              <div class="text-[10px] text-slate-400 mt-1">${escapeHtml(r.source_tag || '')}</div>
+            </td>
+            <td class="py-3.5 px-4 text-slate-700 text-xs leading-relaxed max-w-md">
+              ${escapeHtml(r.brief_description || 'No description provided.')}
+            </td>
+            <td class="py-3.5 px-4">${homeCell}</td>
+            <td class="py-3.5 px-4">${accelCell}</td>
+            <td class="py-3.5 px-4 text-right space-y-2">
+              <div>${regBadge}</div>
+              <div>${actionBtn}</div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function saveBespokePlatform(idx, btnEl) {
+      const r = bespokeLastResults[idx];
+      if (!r) return;
+      if (btnEl) { btnEl.disabled = true; btnEl.innerText = 'Saving...'; }
+      try {
+        const res = await fetch('/api/bespoke-search/save-platform', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: r.name,
+            domain: r.domain,
+            homepage_url: r.homepage_url,
+            accelerator_page_url: r.accelerator_page_url || r.homepage_url,
+            brief_description: r.brief_description || ''
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Save failed');
+        r.already_in_index = true;
+        showToast(data.message || 'Added to Review Queue.', 'success');
+        if (btnEl) {
+          btnEl.outerHTML = `<span class="inline-block px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono text-[10px] font-semibold">Queued</span>`;
+        }
+        if (typeof loadDashboardStats === 'function') loadDashboardStats();
+      } catch (err) {
+        showToast('Could not save platform: ' + err.message, 'error');
+        if (btnEl) { btnEl.disabled = false; btnEl.innerText = '+ Add to Queue'; }
+      }
+    }
+
+    async function loadBespokeHistory() {
+      const el = document.getElementById('bespoke-history-list');
+      if (!el) return;
+      try {
+        const res = await fetch('/api/bespoke-search/history');
+        const data = await res.json();
+        bespokeHistoryCache = data.history || [];
+        if (bespokeHistoryCache.length === 0) {
+          el.innerHTML = `<p class="text-slate-500">No saved bespoke searches yet.</p>`;
+          return;
+        }
+        el.innerHTML = bespokeHistoryCache.map((h, idx) => `
+          <div class="p-3 rounded-xl border border-slate-200 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div class="min-w-0">
+              <div class="text-slate-900 font-medium truncate">${escapeHtml(h.prompt)}</div>
+              <div class="text-[10px] font-mono text-slate-500 mt-0.5">${escapeHtml(h.created_at || '')} · ${h.total_found || 0} platforms returned</div>
+            </div>
+            <button onclick="reloadBespokeHistory(${idx})" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-xs font-medium text-slate-800 shrink-0 cursor-pointer">
+              View Results
+            </button>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error('Failed loading bespoke history:', err);
+      }
+    }
+
+    function reloadBespokeHistory(idx) {
+      const h = bespokeHistoryCache[idx];
+      if (!h) return;
+      const box = document.getElementById('bespoke-query-input');
+      if (box) box.value = h.prompt;
+      renderBespokePayload({
+        parsed_params: h.parsed_params,
+        results: h.results || [],
+        total_found: h.total_found || (h.results || []).length
+      });
+      showToast('Loaded saved bespoke search results.', 'info');
+    }
+
+    function exportBespokeCsv() {
+      if (!bespokeLastResults || bespokeLastResults.length === 0) return;
+      const rows = [['Name', 'Domain', 'Brief Description', 'Main Homepage', 'Accelerator Webpage', 'Startup Registration', 'Source', 'Recency Note']];
+      bespokeLastResults.forEach(r => {
+        rows.push([
+          r.name || '',
+          r.domain || '',
+          r.brief_description || '',
+          r.homepage_url || '',
+          r.accelerator_page_url || '',
+          r.supports_registration ? 'Yes' : 'No',
+          r.source_tag || '',
+          r.recency_note || ''
+        ]);
+      });
+      const csv = rows.map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `eupnea_bespoke_search_${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
 
 </script>

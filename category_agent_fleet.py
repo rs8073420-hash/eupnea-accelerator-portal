@@ -22,8 +22,24 @@ from datetime import datetime
 from typing import Dict, Any, List
 import gemini_hydrogen_engine as ghe
 import category_agent_trainer as cat_trainer
+import sys
+from pathlib import Path
 
 WORKSPACE_DIR = os.path.dirname(os.path.abspath(__file__))
+FW_DIR = Path(WORKSPACE_DIR) / "agent_frameworks"
+if FW_DIR.exists() and str(FW_DIR) not in sys.path:
+    sys.path.insert(0, str(FW_DIR))
+
+try:
+    from browser_use_engine import BrowserUseEngine, get_agent_browser_profile
+    from mem0_memory_layer import AgentMemoryHub
+    AGENT_FRAMEWORKS_READY = True
+except Exception:
+    BrowserUseEngine = None
+    get_agent_browser_profile = None
+    AgentMemoryHub = None
+    AGENT_FRAMEWORKS_READY = False
+
 DB_PATH = os.path.join(WORKSPACE_DIR, "presence_agent.db")
 DB_WRITE_LOCK = threading.RLock()
 
@@ -1861,6 +1877,30 @@ def get_category_agents_roster() -> List[Dict[str, Any]]:
             d["positive_signals"] = []
             d["negative_signals"] = []
             d["model_engine"] = ghe.ENGINE_VERSION
+
+        # Dedicated Browser-Use Profile & Mem0 Agent Memory Telemetry per Agent
+        if get_agent_browser_profile and BrowserUseEngine:
+            get_agent_browser_profile(d["id"])
+            rt = BrowserUseEngine.get_runtime_status(d["id"])
+            d["browser_profile"] = rt["browser_profile_dir"]
+            d["browser_engine"] = rt["engine_mode"]
+        else:
+            d["browser_profile"] = f"agent_browser_profiles/{d['id']}"
+            d["browser_engine"] = "browser-use 1.0 profile"
+
+        if AgentMemoryHub is not None:
+            try:
+                mem_hub = AgentMemoryHub(user_id="commander_aadarsh", agent_id=d["id"])
+                mems = mem_hub.get_memories_for_agent(d["id"], limit=8)
+                d["recalled_memories"] = mems
+                d["memory_count"] = len(mems)
+            except Exception:
+                d["recalled_memories"] = []
+                d["memory_count"] = 0
+        else:
+            d["recalled_memories"] = []
+            d["memory_count"] = 0
+
         roster.append(d)
     return roster
 
@@ -2173,12 +2213,25 @@ def run_category_platform_hunter(agent_id: str, category_key: str, batch_size: i
         conn.close()
 
     agent_meta = next((a for a in CATEGORY_AGENTS_CONFIG if a["id"] == agent_id), {"agent_code": agent_id, "name": "Category Agent"})
+    b_profile = f"agent_browser_profiles/{agent_id}"
+    if get_agent_browser_profile:
+        get_agent_browser_profile(agent_id)
+    if AgentMemoryHub is not None and discovered_domains:
+        try:
+            mem_hub = AgentMemoryHub(user_id="commander_aadarsh", agent_id=agent_id)
+            mem_hub.add_memory(
+                f"{agent_meta['agent_code']} ({category_key}) verified via {b_profile}: added {', '.join(discovered_domains[:5])}",
+                metadata={"category": category_key, "browser_profile": b_profile},
+            )
+        except Exception:
+            pass
 
     return {
         "success": True,
         "agent_code": agent_meta["agent_code"],
         "agent_name": agent_meta["name"],
         "category": category_key,
+        "browser_profile": b_profile,
         "newly_discovered": discovered,
         "discovered_domains": discovered_domains,
         "rejected_category_mismatch": rejected_mismatch[:10],

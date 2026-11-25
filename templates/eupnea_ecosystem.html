@@ -6620,7 +6620,8 @@
               </div>
               
               <h5 class="font-syne font-bold text-xs text-slate-900 mb-0.5 leading-tight">${escapeHtml(a.name)}</h5>
-              <span class="text-[11px] font-medium text-slate-600 block mb-2">${escapeHtml(a.role)}</span>
+              <span class="text-[11px] font-medium text-slate-600 block mb-1.5">${escapeHtml(a.role)}</span>
+              ${a.browser_profile ? `<div class="mb-2 flex items-center gap-1.5 flex-wrap text-[10px] font-mono"><span class="px-1.5 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-emerald-800 font-semibold">${escapeHtml(a.browser_engine || 'browser-use 1.0')}</span><span class="text-slate-500 truncate max-w-[180px]" title="${escapeHtml(a.browser_profile)}">${escapeHtml(a.browser_profile)}</span></div>` : ''}
               
               <div class="mb-3 text-[11px] text-slate-600 leading-relaxed bg-slate-50 p-2.5 rounded-lg border border-slate-200">
                 <span class="font-mono text-[9px] uppercase tracking-wider text-slate-500 block mb-1">Active Duty / Task</span>
@@ -6745,8 +6746,9 @@
             <span class="font-mono text-[10px] text-slate-500">${escapeHtml(a.squad)}</span>
           </div>
 
-          <div class="mb-2">
+          <div class="mb-2 flex items-center gap-1.5 flex-wrap">
             ${roleBadge}
+            ${a.browser_profile ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono bg-emerald-50 text-emerald-800 border border-emerald-200 truncate max-w-[165px]" title="${escapeHtml(a.browser_engine || 'browser-use 1.0')} · ${escapeHtml(a.browser_profile)}">${escapeHtml(a.browser_profile.replace('agent_browser_profiles/', 'browser-use: '))}</span>` : ''}
           </div>
 
           <span class="text-[11px] font-medium text-slate-700 block mb-1.5">${escapeHtml(a.role)}</span>
@@ -7102,6 +7104,11 @@
                   <div class="text-[11px] font-mono text-slate-600 mt-1">
                     Category: <span class="text-slate-900 font-semibold">${escapeHtml(ag.category_name)}</span> · <span class="text-sky-700 font-medium">Gemini 4 Hydrogen</span>
                   </div>
+                  <div class="text-[10px] font-mono mt-1.5 flex items-center gap-1.5 flex-wrap">
+                    <span class="px-1.5 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-emerald-800 font-semibold">${escapeHtml(ag.browser_engine || 'browser-use 1.0')}</span>
+                    <span class="px-1.5 py-0.5 rounded bg-white border border-slate-200 text-slate-700 truncate max-w-[240px]" title="${escapeHtml(ag.browser_profile || ('agent_browser_profiles/' + ag.id))}">Browser: ${escapeHtml(ag.browser_profile || ('agent_browser_profiles/' + ag.id))}</span>
+                    <span class="px-1.5 py-0.5 rounded bg-violet-50 border border-violet-200 text-violet-800 font-semibold">Mem0: ${ag.memory_count ?? 0}</span>
+                  </div>
                 </div>
 
                 <div class="text-right shrink-0">
@@ -7114,6 +7121,14 @@
               <p class="text-xs text-slate-600 leading-relaxed mb-2.5">
                 ${escapeHtml(ag.specialization)}
               </p>
+
+              ${(ag.recalled_memories && ag.recalled_memories.length) ? `
+              <details class="mb-2.5 text-[10px] font-mono text-slate-600">
+                <summary class="cursor-pointer text-violet-700 hover:text-violet-900 font-semibold select-none">Inspect ${ag.recalled_memories.length} recalled agent memories</summary>
+                <ul class="mt-1 space-y-1 pl-4 list-disc text-slate-600 bg-white border border-slate-200 rounded-lg p-2">
+                  ${ag.recalled_memories.slice(0, 4).map(m => `<li class="leading-snug">${escapeHtml(m)}</li>`).join('')}
+                </ul>
+              </details>` : ''}
 
               ${posSigs ? `<div class="flex items-center gap-1 mb-2 flex-wrap"><span class="text-[10px] font-mono font-semibold text-emerald-800">Signals:</span>${posSigs}</div>` : ''}
 
@@ -7373,9 +7388,13 @@
       const bar = document.getElementById('bespoke-parsed-bar');
       const chips = document.getElementById('bespoke-parsed-chips');
       const engineBadge = document.getElementById('bespoke-engine-badge');
+      const routingEl = document.getElementById('bespoke-agent-routing');
+      const assignedAgents = data.assigned_agents || parsed.assigned_agents || [];
+      const recalledMem = data.recalled_memories || parsed.recalled_memories || [];
+      const browserEngine = data.browser_engine || parsed.browser_engine || 'browser-use 1.0';
       if (bar && chips) {
         bar.classList.remove('hidden');
-        if (engineBadge && parsed.engine_mode) engineBadge.innerText = parsed.engine_mode;
+        if (engineBadge) engineBadge.innerText = `${parsed.engine_mode || 'Gemini 4 Hydrogen'} · ${browserEngine}`;
         const sectors = (parsed.sector_labels || []).join(', ') || 'General';
         const geos = (parsed.geography || []).join(', ') || 'Global';
         chips.innerHTML = `
@@ -7384,7 +7403,23 @@
           <span class="px-2 py-1 rounded bg-white border border-sky-200 text-slate-800">Sector: <strong>${escapeHtml(sectors)}</strong></span>
           <span class="px-2 py-1 rounded bg-white border border-sky-200 text-slate-800">Geography: <strong>${escapeHtml(geos)}</strong></span>
           <span class="px-2 py-1 rounded bg-white border border-sky-200 text-slate-800">Registration Gate: <strong>${parsed.require_registration ? 'Required' : 'Optional'}</strong></span>
+          <span class="px-2 py-1 rounded bg-violet-50 border border-violet-200 text-violet-900">Mem0 Recalled: <strong>${recalledMem.length}</strong></span>
         `;
+      }
+      if (routingEl) {
+        if (assignedAgents.length > 0 || recalledMem.length > 0) {
+          routingEl.classList.remove('hidden');
+          const agentChips = assignedAgents.map(a =>
+            `<span class="px-2 py-1 rounded bg-emerald-50 border border-emerald-200 text-emerald-900" title="${escapeHtml(a.agent_name || '')}"><strong>${escapeHtml(a.agent_code || a.agent_id)}</strong> → <span class="text-slate-700">${escapeHtml(a.browser_profile || '')}</span></span>`
+          ).join('');
+          const memBlock = recalledMem.length > 0
+            ? `<details class="w-full mt-1.5 text-[10px] font-mono text-slate-600"><summary class="cursor-pointer text-violet-800 font-semibold hover:underline select-none">Inspect ${recalledMem.length} recalled Mem0 &amp; training memories guiding this agent swarm</summary><ul class="mt-1.5 space-y-1 pl-4 list-disc bg-white border border-violet-200 rounded-lg p-2.5">${recalledMem.slice(0, 8).map(m => `<li>${escapeHtml(m)}</li>`).join('')}</ul></details>`
+            : '';
+          routingEl.innerHTML = `<span class="text-sky-900 font-bold uppercase text-[10px] mr-1">Agent Browsers:</span>${agentChips}${memBlock}`;
+        } else {
+          routingEl.classList.add('hidden');
+          routingEl.innerHTML = '';
+        }
       }
 
       const cntEl = document.getElementById('bespoke-result-count');
@@ -7429,6 +7464,13 @@
           ? `<span class="inline-block px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 font-mono text-[10px] font-semibold">In Main Index</span>`
           : `<button onclick="saveBespokePlatform(${idx}, this)" class="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-semibold cursor-pointer">+ Add to Queue</button>`;
 
+        const agentTag = r.assigned_agent_code
+          ? `<span class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono text-[9px] font-semibold" title="${escapeHtml(r.browser_profile || '')}">${escapeHtml(r.assigned_agent_code)} · ${escapeHtml(r.browser_profile || '')}</span>`
+          : '';
+        const cdpTag = r.browser_use_cdp
+          ? `<span class="px-1.5 py-0.5 rounded bg-sky-50 text-sky-800 border border-sky-200 font-mono text-[9px] font-semibold">browser-use CDP</span>`
+          : '';
+
         return `
           <tr class="hover:bg-slate-50 align-top">
             <td class="py-3.5 px-4">
@@ -7437,6 +7479,8 @@
               <div class="flex flex-wrap items-center gap-1 mt-1.5">
                 <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 font-mono text-[9px]">${escapeHtml(r.recency_note || 'Live')}</span>
                 ${matchedChips}
+                ${agentTag}
+                ${cdpTag}
               </div>
               <div class="text-[10px] text-slate-400 mt-1">${escapeHtml(r.source_tag || '')}</div>
             </td>
@@ -7526,7 +7570,7 @@
 
     function exportBespokeCsv() {
       if (!bespokeLastResults || bespokeLastResults.length === 0) return;
-      const rows = [['Name', 'Domain', 'Brief Description', 'Main Homepage', 'Accelerator Webpage', 'Startup Registration', 'Source', 'Recency Note']];
+      const rows = [['Name', 'Domain', 'Brief Description', 'Main Homepage', 'Accelerator Webpage', 'Startup Registration', 'Assigned Agent', 'Browser Profile', 'Source', 'Recency Note']];
       bespokeLastResults.forEach(r => {
         rows.push([
           r.name || '',
@@ -7535,6 +7579,8 @@
           r.homepage_url || '',
           r.accelerator_page_url || '',
           r.supports_registration ? 'Yes' : 'No',
+          r.assigned_agent_code || '',
+          r.browser_profile || '',
           r.source_tag || '',
           r.recency_note || ''
         ]);

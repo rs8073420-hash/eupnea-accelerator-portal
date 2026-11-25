@@ -34,10 +34,13 @@ try:
     if fw_dir.exists() and str(fw_dir) not in sys.path:
         sys.path.insert(0, str(fw_dir))
     from mem0_memory_layer import AgentMemoryHub
+    from browser_use_engine import BrowserUseEngine, get_agent_browser_profile
     MEM0_READY = True
 except Exception:
     MEM0_READY = False
     AgentMemoryHub = None
+    BrowserUseEngine = None
+    get_agent_browser_profile = None
 
 
 # ==============================================================================
@@ -556,7 +559,7 @@ def train_category_agent(
 
     if use_llm:
         prompt = (
-            f"Generate 2 concise high-precision Google/DuckDuckGo search queries to find more websites strictly in category "
+            f"Generate 2 concise high-precision Google / browser-use discovery queries to find more websites strictly in category "
             f"'{target_bp['mapped_hl_cat']}' ({target_bp['mission']}). "
             f"Return JSON list of strings ONLY: [\"query1\", \"query2\"]"
         )
@@ -744,16 +747,16 @@ def search_live_web_for_category(
 ) -> List[Dict[str, Any]]:
     """
     Executes multi-source live internet discovery (Outbound Hub crawling, GitHub Awesome Lists/API,
-    HN Algolia API, and relevance-filtered Bing RSS + DuckDuckGo fallback) using the agent's
-    trained category rules so all 6 categories discover real, unadded live platforms cleanly.
+    HN Algolia API, Google News RSS, and dedicated per-agent browser-use CDP browsing) using the
+    agent's trained category rules & Mem0 memory without DuckDuckGo.
     """
-    prof = get_training_profile(
-        CATEGORY_TRAINING_BLUEPRINTS.get(category_key, {}).get("agent_id", ""),
-        db_path=db_path
-    )
+    agent_id = CATEGORY_TRAINING_BLUEPRINTS.get(category_key, {}).get("agent_id", "")
+    prof = get_training_profile(agent_id, db_path=db_path)
     bp = CATEGORY_TRAINING_BLUEPRINTS.get(category_key, {})
     queries = (prof or {}).get("search_queries") or bp.get("default_search_queries") or []
     pos_kws = [k.lower() for k in bp.get("positive_keywords", [])]
+    if get_agent_browser_profile and agent_id:
+        get_agent_browser_profile(agent_id)
 
     discovered: List[Dict[str, Any]] = []
     seen_domains = set(d.lower().replace("www.", "") for d in existing_domains)
@@ -846,41 +849,43 @@ def search_live_web_for_category(
             except Exception:
                 continue
 
-        # Source 2: Strict Relevance-Filtered Bing RSS Search + DDG HTML fallback
+        # Source 2: Dedicated Per-Agent Browser-Use Google Search + Google News RSS (Zero DuckDuckGo)
+        if BrowserUseEngine is not None and agent_id and queries and len(discovered) < max_candidates:
+            try:
+                bu = BrowserUseEngine(agent_id=agent_id, headless=True)
+                import asyncio
+                loop = asyncio.new_event_loop()
+                try:
+                    bu_hits = loop.run_until_complete(bu.google_search_via_browser(queries[0], limit=8))
+                finally:
+                    loop.close()
+                for item in bu_hits:
+                    if len(discovered) >= max_candidates:
+                        break
+                    _try_add(item.get("url", ""), item.get("title", ""), f"browser-use ({agent_id})")
+            except Exception:
+                pass
+
         for q in queries[:2]:
             if len(discovered) >= max_candidates:
                 break
             try:
-                rrss = cli.get("https://www.bing.com/search", params={"q": q, "format": "rss"})
-                if rrss.status_code == 200 and "<item>" in rrss.text:
-                    for item_xml in re.findall(r'<item>(.*?)</item>', rrss.text, re.S):
+                gn = cli.get(
+                    "https://news.google.com/rss/search",
+                    params={"q": q, "hl": "en-GB", "gl": "GB", "ceid": "GB:en"},
+                )
+                if gn.status_code == 200 and "<item>" in gn.text:
+                    for item_xml in re.findall(r'<item>(.*?)</item>', gn.text, re.S):
                         if len(discovered) >= max_candidates:
                             break
                         t_m = re.search(r'<title>(.*?)</title>', item_xml, re.S)
-                        l_m = re.search(r'<link>(.*?)</link>', item_xml, re.S)
-                        d_m = re.search(r'<description>(.*?)</description>', item_xml, re.S)
-                        raw_t = (t_m.group(1) if t_m else "").strip()
-                        raw_l = (l_m.group(1) if l_m else "").strip()
-                        raw_d = (d_m.group(1) if d_m else "").strip()
-                        if raw_l.startswith("http") and any(k in f"{raw_t} {raw_d}".lower() for k in pos_kws):
-                            _try_add(raw_l, raw_t, f"Live Bing RSS ({q[:32]})", notes=raw_d[:140])
+                        s_m = re.search(r'<source[^>]*url=["\']([^"\']+)["\'][^>]*>(.*?)</source>', item_xml, re.S)
+                        if s_m:
+                            raw_t = (t_m.group(1) if t_m else s_m.group(2)).strip()
+                            raw_l = s_m.group(1).strip()
+                            if raw_l.startswith("http") and any(k in raw_t.lower() for k in pos_kws):
+                                _try_add(raw_l, raw_t, f"Live Web News ({q[:28]})", notes=raw_t[:140])
             except Exception:
                 pass
-
-            if len(discovered) < max_candidates:
-                try:
-                    rddg = cli.get("https://html.duckduckgo.com/html/", params={"q": q})
-                    if rddg.status_code == 200:
-                        for raw_href, raw_title in re.findall(r'<a[^>]*class="result__a"[^>]*href="([^"]+)"[^>]*>(.*?)</a>', rddg.text, re.S | re.I):
-                            if len(discovered) >= max_candidates:
-                                break
-                            actual_url = raw_href
-                            if "uddg=" in raw_href:
-                                qs = urllib.parse.parse_qs(urllib.parse.urlparse(raw_href).query)
-                                actual_url = (qs.get("uddg") or [raw_href])[0]
-                            if actual_url.startswith("http"):
-                                _try_add(actual_url, raw_title, f"Live DDG ({q[:32]})")
-                except Exception:
-                    pass
 
     return discovered

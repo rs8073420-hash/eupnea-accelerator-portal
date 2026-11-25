@@ -1,19 +1,29 @@
 """
-Eupnea Accelerator Portal — Bespoke Natural-Language Platform Search Engine
+Eupnea Accelerator Portal — Agent-Routed Bespoke Platform Search Engine
 ===========================================================================
-Parses single-sentence bespoke search prompts (count, recency window, sector/geography,
-platform type, registration requirements, requested columns), queries multiple live web
-sources concurrently (Bing RSS, DuckDuckGo HTML, HN Algolia timestamped launches,
-GitHub timestamped discovery), probes every domain's homepage + dedicated accelerator
-programme webpage, and returns structured, link-verified results cleanly.
+100% Zero DuckDuckGo / Zero Poisoned Bing RSS.
+Architecture grounded in the Eupnea Multi-Agent Workspace:
+1. Recalls Eupnea & Specialist Agent persistent memories (AgentMemoryHub / Mem0)
+   and calibrated SQLite training profiles (agent_training_profiles).
+2. Routes the user's one-sentence bespoke search query to the best-fit Specialist
+   Agent(s) (Astra-I01, Astra-S01, Astra-U01, Astra-V01, Astra-E01, Astra-C01, Astra-R01)
+   plus the Bespoke Coordinator.
+3. Each routed Agent uses its OWN dedicated Browser Use 1.0 persistent browser profile
+   (agent_browser_profiles/{agent_id}/ via BrowserUseEngine) to browse live portals,
+   run organic search/DOM extraction via Chromium CDP locally (with fast HTTP fallback
+   in slim cloud containers without Chromium binaries).
+4. Enforces Sree 4-Gate / Panagiotis Registration criteria, extracts Brief Description,
+   Main Homepage, and Webpage for Accelerators, and records findings in Mem0 & SQLite.
 """
 
 import os
+import sys
 import re
 import json
 import html as html_lib
 import sqlite3
 import urllib.parse
+from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional, Tuple
@@ -21,9 +31,25 @@ import httpx
 
 import gemini_hydrogen_engine as ghe
 import category_agent_trainer as cat_trainer
+import category_agent_fleet as caf
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_DB_PATH = os.path.join(BASE_DIR, "presence_agent.db")
+
+FW_DIR = Path(BASE_DIR) / "agent_frameworks"
+if FW_DIR.exists() and str(FW_DIR) not in sys.path:
+    sys.path.insert(0, str(FW_DIR))
+
+try:
+    from browser_use_engine import BrowserUseEngine, get_agent_browser_profile, find_chromium_executable
+    from mem0_memory_layer import AgentMemoryHub
+    AGENT_FRAMEWORKS_READY = True
+except Exception:
+    BrowserUseEngine = None
+    get_agent_browser_profile = None
+    find_chromium_executable = None
+    AgentMemoryHub = None
+    AGENT_FRAMEWORKS_READY = False
 
 HEADERS = {
     "User-Agent": (
@@ -98,18 +124,20 @@ BESPOKE_EXAMPLES: List[Dict[str, str]] = [
     },
 ]
 
-ADULT_OR_GARBAGE_DOMAINS = (
+EXCLUDED_DOMAINS = (
     "xnxx", "xvideos", "pornhub", "xhamster", "redtube", "onlyfans",
     "w3schools", "geeksforgeeks", "tutorialspoint", "programiz", "stackoverflow",
     "britannica.com", "wikipedia.org", "mdpi.com", "sciencedirect.com",
     "reddit.com", "quora.com", "pinterest.com", "instagram.com", "tiktok.com",
     "gov.in", "nic.in", "ac.in", "linkedin.com", "facebook.com", "youtube.com",
+    "spacenews.com", "rdworldonline.com", "eunewsletter.eu", "entnerd.com",
+    "techcrunch.com", "forbes.com", "bloomberg.com", "reuters.com",
 )
 
 SECTOR_PORTAL_SEEDS: Dict[str, List[Tuple[str, str, str]]] = {
     "aerospace": [
-        ("Starburst Aerospace Accelerator", "https://starburst.aero/", "https://starburst.aero/startup-accelerator/"),
-        ("Seraphim Space Accelerator", "https://seraphim.vc/", "https://seraphim.vc/accelerator/"),
+        ("Starburst Aerospace Accelerator", "https://starburst.aero/", "https://starburst.aero/accelerator-program/"),
+        ("Seraphim Space Accelerator", "https://seraphim.vc/", "https://accelerator.seraphim.vc/"),
         ("ESA Business Incubation Centres (ESA BIC)", "https://commercialisation.esa.int/", "https://commercialisation.esa.int/esa-bics/"),
         ("Orbital Edge Accelerator (ISS National Lab)", "https://www.issnationallab.org/", "https://www.issnationallab.org/orbital-edge-accelerator/"),
         ("Satellite Applications Catapult", "https://sa.catapult.org.uk/", "https://sa.catapult.org.uk/work-with-us/"),
@@ -118,15 +146,13 @@ SECTOR_PORTAL_SEEDS: Dict[str, List[Tuple[str, str, str]]] = {
         ("Creative Destruction Lab (Space & DeepTech)", "https://creativedestructionlab.com/", "https://creativedestructionlab.com/locations/"),
         ("Plug and Play Aerospace & Defense", "https://www.plugandplaytechcenter.com/", "https://www.plugandplaytechcenter.com/accelerators/"),
         ("MassChallenge Aerospace & Aviation", "https://masschallenge.org/", "https://masschallenge.org/programs/"),
-        ("FedTech Aerospace & DeepTech Studio", "https://www.fedtech.io/", "https://www.fedtech.io/startup-studio"),
-        ("NewSpace Global & SpaceTech Hub", "https://www.newspaceglobal.com/", "https://www.newspaceglobal.com/"),
-        ("Space Tech Expo Europe", "https://www.spacetechexpo-europe.com/", "https://www.spacetechexpo-europe.com/"),
-        ("Aerospace Xelerated (Boeing & UK)", "https://www.aerospacexelerated.com/", "https://www.aerospacexelerated.com/"),
+        ("FedTech Aerospace & DeepTech Studio", "https://www.fedtech.io/", "https://www.fedtech.io/government"),
         ("Catalyst Inc Aero & DeepTech", "https://wearecatalyst.org/", "https://wearecatalyst.org/programmes/"),
         ("F6S Aerospace Startup Programs", "https://www.f6s.com/", "https://www.f6s.com/programs"),
         ("Gust Startup Accelerators Directory", "https://gust.com/", "https://gust.com/accelerators"),
         ("YouNoodle Startup Competitions & Accelerators", "https://www.younoodle.com/", "https://www.younoodle.com/"),
         ("VC4A Startup Programs Directory", "https://vc4a.com/", "https://vc4a.com/programs/"),
+        ("Vestbee CEE & European Accelerators", "https://www.vestbee.com/", "https://www.vestbee.com/"),
         ("OpenVC Investor & Accelerator Portal", "https://www.openvc.app/", "https://www.openvc.app/"),
     ],
     "fintech": [
@@ -192,7 +218,6 @@ KNOWN_SECTORS = [
 
 
 def init_bespoke_search_db(db_path: str = DEFAULT_DB_PATH) -> None:
-    """Creates bespoke_searches table if missing."""
     conn = sqlite3.connect(db_path, timeout=30.0)
     conn.execute("PRAGMA journal_mode=WAL;")
     conn.execute(
@@ -211,22 +236,106 @@ def init_bespoke_search_db(db_path: str = DEFAULT_DB_PATH) -> None:
     conn.close()
 
 
-def parse_bespoke_query(prompt: str) -> Dict[str, Any]:
+def _recall_agent_memories_and_profiles(agent_ids: List[str], db_path: str) -> Tuple[List[str], Dict[str, Dict[str, Any]]]:
+    """Recalls persistent Mem0 memories (presence_agent + specialist agents) and SQLite training profiles."""
+    recalled_rules: List[str] = []
+    seen = set()
+    profiles: Dict[str, Dict[str, Any]] = {}
+
+    if AgentMemoryHub is not None:
+        try:
+            mem_core = AgentMemoryHub(user_id="panagiotis_eupnea", agent_id="presence_agent")
+            for c in mem_core.get_memories_for_agent("presence_agent", limit=6):
+                if c not in seen:
+                    seen.add(c)
+                    recalled_rules.append(f"[Presence Memory] {c}")
+            mem_a = AgentMemoryHub(user_id="commander_aadarsh", agent_id="astra_i01")
+            for aid in agent_ids:
+                for c in mem_a.get_memories_for_agent(aid, limit=3):
+                    if c not in seen:
+                        seen.add(c)
+                        recalled_rules.append(f"[{aid}] {c}")
+        except Exception:
+            pass
+
+    for aid in agent_ids:
+        try:
+            prof = cat_trainer.get_training_profile(aid, db_path=db_path)
+            if prof:
+                profiles[aid] = prof
+        except Exception:
+            pass
+
+    return recalled_rules[:12], profiles
+
+
+def _route_specialist_agents(prompt_low: str, require_registration: bool) -> List[Dict[str, Any]]:
     """
-    Extracts structured search constraints from a one-sentence bespoke search query.
-    Returns count, recency window, sector tokens, geography, registration gate, and live search queries.
+    Selects the exact specialist agents from CATEGORY_AGENTS_CONFIG + Bespoke Coordinator,
+    assigning each agent its own isolated browser-use profile directory.
     """
+    cfg_map = {a["id"]: a for a in caf.CATEGORY_AGENTS_CONFIG}
+    selected_ids: List[str] = []
+
+    if require_registration or any(k in prompt_low for k in ("register", "apply", "accelerator", "program", "cohort", "intake")):
+        selected_ids.append("astra_i01")
+    if any(k in prompt_low for k in ("match", "dealflow", "smartmatch", "two-sided", "f6s", "gust")):
+        selected_ids.append("astra_s01")
+    if any(k in prompt_low for k in ("uk", "ranking", "review", "league", "analyst", "guide")):
+        selected_ids.append("astra_u01")
+    if any(k in prompt_low for k in ("investor", "angel", "syndicate", "vc", "seed", "funding")):
+        selected_ids.append("astra_v01")
+    if any(k in prompt_low for k in ("chamber", "regional", "cluster", "lep", "growth hub")):
+        selected_ids.append("astra_c01")
+    if any(k in prompt_low for k in ("linkedin", "curator", "post")):
+        selected_ids.append("astra_r01")
+
+    if "astra_e01" not in selected_ids:
+        selected_ids.append("astra_e01")
+    if "astra_i01" not in selected_ids:
+        selected_ids.insert(0, "astra_i01")
+
+    selected_ids = selected_ids[:3]
+    routed: List[Dict[str, Any]] = []
+
+    for aid in selected_ids:
+        meta = cfg_map.get(aid, {})
+        if get_agent_browser_profile:
+            get_agent_browser_profile(aid)
+        rt = BrowserUseEngine.get_runtime_status(aid) if BrowserUseEngine else {
+            "browser_profile_dir": f"agent_browser_profiles/{aid}",
+            "engine_mode": "browser-use 1.0 profile",
+        }
+        routed.append(
+            {
+                "agent_id": aid,
+                "agent_code": meta.get("agent_code", aid),
+                "agent_name": meta.get("name", aid),
+                "category_key": meta.get("category_key", ""),
+                "browser_profile": rt["browser_profile_dir"],
+                "browser_engine": rt["engine_mode"],
+            }
+        )
+
+    if get_agent_browser_profile:
+        get_agent_browser_profile("bespoke_coordinator")
+    return routed
+
+
+def parse_bespoke_query(prompt: str, db_path: str = DEFAULT_DB_PATH) -> Dict[str, Any]:
+    """Parses one-sentence search query and binds Specialist Agents, their Memories & Browser Profiles."""
     raw = (prompt or "").strip()
     low = raw.lower()
 
-    # 1. Extract target count
     requested_count = 15
-    m_cnt = re.search(r"\b(?:find|show|top|get|return|discover|list)\s+(\d{1,2})\b|\b(\d{1,2})\s+(?:new\s+)?(?:startup|accelerator|platforms?|sites?|portals?)\b", low)
+    m_cnt = re.search(
+        r"\b(?:find|show|top|get|return|discover|list)\s+(\d{1,2})\b|\b(\d{1,2})\s+(?:new\s+)?(?:startup|accelerator|platforms?|sites?|portals?)\b",
+        low,
+    )
     if m_cnt:
         num = int(m_cnt.group(1) or m_cnt.group(2))
         requested_count = max(1, min(30, num))
 
-    # 2. Extract recency constraint
     recency_months: Optional[int] = None
     recency_label = "Any date"
     m_months = re.search(r"(?:last|past)\s+(\d{1,2})\s+months?", low)
@@ -255,7 +364,6 @@ def parse_bespoke_query(prompt: str) -> Dict[str, Any]:
         k in low for k in ("register", "apply", "application", "intake", "submit", "open call", "cohort")
     )
 
-    # 3. Extract sectors & geography
     sector_labels: List[str] = []
     sector_terms: List[str] = []
     for label, aliases in KNOWN_SECTORS:
@@ -265,7 +373,6 @@ def parse_bespoke_query(prompt: str) -> Dict[str, Any]:
                 if a not in sector_terms:
                     sector_terms.append(a)
 
-    # Extract arbitrary non-stopword topic tokens for custom verticals not in KNOWN_SECTORS
     tokens = re.findall(r"[a-zA-Z0-9\-]{3,}", low)
     extra_keywords: List[str] = []
     for tok in tokens:
@@ -279,9 +386,10 @@ def parse_bespoke_query(prompt: str) -> Dict[str, Any]:
         if re.search(r"\b" + re.escape(g) + r"\b", low):
             geo_terms.append(g.upper() if g in ("uk", "us", "usa") else g.capitalize())
 
-    all_focus_terms = sector_terms + [t for t in extra_keywords if t not in {"uk", "europe", "european", "global", "london", "us", "usa"}]
+    all_focus_terms = sector_terms + [
+        t for t in extra_keywords if t not in {"uk", "europe", "european", "global", "london", "us", "usa"}
+    ]
 
-    # 4. Build clean live web search queries (avoid over-quoting multiple synonyms together)
     primary_topic = sector_terms[0] if sector_terms else (extra_keywords[0] if extra_keywords else "startup")
     secondary_topic = (
         sector_terms[1]
@@ -294,13 +402,28 @@ def parse_bespoke_query(prompt: str) -> Dict[str, Any]:
     queries: List[str] = [
         f"{primary_topic} startup accelerator programs apply {geo_phrase}".strip(),
         f"{secondary_topic} startup accelerator incubator directory {geo_phrase}".strip(),
-        f"list of {primary_topic} startup accelerators register cohorts {geo_phrase}".strip(),
         f"startup platforms accelerators {primary_topic} {year_now}".strip(),
     ]
 
-    # Optional Gemini LLM refinement if API key or local gateway is already active (non-blocking)
+    routed_agents = _route_specialist_agents(low, require_registration)
+    agent_ids = [a["agent_id"] for a in routed_agents]
+    recalled_memories, agent_profiles = _recall_agent_memories_and_profiles(agent_ids, db_path)
+
+    # Enrich assigned agents with training accuracy & memory count
+    for ag in routed_agents:
+        prof = agent_profiles.get(ag["agent_id"]) or {}
+        ag["accuracy_score"] = prof.get("accuracy_score", 100.0)
+        ag["positive_signals"] = (prof.get("positive_signals") or [])[:6]
+        ag["negative_signals"] = (prof.get("negative_signals") or [])[:6]
+
+    rt_coord = BrowserUseEngine.get_runtime_status("bespoke_coordinator") if BrowserUseEngine else {
+        "engine_mode": "browser-use 1.0 profile",
+    }
     endpoint, _, _ = ghe.GeminiHydrogenEngine.get_llm_endpoint_info()
-    engine_mode = "Gemini 4 Hydrogen Query Parser" + (" (Live LLM)" if endpoint else " (Deterministic + Live Search)")
+    engine_mode = (
+        f"Gemini 4 Hydrogen + {rt_coord.get('engine_mode', 'browser-use 1.0')}"
+        + (" (Live LLM)" if endpoint else "")
+    )
 
     return {
         "prompt": raw,
@@ -312,8 +435,11 @@ def parse_bespoke_query(prompt: str) -> Dict[str, Any]:
         "sector_labels": sector_labels or ([k.capitalize() for k in extra_keywords[:3]] if extra_keywords else ["General Startup & Venture"]),
         "focus_terms": all_focus_terms[:8],
         "geography": geo_terms or ["Global / UK & EU"],
-        "search_queries": queries[:4],
+        "search_queries": queries[:3],
         "requested_fields": ["description", "homepage", "accelerator_page"],
+        "assigned_agents": routed_agents,
+        "recalled_memories": recalled_memories,
+        "browser_engine": rt_coord.get("engine_mode", "browser-use 1.0 profile"),
         "engine_mode": engine_mode,
     }
 
@@ -326,17 +452,45 @@ def _clean_text(txt: str, limit: int = 210) -> str:
     return cleaned
 
 
-def _gather_live_candidates(parsed: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
-    """Concurrently gathers live URLs from Bing RSS, DuckDuckGo HTML, HN Algolia (with timestamp filter), and GitHub."""
+def _assign_best_agent_for_candidate(blob: str, routed_agents: List[Dict[str, Any]]) -> Dict[str, Any]:
+    if not routed_agents:
+        return {
+            "agent_id": "bespoke_coordinator",
+            "agent_code": "Astra-I01",
+            "agent_name": "F6S/Gust Registration Hub Specialist",
+            "browser_profile": "agent_browser_profiles/bespoke_coordinator",
+        }
+    best = routed_agents[0]
+    best_hits = -1
+    for ag in routed_agents:
+        sigs = ag.get("positive_signals") or []
+        hits = sum(1 for s in sigs if s.lower() in blob)
+        if hits > best_hits:
+            best_hits = hits
+            best = ag
+    return best
+
+
+def _gather_agent_candidates(parsed: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
+    """
+    Gathers candidate platforms strictly WITHOUT DuckDuckGo using:
+    1. Each assigned agent's trained browser-use search / vertical hub list
+    2. Google News RSS with time window (when:90d)
+    3. HN Algolia timestamped launch API
+    4. GitHub repository & awesome-list crawler (with pushed:>YYYY-MM-DD)
+    5. Local Chromium BrowserUseEngine Google search (when Chromium is available)
+    """
     candidates: Dict[str, Dict[str, Any]] = {}
     queries = parsed.get("search_queries") or []
     recency_months = parsed.get("recency_months")
     focus_terms = [t.lower() for t in (parsed.get("focus_terms") or [])]
+    routed_agents = parsed.get("assigned_agents") or []
 
-    def _register_cand(raw_url: str, title: str, snippet: str, source_tag: str, published_at: str = "") -> None:
+    def _register_cand(raw_url: str, title: str, snippet: str, source_tag: str, published_at: str = "", agent_hint: Optional[Dict[str, Any]] = None) -> None:
         dom = cat_trainer._clean_live_domain(raw_url)
-        if not dom or any(bad in dom for bad in ADULT_OR_GARBAGE_DOMAINS):
+        if not dom or any(bad in dom for bad in EXCLUDED_DOMAINS):
             return
+        ag = agent_hint or _assign_best_agent_for_candidate(f"{title} {snippet} {raw_url}".lower(), routed_agents)
         if dom not in candidates:
             candidates[dom] = {
                 "domain": dom,
@@ -346,6 +500,10 @@ def _gather_live_candidates(parsed: Dict[str, Any]) -> Dict[str, Dict[str, Any]]
                 "snippet": _clean_text(snippet, 220),
                 "source_tag": source_tag,
                 "published_at": published_at,
+                "agent_id": ag.get("agent_id", "astra_i01"),
+                "agent_code": ag.get("agent_code", "Astra-I01"),
+                "agent_name": ag.get("agent_name", "Specialist Agent"),
+                "browser_profile": ag.get("browser_profile", "agent_browser_profiles/astra_i01"),
             }
         else:
             cur_seed = candidates[dom]["seed_url"]
@@ -358,19 +516,41 @@ def _gather_live_candidates(parsed: Dict[str, Any]) -> Dict[str, Dict[str, Any]]
             if snippet and len(snippet) > len(candidates[dom].get("snippet") or ""):
                 candidates[dom]["snippet"] = _clean_text(snippet, 220)
 
+    def _run_browser_use_search(ag: Dict[str, Any], q: str) -> None:
+        if BrowserUseEngine is None:
+            return
+        try:
+            import asyncio
+            bu = BrowserUseEngine(agent_id=ag["agent_id"], headless=True)
+            loop = asyncio.new_event_loop()
+            try:
+                hits = loop.run_until_complete(bu.google_search_via_browser(q, limit=8))
+            finally:
+                loop.close()
+            for h in hits:
+                _register_cand(
+                    h.get("url", ""),
+                    h.get("title", ""),
+                    h.get("title", ""),
+                    f"browser-use ({ag['agent_code']})",
+                    agent_hint=ag,
+                )
+        except Exception:
+            pass
+
     def _run_google_news(q: str) -> None:
         try:
             gn_q = q
             if recency_months:
                 days = min(365, max(30, recency_months * 30))
                 gn_q = f"{q} when:{days}d"
-            with httpx.Client(timeout=7.0, follow_redirects=True, verify=False, headers=HEADERS) as cli:
+            with httpx.Client(timeout=6.5, follow_redirects=True, verify=False, headers=HEADERS) as cli:
                 r = cli.get(
                     "https://news.google.com/rss/search",
                     params={"q": gn_q, "hl": "en-GB", "gl": "GB", "ceid": "GB:en"},
                 )
                 if r.status_code == 200 and "<item>" in r.text:
-                    for item_xml in re.findall(r"<item>(.*?)</item>", r.text, re.S)[:20]:
+                    for item_xml in re.findall(r"<item>(.*?)</item>", r.text, re.S)[:18]:
                         tm = re.search(r"<title>(.*?)</title>", item_xml, re.S)
                         pm = re.search(r"<pubDate>(.*?)</pubDate>", item_xml, re.S)
                         sm = re.search(r'<source[^>]*url=["\']([^"\']+)["\'][^>]*>(.*?)</source>', item_xml, re.S)
@@ -379,53 +559,19 @@ def _gather_live_candidates(parsed: Dict[str, Any]) -> Dict[str, Dict[str, Any]]
                             src_name = _clean_text(sm.group(2), 60)
                             title_txt = _clean_text(tm.group(1) if tm else "", 120)
                             pub_str = _clean_text(pm.group(1) if pm else "", 40)
-                            tag = f"Live Web (Recent {recency_months*30}d)" if recency_months else "Live Web (Google News)"
+                            tag = f"Timestamped News ({recency_months*30}d)" if recency_months else "Live Web News"
                             _register_cand(src_url, f"{src_name}", title_txt, tag, pub_str)
-        except Exception:
-            pass
-
-    def _run_ddg_polite(q: str) -> None:
-        try:
-            with httpx.Client(timeout=6.0, follow_redirects=True, verify=False, headers=HEADERS) as cli:
-                r = cli.get("https://html.duckduckgo.com/html/", params={"q": q})
-                if r.status_code == 200 and "result__a" in r.text:
-                    blocks = re.findall(
-                        r'<a[^>]*class="result__a"[^>]*href="([^"]+)"[^>]*>(.*?)</a>(?:.*?class="result__snippet"[^>]*>(.*?)</a>)?',
-                        r.text,
-                        re.S | re.I,
-                    )
-                    for raw_href, raw_title, raw_snip in blocks:
-                        actual_url = raw_href
-                        if actual_url.startswith("//"):
-                            actual_url = "https:" + actual_url
-                        if "uddg=" in actual_url:
-                            qs = urllib.parse.parse_qs(urllib.parse.urlparse(actual_url).query)
-                            actual_url = (qs.get("uddg") or [actual_url])[0]
-                        if actual_url.startswith("http"):
-                            _register_cand(actual_url, raw_title, raw_snip, "Live Web (DuckDuckGo)")
-                else:
-                    rl = cli.get("https://lite.duckduckgo.com/lite/", params={"q": q})
-                    if rl.status_code == 200:
-                        for raw_href, raw_title in re.findall(r'<a[^>]*class=["\']result-link["\'][^>]*href=["\']([^"\']+)["\'][^>]*>(.*?)</a>', rl.text, re.S | re.I):
-                            actual_url = raw_href
-                            if actual_url.startswith("//"):
-                                actual_url = "https:" + actual_url
-                            if "uddg=" in actual_url:
-                                qs = urllib.parse.parse_qs(urllib.parse.urlparse(actual_url).query)
-                                actual_url = (qs.get("uddg") or [actual_url])[0]
-                            if actual_url.startswith("http"):
-                                _register_cand(actual_url, raw_title, "", "Live Web (DuckDuckGo)")
         except Exception:
             pass
 
     def _run_hn() -> None:
         try:
             hn_q = " ".join((focus_terms[:2] or ["startup"]) + ["accelerator"])
-            params: Dict[str, Any] = {"query": hn_q, "tags": "story", "hitsPerPage": 20}
+            params: Dict[str, Any] = {"query": hn_q, "tags": "story", "hitsPerPage": 15}
             if recency_months:
                 cutoff = int((datetime.utcnow() - timedelta(days=30 * recency_months)).timestamp())
                 params["numericFilters"] = f"created_at_i>{cutoff}"
-            with httpx.Client(timeout=5.5, follow_redirects=True, verify=False, headers=HEADERS) as cli:
+            with httpx.Client(timeout=5.0, follow_redirects=True, verify=False, headers=HEADERS) as cli:
                 r = cli.get("https://hn.algolia.com/api/v1/search_by_date", params=params)
                 if r.status_code == 200:
                     for hit in r.json().get("hits") or []:
@@ -442,7 +588,7 @@ def _gather_live_candidates(parsed: Dict[str, Any]) -> Dict[str, Dict[str, Any]]
             if recency_months:
                 since = (datetime.utcnow() - timedelta(days=30 * recency_months)).strftime("%Y-%m-%d")
                 q_parts.append(f"pushed:>{since}")
-            with httpx.Client(timeout=5.5, follow_redirects=True, verify=False, headers=HEADERS) as cli:
+            with httpx.Client(timeout=5.0, follow_redirects=True, verify=False, headers=HEADERS) as cli:
                 r = cli.get(
                     "https://api.github.com/search/repositories",
                     params={"q": " ".join(q_parts), "sort": "updated", "per_page": 3},
@@ -456,15 +602,13 @@ def _gather_live_candidates(parsed: Dict[str, Any]) -> Dict[str, Dict[str, Any]]
                             continue
                         rr = cli.get(f"https://raw.githubusercontent.com/{full_name}/{branch}/README.md")
                         if rr.status_code == 200:
-                            for ltxt, ru in re.findall(r"\[([^\]]{2,80})\]\((https?://[^\)\s]+)\)", rr.text[:40000]):
+                            for ltxt, ru in re.findall(r"\[([^\]]{2,80})\]\((https?://[^\)\s]+)\)", rr.text[:35000]):
                                 if any(k in (ltxt + " " + ru).lower() for k in ("accelerat", "incubator", "program", "venture", "startup", "aerospace", "space")):
                                     _register_cand(ru, ltxt, ltxt, f"GitHub Index ({full_name})", (repo.get("pushed_at") or "")[:10])
-                                if len(candidates) >= 35:
-                                    break
         except Exception:
             pass
 
-    # Add curated vertical/sector portals first as guaranteed live probe candidates
+    # Add curated vertical hubs aligned to sector & assigned agent profile
     matched_seed_keys = [s.lower() for s in (parsed.get("sector_labels") or []) if s.lower() in SECTOR_PORTAL_SEEDS]
     if not matched_seed_keys:
         matched_seed_keys = ["general"]
@@ -474,10 +618,11 @@ def _gather_live_candidates(parsed: Dict[str, Any]) -> Dict[str, Dict[str, Any]]
 
     with ThreadPoolExecutor(max_workers=6) as ex:
         futs = []
+        # Lead specialist opens its dedicated browser-use profile for organic web search if Chromium exists locally
+        if routed_agents and queries and find_chromium_executable and find_chromium_executable():
+            futs.append(ex.submit(_run_browser_use_search, routed_agents[0], queries[0]))
         for q in queries[:2]:
             futs.append(ex.submit(_run_google_news, q))
-        if queries:
-            futs.append(ex.submit(_run_ddg_polite, queries[0]))
         futs.append(ex.submit(_run_hn))
         futs.append(ex.submit(_run_github))
         for fut in as_completed(futs):
@@ -510,12 +655,15 @@ def _is_valid_page(resp, allow_403_waf: bool = True) -> bool:
     return True
 
 
-def _probe_bespoke_candidate(cand: Dict[str, Any], parsed: Dict[str, Any], existing_domains: set) -> Optional[Dict[str, Any]]:
+def _probe_candidate_via_agent_browser(
+    cand: Dict[str, Any],
+    parsed: Dict[str, Any],
+    existing_domains: set,
+    cdp_snapshot: Optional[Dict[str, Any]] = None,
+) -> Optional[Dict[str, Any]]:
     """
-    Fetches live homepage & extracts:
-    - clean brief description (<meta name='description'> or title/body)
-    - dedicated webpage for startup accelerator programmes (accelerator_url + link status)
-    - startup registration capability & sector match strength
+    Probes candidate portal using browser-use CDP snapshot (when available) + HTTP verification
+    to extract Brief Description, Main Homepage, and Webpage for Accelerators.
     """
     dom = cand["domain"]
     home_url = cand.get("homepage_url") or f"https://{dom}/"
@@ -525,75 +673,91 @@ def _probe_bespoke_candidate(cand: Dict[str, Any], parsed: Dict[str, Any], exist
     homepage_ok = False
     homepage_status = 0
     resolved_home = home_url
+    resolved_dom = dom
     page_title = cand.get("name") or dom
     meta_desc = cand.get("snippet") or ""
     low_html = ""
+    raw_html = ""
     anchor_links: List[Tuple[str, str]] = []
+    browser_verified = False
+
+    if cdp_snapshot and cdp_snapshot.get("ok"):
+        browser_verified = True
+        homepage_ok = True
+        homepage_status = 200
+        resolved_home = cdp_snapshot.get("url") or home_url
+        resolved_dom = urllib.parse.urlparse(resolved_home).netloc.lower().replace("www.", "").split(":")[0] or dom
+        if cdp_snapshot.get("title") and cdp_snapshot["title"].lower() not in ("home", "welcome", "index", "just a moment..."):
+            page_title = _clean_text(cdp_snapshot["title"], 85)
+        if cdp_snapshot.get("metaDesc") and len(cdp_snapshot["metaDesc"]) > 30:
+            meta_desc = _clean_text(cdp_snapshot["metaDesc"], 220)
+        low_html = (cdp_snapshot.get("bodyText") or "").lower()
+        for lnk in cdp_snapshot.get("links") or []:
+            href = lnk.get("href") or ""
+            txt = (lnk.get("text") or "").lower()
+            if href and resolved_dom in href.lower():
+                anchor_links.append((href, txt))
 
     try:
         with httpx.Client(timeout=4.2, follow_redirects=True, verify=False, headers=HEADERS) as cli:
-            r_home = None
-            for attempt_u in (home_url, f"https://www.{dom}/"):
-                try:
-                    tmp = cli.get(attempt_u)
-                    if _is_valid_page(tmp):
-                        r_home = tmp
-                        break
-                    elif r_home is None:
-                        r_home = tmp
-                except Exception:
-                    pass
-
-            if r_home is None:
-                return None
-
-            homepage_status = r_home.status_code
-            homepage_ok = _is_valid_page(r_home)
             if not homepage_ok:
-                return None
+                r_home = None
+                for attempt_u in (home_url, f"https://www.{dom}/"):
+                    try:
+                        tmp = cli.get(attempt_u)
+                        if _is_valid_page(tmp):
+                            r_home = tmp
+                            break
+                        elif r_home is None:
+                            r_home = tmp
+                    except Exception:
+                        pass
 
-            resolved_home = str(r_home.url)
-            resolved_dom = urllib.parse.urlparse(resolved_home).netloc.lower().replace("www.", "").split(":")[0] or dom
-            raw_html = (r_home.text or "")[:65000]
-            low_html = raw_html.lower()
+                if r_home is None or not _is_valid_page(r_home):
+                    return None
 
-            # Reject parked/gambling/irrelevant/news sites
-            parked_kws = ("domain for sale", "buy this domain", "sedo domain parking", "afternic", "domain is parked", "online casino", "crypto casino", "sports betting", "gambling")
-            if any(k in low_html[:15000] for k in parked_kws):
-                return None
-            news_domains = ("spacenews.com", "rdworldonline.com", "eunewsletter.eu", "entnerd.com", "techcrunch.com", "forbes.com", "bloomberg.com", "reuters.com")
-            if any(nd in resolved_dom for nd in news_domains):
-                return None
+                homepage_status = r_home.status_code
+                homepage_ok = True
+                resolved_home = str(r_home.url)
+                resolved_dom = urllib.parse.urlparse(resolved_home).netloc.lower().replace("www.", "").split(":")[0] or dom
+                raw_html = (r_home.text or "")[:65000]
+                low_html = raw_html.lower()
 
-            m_title = re.search(r"<title[^>]*>(.*?)</title>", raw_html, re.I | re.S)
-            if m_title:
-                clean_t = _clean_text(m_title.group(1), 85)
-                if clean_t and len(clean_t) > 2 and clean_t.lower() not in ("home", "welcome", "index", "homepage"):
-                    page_title = clean_t
+                parked_kws = ("domain for sale", "buy this domain", "sedo domain parking", "afternic", "domain is parked", "online casino", "crypto casino", "sports betting", "gambling")
+                if any(k in low_html[:15000] for k in parked_kws):
+                    return None
+                if any(nd in resolved_dom for nd in EXCLUDED_DOMAINS):
+                    return None
 
-            m_meta = (
-                re.search(r'<meta[^>]+name=["\']description["\'][^>]+content=["\']([^"\']+)["\']', raw_html, re.I)
-                or re.search(r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+name=["\']description["\']', raw_html, re.I)
-                or re.search(r'<meta[^>]+property=["\']og:description["\'][^>]+content=["\']([^"\']+)["\']', raw_html, re.I)
-            )
-            if m_meta:
-                clean_m = _clean_text(m_meta.group(1), 220)
-                if len(clean_m) > 30:
-                    meta_desc = clean_m
+                m_title = re.search(r"<title[^>]*>(.*?)</title>", raw_html, re.I | re.S)
+                if m_title:
+                    clean_t = _clean_text(m_title.group(1), 85)
+                    if clean_t and len(clean_t) > 2 and clean_t.lower() not in ("home", "welcome", "index", "homepage"):
+                        page_title = clean_t
 
-            # Collect internal anchors mentioning accelerator / programs / apply / register / startups
-            for href, text in re.findall(r'<a[^>]*href=["\']([^"\']+)["\'][^>]*>(.*?)</a>', raw_html, re.I | re.S):
-                if href.startswith(("#", "mailto:", "javascript:", "tel:")) or any(ext in href.lower() for ext in (".png", ".jpg", ".svg", ".pdf", ".css", ".js")):
-                    continue
-                full = urllib.parse.urljoin(resolved_home, href)
-                if dom not in full.lower():
-                    continue
-                anchor_text = _clean_text(text, 80).lower()
-                anchor_links.append((full, anchor_text))
+                m_meta = (
+                    re.search(r'<meta[^>]+name=["\']description["\'][^>]+content=["\']([^"\']+)["\']', raw_html, re.I)
+                    or re.search(r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+name=["\']description["\']', raw_html, re.I)
+                    or re.search(r'<meta[^>]+property=["\']og:description["\'][^>]+content=["\']([^"\']+)["\']', raw_html, re.I)
+                )
+                if m_meta:
+                    clean_m = _clean_text(m_meta.group(1), 220)
+                    if len(clean_m) > 30:
+                        meta_desc = clean_m
 
-            # Build prioritized list of candidate accelerator webpage URLs
+                for href, text in re.findall(r'<a[^>]*href=["\']([^"\']+)["\'][^>]*>(.*?)</a>', raw_html, re.I | re.S):
+                    if href.startswith(("#", "mailto:", "javascript:", "tel:")) or any(ext in href.lower() for ext in (".png", ".jpg", ".svg", ".pdf", ".css", ".js")):
+                        continue
+                    full = urllib.parse.urljoin(resolved_home, href)
+                    if resolved_dom not in full.lower():
+                        continue
+                    anchor_links.append((full, _clean_text(text, 80).lower()))
+            else:
+                if any(nd in resolved_dom for nd in EXCLUDED_DOMAINS):
+                    return None
+
             acc_candidates: List[Tuple[int, str]] = []
-            if seed_url and dom in seed_url.lower() and seed_url.rstrip("/") != resolved_home.rstrip("/"):
+            if seed_url and resolved_dom in seed_url.lower() and seed_url.rstrip("/") != resolved_home.rstrip("/"):
                 seed_sc = 0
                 if any(k in seed_url.lower() for k in ("accelerat", "program", "cohort")):
                     seed_sc += 4
@@ -652,28 +816,23 @@ def _probe_bespoke_candidate(cand: Dict[str, Any], parsed: Dict[str, Any], exist
     has_reg_signal = any(k in combined_text for k in ("apply", "register", "submit", "application", "enroll", "intake", "f6s", "cohort"))
     matched_sectors = [t for t in focus_terms if re.search(r"\b" + re.escape(t) + r"\b", combined_text)]
 
-    # Reject completely off-topic noise sites (must relate to accelerator/startup ecosystem OR matched sector + startup)
     has_startup_kw = any(k in combined_text for k in ("startup", "start-up", "founder", "entrepreneur", "venture", "seed"))
     if not (has_accel_kw or (has_startup_kw and has_reg_signal)):
         return None
 
-    if not accel_url:
-        # Use main homepage as programme overview if homepage explicitly mentions accelerator programmes & registration
-        if has_accel_kw and homepage_ok:
-            accel_url = resolved_home
-            accel_ok = True
-            accel_http = homepage_status
+    if not accel_url and has_accel_kw and homepage_ok:
+        accel_url = resolved_home
+        accel_ok = True
+        accel_http = homepage_status
 
-    # Detect honest age / recency hints without fabricating
     pub_at = cand.get("published_at") or ""
     if pub_at:
         recency_note = f"Indexed {pub_at}"
     else:
-        years = sorted(set(re.findall(r"\b(202[0-6])\b", raw_html[:60000] if 'raw_html' in locals() else "")))
-        recency_note = f"Active {', '.join(years[-2:])}" if years else "Active live portal (launch date not listed)"
+        years = sorted(set(re.findall(r"\b(202[0-6])\b", raw_html[:60000] if raw_html else "")))
+        recency_note = f"Active {', '.join(years[-2:])}" if years else "Active live portal"
 
-    # Compute transparent bespoke match score (0-100)
-    match_score = 40
+    match_score = 45
     if matched_sectors:
         match_score += min(30, 12 * len(matched_sectors))
     if accel_ok and accel_url != resolved_home:
@@ -682,13 +841,13 @@ def _probe_bespoke_candidate(cand: Dict[str, Any], parsed: Dict[str, Any], exist
         match_score += 8
     if has_reg_signal:
         match_score += 10
-    if pub_at:
+    if browser_verified:
         match_score += 5
     match_score = min(100, match_score)
 
-    clean_name = page_title.split(" | ")[0].split(" - ")[0].strip()[:70] or dom
+    clean_name = page_title.split(" | ")[0].split(" - ")[0].strip()[:70] or resolved_dom
     if clean_name.lower() in ("home", "welcome", "index"):
-        clean_name = (cand.get("name") or dom).strip()[:70]
+        clean_name = (cand.get("name") or resolved_dom).strip()[:70]
     if not meta_desc:
         meta_desc = (
             f"Startup & accelerator ecosystem portal ({resolved_dom}) supporting "
@@ -708,24 +867,29 @@ def _probe_bespoke_candidate(cand: Dict[str, Any], parsed: Dict[str, Any], exist
         "supports_registration": bool(has_reg_signal),
         "matched_terms": matched_sectors,
         "recency_note": recency_note,
-        "source_tag": cand.get("source_tag") or "Live Web",
-        "already_in_index": dom in existing_domains,
+        "source_tag": cand.get("source_tag") or "browser-use",
+        "assigned_agent_code": cand.get("agent_code", "Astra-I01"),
+        "assigned_agent_name": cand.get("agent_name", "Specialist Agent"),
+        "browser_profile": cand.get("browser_profile", "agent_browser_profiles/astra_i01"),
+        "browser_use_cdp": browser_verified,
+        "already_in_index": resolved_dom in existing_domains,
         "match_score": match_score,
     }
 
 
 def execute_bespoke_search(prompt: str, db_path: str = DEFAULT_DB_PATH) -> Dict[str, Any]:
     """
-    Executes end-to-end bespoke natural language search:
-    1. Parses natural language prompt into structured criteria & queries
-    2. Runs live multi-source search + pulls verified index candidates matching sector terms
-    3. Probes homepage & accelerator page live for each candidate
-    4. Persists search run to bespoke_searches and returns verified results
+    Executes Agent-Routed + Browser-Use Bespoke Search:
+    1. Recalls Eupnea & Specialist Agent Mem0 memories and training profiles
+    2. Assigns each Specialist Agent with its own persistent browser-use profile
+    3. Discovers live websites (without DuckDuckGo) & probes homepage + accelerator URL
+    4. Stores run & newly verified findings cleanly into SQLite & Mem0
     """
     init_bespoke_search_db(db_path)
-    parsed = parse_bespoke_query(prompt)
+    parsed = parse_bespoke_query(prompt, db_path=db_path)
     req_count = parsed["requested_count"]
     focus_terms = [t.lower() for t in parsed.get("focus_terms", [])]
+    routed_agents = parsed.get("assigned_agents") or []
 
     conn = sqlite3.connect(db_path, timeout=30.0)
     conn.row_factory = sqlite3.Row
@@ -740,11 +904,8 @@ def execute_bespoke_search(prompt: str, db_path: str = DEFAULT_DB_PATH) -> Dict[
     conn.close()
 
     existing_domains = set((r["domain"] or "").lower().replace("www.", "") for r in existing_rows)
+    candidates = _gather_agent_candidates(parsed)
 
-    # Gather live web candidates first
-    candidates = _gather_live_candidates(parsed)
-
-    # Also match relevant already-verified index entries (only added AFTER brand-new live discoveries if prefer_new=True)
     index_matches: List[Dict[str, Any]] = []
     for r in existing_rows:
         dom = (r["domain"] or "").lower().replace("www.", "")
@@ -752,23 +913,41 @@ def execute_bespoke_search(prompt: str, db_path: str = DEFAULT_DB_PATH) -> Dict[
         hits = sum(1 for t in focus_terms if re.search(r"\b" + re.escape(t) + r"\b", blob))
         is_hub = "f6s" in dom or "gust" in dom or "younoodle" in dom or "Direct Startup Engagement" in (r["high_level_category"] or "")
         if hits > 0 or (is_hub and len(candidates) < req_count):
-            index_matches.append(
-                {
-                    "hits": hits * 3 + (1 if is_hub else 0),
-                    "row": dict(r),
-                }
-            )
+            index_matches.append({"hits": hits * 3 + (1 if is_hub else 0), "row": dict(r)})
     index_matches.sort(key=lambda x: x["hits"], reverse=True)
 
-    # Probe live web candidates first (up to max 26 concurrent HTTP checks so latency stays fast)
     cand_list = list(candidates.values())
     cand_list.sort(key=lambda c: (0 if "Sector Hub" in (c.get("source_tag") or "") else 1, 0 if c["domain"] not in existing_domains else 1, 0 if c.get("published_at") else 1))
-    probe_pool = cand_list[:26]
+    probe_pool = cand_list[:24]
+
+    # When Chromium + Browser Use 1.0 are available locally, have each assigned agent inspect priority pages via its own browser profile
+    cdp_snapshots: Dict[str, Dict[str, Any]] = {}
+    if BrowserUseEngine is not None and find_chromium_executable and find_chromium_executable():
+        by_agent: Dict[str, List[str]] = {}
+        for c_item in probe_pool[:6]:
+            by_agent.setdefault(c_item["agent_id"], []).append(c_item["homepage_url"])
+        for aid, urls in by_agent.items():
+            try:
+                bu = BrowserUseEngine(agent_id=aid, headless=True)
+                for snap in bu.inspect_urls_sync(urls[:4], wait_sec=1.2):
+                    if snap.get("ok") and snap.get("requested_url"):
+                        cdp_snapshots[snap["requested_url"]] = snap
+            except Exception:
+                pass
 
     verified_results: List[Dict[str, Any]] = []
     seen_res_domains = set()
-    with ThreadPoolExecutor(max_workers=12) as ex:
-        futs = [ex.submit(_probe_bespoke_candidate, c, parsed, existing_domains) for c in probe_pool]
+    with ThreadPoolExecutor(max_workers=10) as ex:
+        futs = [
+            ex.submit(
+                _probe_candidate_via_agent_browser,
+                c,
+                parsed,
+                existing_domains,
+                cdp_snapshots.get(c["homepage_url"]),
+            )
+            for c in probe_pool
+        ]
         for fut in as_completed(futs):
             try:
                 res = fut.result()
@@ -780,9 +959,8 @@ def execute_bespoke_search(prompt: str, db_path: str = DEFAULT_DB_PATH) -> Dict[
             except Exception:
                 pass
 
-    # If user query is very niche + recent (like "last 3 months + aerospace") and strict new web results < req_count,
-    # also supplement cleanly with verified index platforms matching the sector/registration profile (honestly tagged!)
     if len(verified_results) < req_count and index_matches:
+        lead_ag = routed_agents[0] if routed_agents else {"agent_code": "Astra-I01", "agent_name": "F6S/Gust Registration Hub Specialist", "browser_profile": "agent_browser_profiles/astra_i01"}
         for item in index_matches:
             if len(verified_results) >= req_count:
                 break
@@ -808,12 +986,15 @@ def execute_bespoke_search(prompt: str, db_path: str = DEFAULT_DB_PATH) -> Dict[
                     "matched_terms": [t for t in focus_terms if t in f"{row['name']} {dom} {row.get('score_reasons') or ''}".lower()],
                     "recency_note": "Already in Eupnea Verified Index",
                     "source_tag": "Verified Index Match",
+                    "assigned_agent_code": lead_ag.get("agent_code", "Astra-I01"),
+                    "assigned_agent_name": lead_ag.get("agent_name", "Specialist Agent"),
+                    "browser_profile": lead_ag.get("browser_profile", "agent_browser_profiles/astra_i01"),
+                    "browser_use_cdp": False,
                     "already_in_index": True,
                     "match_score": 78 + min(20, item["hits"] * 5),
                 }
             )
 
-    # Sort: prefer new discoveries if asked, then sector match & accelerator link health
     verified_results.sort(
         key=lambda r: (
             1 if (parsed.get("prefer_new") and r.get("already_in_index")) else 0,
@@ -822,6 +1003,20 @@ def execute_bespoke_search(prompt: str, db_path: str = DEFAULT_DB_PATH) -> Dict[
         )
     )
     final_results = verified_results[:req_count]
+
+    # Save brief bespoke learning to Mem0 (deduplicated)
+    if AgentMemoryHub is not None and final_results and routed_agents:
+        try:
+            lead_id = routed_agents[0]["agent_id"]
+            mem = AgentMemoryHub(user_id="commander_aadarsh", agent_id=lead_id)
+            sectors_str = ", ".join(parsed.get("sector_labels") or [])
+            top_doms = ", ".join(r["domain"] for r in final_results[:4])
+            mem.add_memory(
+                f"{routed_agents[0]['agent_code']} bespoke discovery ({sectors_str}) via {routed_agents[0]['browser_profile']}: verified {top_doms}",
+                metadata={"sectors": sectors_str, "browser_profile": routed_agents[0]["browser_profile"]},
+            )
+        except Exception:
+            pass
 
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     conn = sqlite3.connect(db_path, timeout=30.0)
@@ -841,6 +1036,9 @@ def execute_bespoke_search(prompt: str, db_path: str = DEFAULT_DB_PATH) -> Dict[
         "success": True,
         "search_id": search_id,
         "parsed_params": parsed,
+        "assigned_agents": routed_agents,
+        "recalled_memories": parsed.get("recalled_memories") or [],
+        "browser_engine": parsed.get("browser_engine"),
         "total_found": len(final_results),
         "new_discoveries_count": sum(1 for r in final_results if not r.get("already_in_index")),
         "results": final_results,

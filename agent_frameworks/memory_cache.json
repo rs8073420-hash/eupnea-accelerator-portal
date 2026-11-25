@@ -1,0 +1,181 @@
+{
+  "memories": [
+    {
+      "content": "Eupnea was founded in 2016 in London, UK, focused on strategy, operations, and AI readiness.",
+      "metadata": {
+        "user_id": "panagiotis_eupnea",
+        "agent_id": "presence_agent"
+      }
+    },
+    {
+      "content": "Official contact details: Phone +44 203 026 1523, Email clientservices@eupnea.co.uk.",
+      "metadata": {
+        "user_id": "panagiotis_eupnea",
+        "agent_id": "presence_agent"
+      }
+    },
+    {
+      "content": "Commitments: Client-centred decisions, responsible counsel, integrity, and relevant innovation (UNGC aligned).",
+      "metadata": {
+        "user_id": "panagiotis_eupnea",
+        "agent_id": "presence_agent"
+      }
+    },
+    {
+      "content": "Accelerator Offer: Seed capital (£50k - £250k), executive partner mentorship, and commercial pilots in London.",
+      "metadata": {
+        "user_id": "panagiotis_eupnea",
+        "agent_id": "presence_agent"
+      }
+    },
+    {
+      "content": "Rule: Prioritize free, high-authority UK directories and founder networks. Flag any paid listings for manual approval.",
+      "metadata": {
+        "user_id": "panagiotis_eupnea",
+        "agent_id": "presence_agent"
+      }
+    },
+    {
+      "content": "Sree Pre-Qualification Mandate: Reject dead links, unverified entities, SaaS/AI tool sites, and non-intake portals.",
+      "metadata": {
+        "user_id": "panagiotis_eupnea",
+        "agent_id": "presence_agent"
+      }
+    },
+    {
+      "content": "Astra-I01 (engagement_intake) trained on 8 positive & 8 negative examples | Accuracy 87.5% | [Trained Gemini 4 Hydrogen Directive for Astra-I01 (engagement_intake)]\nMission: Discover F6S / Gust equivalent multi-programme registration marketplaces, open accelerator intake portals, challenge platforms, and programme listing hubs where Eupnea can create a public programme page AND receive direct startup applications.\nCalibrated on 8 gold examples & 8 negative counter-examples (Validation Acc: 87.5%).",
+      "metadata": {
+        "category": "engagement_intake",
+        "accuracy": 87.5,
+        "user_id": "commander_aadarsh",
+        "agent_id": "astra_i01"
+      }
+    },
+    {
+      "content": "Astra-S01 (smartmatch) trained on 8 positive & 8 negative examples | Accuracy 87.5% | [Trained Gemini 4 Hydrogen Directive for Astra-S01 (smartmatch)]\nMission: Discover two-sided SmartMatch & dealflow licensing platforms connecting startup accelerators with curated founders (free or paid accelerator matching licences).\nCalibrated on 8 gold examples & 8 negative counter-examples (Validation Acc: 87.5%).",
+      "metadata": {
+        "category": "smartmatch",
+        "accuracy": 87.5,
+        "user_id": "commander_aadarsh",
+        "agent_id": "astra_s01"
+      }
+    },
+    {
+      "content": "Astra-U01 (uk_reviews) trained on 8 positive & 8 negative examples | Accuracy 93.8% | [Trained Gemini 4 Hydrogen Directive for Astra-U01 (uk_reviews)]\nMission: Discover authentic UK-focused accelerator rankings, legal/analyst review guides, and British startup support directories (SeedLegals, Tracxn UK, Sifted, UKBAA).\nCalibrated on 8 gold examples & 8 negative counter-examples (Validation Acc: 93.8%).",
+      "metadata": {
+        "category": "uk_reviews",
+        "accuracy": 93.8,
+        "user_id": "commander_aadarsh",
+        "agent_id": "astra_u01"
+      }
+    },
+    {
+      "content": "Astra-V01 (investor_networks) trained on 8 positive & 8 negative examples | Accuracy 100.0% | [Trained Gemini 4 Hydrogen Directive for Astra-V01 (investor_networks)]\nMission: Discover verified angel syndicates, VC directories, equity co-investment portals, and capital-raising platforms open to accelerator partnership & portfolio routing.\nCalibrated on 8 gold examples & 8 negative counter-examples (Validation Acc: 100.0%).",
+      "metadata": {
+        "category": "investor_networks",
+        "accuracy": 100.0,
+        "user_id": "commander_aadarsh",
+        "agent_id": "astra_v01"
+      }
+    },
+    {
+      "content": "Astra-E01 (ecosystem_visibility) trained on 8 positive & 8 negative examples | Accuracy 93.8% | [Trained Gemini 4 Hydrogen Directive for Astra-E01 (ecosystem_visibility)]\nMission: Discover high-authority global/European startup databases, accelerator registries, launchpads, and ecosystem maps for maximum SEO visibility and founder discovery.\nCalibrated on 8 gold examples & 8 negative counter-examples (Validation Acc: 93.8%).",
+      "metadata": {
+        "category": "ecosystem_visibility",
+        "accuracy": 93.8,
+        "user_id": "commander_aadarsh",
+        "agent_id": "astra_e01"
+      }
+    },
+    {
+      "content": "Astra-C01 (regional_chambers) trained on 0 positive & 8 negative examples | Accuracy 100.0% | [Trained Gemini 4 Hydrogen Directive for Astra-C01 (regional_chambers)]\nMission: Discover verified UK regional Chambers of Commerce, Growth Hubs, Local Enterprise Partnerships (LEPs), and regional tech business networks.\nCalibrated on 0 gold examples & 8 negative counter-examples (Validation Acc: 100.0%).",
+      "metadata": {
+        "category": "regional_chambers",
+        "accuracy": 100.0,
+        "user_id": "commander_aadarsh",
+        "agent_id": "astra_c01"
+      }
+    },
+    {
+      "content": "Astra-R01 (linkedin_rankers) trained on 8 positive & 1 negative examples | Accuracy 100.0% | [Trained Gemini 4 Hydrogen Directive for Astra-R01 (linkedin_rankers)]\nMission: Identify real, active LinkedIn ecosystem curators, VC partners, and accelerator analysts who publish startup accelerator rankings with valid /in/{slug} profiles.\nCalibrated on 8 gold examples & 1 negative counter-examples (Validation Acc: 100.0%).",
+      "metadata": {
+        "category": "linkedin_rankers",
+        "accuracy": 100.0,
+        "user_id": "commander_aadarsh",
+        "agent_id": "astra_r01"
+      }
+    },
+    {
+      "content": "Astra-I01 (engagement_intake) trained on 8 positive & 8 negative examples | Accuracy 100.0% | [Trained Gemini 4 Hydrogen Directive for Astra-I01 (engagement_intake)]\nMission: Discover F6S / Gust equivalent multi-programme registration marketplaces, open accelerator intake portals, challenge platforms, and programme listing hubs where Eupnea can create a public programme page AND receive direct startup applications.\nCalibrated on 8 gold examples & 8 negative counter-examples (Validation Acc: 100.0%).",
+      "metadata": {
+        "category": "engagement_intake",
+        "accuracy": 100.0,
+        "user_id": "commander_aadarsh",
+        "agent_id": "astra_i01"
+      }
+    },
+    {
+      "content": "Astra-S01 (smartmatch) trained on 8 positive & 8 negative examples | Accuracy 100.0% | [Trained Gemini 4 Hydrogen Directive for Astra-S01 (smartmatch)]\nMission: Discover two-sided SmartMatch & dealflow licensing platforms connecting startup accelerators with curated founders (free or paid accelerator matching licences).\nCalibrated on 8 gold examples & 8 negative counter-examples (Validation Acc: 100.0%).",
+      "metadata": {
+        "category": "smartmatch",
+        "accuracy": 100.0,
+        "user_id": "commander_aadarsh",
+        "agent_id": "astra_s01"
+      }
+    },
+    {
+      "content": "Astra-E01 (ecosystem_visibility) trained on 8 positive & 8 negative examples | Accuracy 100.0% | [Trained Gemini 4 Hydrogen Directive for Astra-E01 (ecosystem_visibility)]\nMission: Discover high-authority global/European startup databases, accelerator registries, launchpads, and ecosystem maps for maximum SEO visibility and founder discovery.\nCalibrated on 8 gold examples & 8 negative counter-examples (Validation Acc: 100.0%).",
+      "metadata": {
+        "category": "ecosystem_visibility",
+        "accuracy": 100.0,
+        "user_id": "commander_aadarsh",
+        "agent_id": "astra_e01"
+      }
+    },
+    {
+      "content": "Astra-C01 (regional_chambers) trained on 8 positive & 8 negative examples | Accuracy 75.0% | [Trained Gemini 4 Hydrogen Directive for Astra-C01 (regional_chambers)]\nMission: Discover verified UK regional Chambers of Commerce, Growth Hubs, Local Enterprise Partnerships (LEPs), and regional tech business networks.\nCalibrated on 8 gold examples & 8 negative counter-examples (Validation Acc: 75.0%).",
+      "metadata": {
+        "category": "regional_chambers",
+        "accuracy": 75.0,
+        "user_id": "commander_aadarsh",
+        "agent_id": "astra_c01"
+      }
+    },
+    {
+      "content": "Astra-U01 (uk_reviews) trained on 8 positive & 8 negative examples | Accuracy 100.0% | [Trained Gemini 4 Hydrogen Directive for Astra-U01 (uk_reviews)]\nMission: Discover authentic UK-focused accelerator rankings, legal/analyst review guides, and British startup support directories (SeedLegals, Tracxn UK, Sifted, UKBAA).\nCalibrated on 8 gold examples & 8 negative counter-examples (Validation Acc: 100.0%).",
+      "metadata": {
+        "category": "uk_reviews",
+        "accuracy": 100.0,
+        "user_id": "commander_aadarsh",
+        "agent_id": "astra_u01"
+      }
+    },
+    {
+      "content": "Astra-C01 (regional_chambers) trained on 8 positive & 8 negative examples | Accuracy 100.0% | [Trained Gemini 4 Hydrogen Directive for Astra-C01 (regional_chambers)]\nMission: Discover verified UK regional Chambers of Commerce, Growth Hubs, Local Enterprise Partnerships (LEPs), and regional tech business networks.\nCalibrated on 8 gold examples & 8 negative counter-examples (Validation Acc: 100.0%).",
+      "metadata": {
+        "category": "regional_chambers",
+        "accuracy": 100.0,
+        "user_id": "commander_aadarsh",
+        "agent_id": "astra_c01"
+      }
+    },
+    {
+      "content": "Astra-I01 bespoke discovery (Aerospace) via agent_browser_profiles/astra_i01: verified starburst.aero, academy.seraphim.vc, fedtech.io, manchester.ac.uk",
+      "metadata": {
+        "sectors": "Aerospace",
+        "browser_profile": "agent_browser_profiles/astra_i01",
+        "user_id": "commander_aadarsh",
+        "agent_id": "astra_i01"
+      }
+    },
+    {
+      "content": "Astra-I01 bespoke discovery (Aerospace) via agent_browser_profiles/astra_i01: verified starburst.aero, f6s.com, militaryaerospace.com, vestbee.com",
+      "metadata": {
+        "sectors": "Aerospace",
+        "browser_profile": "agent_browser_profiles/astra_i01",
+        "user_id": "commander_aadarsh",
+        "agent_id": "astra_i01"
+      }
+    }
+  ]
+}

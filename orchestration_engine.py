@@ -27,6 +27,8 @@ PROFILES_BASE_DIR = os.path.join(WORKSPACE_DIR, "agent_browser_profiles")
 os.makedirs(PROFILES_BASE_DIR, exist_ok=True)
 for i in range(1, 91):
     os.makedirs(os.path.join(PROFILES_BASE_DIR, f"agent_{i:02d}"), exist_ok=True)
+for i in range(1, 11):
+    os.makedirs(os.path.join(PROFILES_BASE_DIR, f"agent_m{i:02d}"), exist_ok=True)
 
 import presence_scoring_engine as pse
 import gemini_hydrogen_engine as ghe
@@ -776,6 +778,27 @@ def get_fleet_status_summary() -> Dict[str, Any]:
 
     management = [r for r in rows if r["category"] == "management"]
     search = [r for r in rows if r["category"] != "management"]
+
+    engine_label = "browser-use 1.0 (Profile Ready)"
+    try:
+        from agent_frameworks.browser_use_engine import BrowserUseEngine
+        engine_label = BrowserUseEngine.get_runtime_status("bespoke_coordinator").get("engine_mode", engine_label)
+    except Exception:
+        pass
+
+    for r in management:
+        aid = str(r.get("agent_id", "")).replace("Agent-M", "").strip()
+        prof_id = f"agent_m{int(aid):02d}" if aid.isdigit() else "agent_m01"
+        os.makedirs(os.path.join(PROFILES_BASE_DIR, prof_id), exist_ok=True)
+        r["browser_profile"] = f"agent_browser_profiles/{prof_id}"
+        r["browser_engine"] = engine_label
+
+    for r in search:
+        aid = str(r.get("agent_id", "")).replace("Agent-S", "").strip()
+        prof_id = f"agent_{int(aid):02d}" if aid.isdigit() else "agent_01"
+        os.makedirs(os.path.join(PROFILES_BASE_DIR, prof_id), exist_ok=True)
+        r["browser_profile"] = f"agent_browser_profiles/{prof_id}"
+        r["browser_engine"] = engine_label
 
     # Compute stage distribution for the 90 search agents
     stage_counts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0}

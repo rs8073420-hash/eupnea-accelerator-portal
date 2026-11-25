@@ -2,9 +2,9 @@
 ========================================================================================
 EUPNEA V2 — PRESENCE AGENT DEDICATED AUTONOMOUS BROWSER & LIVE VERIFICATION ENGINE
 ========================================================================================
-Upgraded with DeepSeek Flash v4.1 Real DNS/HTTP Verification + browser-use Integration.
+Upgraded with Gemini 4 Hydrogen Real DNS/HTTP Verification + browser-use Integration.
 Eliminates hardcoded mock responses: verifies real connectivity, HTTP status,
-form/registration presence, and 4-Gate Pre-Qualification compliance.
+form/registration presence, F6S/Gust hub classification, and 4-Gate Pre-Qualification.
 ========================================================================================
 """
 
@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Optional, Dict, Any, List
 from pydantic import BaseModel, Field
 
-import deepseek_flash_engine as dfe
+import gemini_hydrogen_engine as ghe
 
 curr_dir = Path(__file__).resolve().parent
 if (curr_dir / "agent_frameworks").exists():
@@ -69,7 +69,8 @@ class PlatformVisualAudit(BaseModel):
     healed_form_url: Optional[str] = None
     screenshot_path: Optional[str] = None
     audit_notes: str = ""
-    deepseek_verdict: str = "UNVERIFIED"
+    gemini_verdict: str = "UNVERIFIED"
+    is_registration_hub: bool = False
 
 
 class EupneaPresenceBrowserEngine:
@@ -93,12 +94,12 @@ class EupneaPresenceBrowserEngine:
             self.browser = None
 
     async def audit_platform_form(self, url: str) -> PlatformVisualAudit:
-        """Executes genuine DNS, HTTP, form signal, and DeepSeek Flash v4.1 4-Gate audit."""
+        """Executes genuine DNS, HTTP, form signal, and Gemini 4 Hydrogen 4-Gate audit."""
         clean_domain = url.replace("https://", "").replace("http://", "").split("/")[0].lower()
 
         def _sync_audit():
-            probe = dfe.DeepSeekFlashEngine.probe_live_website(url)
-            gate = dfe.DeepSeekFlashEngine.score_platform(
+            probe = ghe.GeminiHydrogenEngine.probe_live_website(url)
+            gate = ghe.GeminiHydrogenEngine.score_platform(
                 {"name": clean_domain, "domain": clean_domain, "url": url},
                 verify_network=True,
                 use_llm=True
@@ -126,8 +127,9 @@ class EupneaPresenceBrowserEngine:
             is_fee_required=False,
             healed_url=probe.get("healed_url"),
             healed_form_url=probe.get("healed_form_url"),
-            audit_notes=f"[{dfe.ENGINE_VERSION}] {gate.get('score_reasons_summary')} | Live Title: {probe.get('title', 'N/A')}",
-            deepseek_verdict=f"SCORE_{gate.get('score')}_{gate.get('tier', '').upper()}"
+            audit_notes=f"[{ghe.ENGINE_VERSION}] {gate.get('score_reasons_summary')} | Live Title: {probe.get('title', 'N/A')}",
+            gemini_verdict=f"SCORE_{gate.get('score')}_{gate.get('tier', '').upper()}",
+            is_registration_hub=bool(gate.get("is_registration_hub"))
         )
 
 
@@ -136,11 +138,11 @@ class EupneaEnhancedPlatformSearch:
     def expand_search_queries(seed_query: str) -> List[str]:
         base = seed_query.strip()
         return [
-            f"{base} UK startup accelerators register programme",
-            f"{base} Europe incubator application portal",
-            f"{base} startup accelerator directory apply",
-            f"{base} early stage VC incubator directory",
-            f"{base} university venture catalyst apply"
+            f'{base} "list your accelerator" OR "register your programme" directory',
+            f'{base} startup accelerator marketplace like f6s OR gust',
+            f'{base} submit accelerator profile founder application intake',
+            f'{base} UK Europe startup accelerator directory apply 2026',
+            f'{base} two-sided incubator startup matchmaking dealflow portal'
         ]
 
     @staticmethod
@@ -186,7 +188,7 @@ class EupneaPresenceController:
         return await self.browser_engine.audit_platform_form(url)
 
     def generate_structured_draft(self, platform_name: str, category: str, domain: str) -> EupneaListingDraftSchema:
-        draft = dfe.DeepSeekFlashEngine.score_platform({"name": platform_name, "domain": domain, "url": f"https://{domain}", "category": category})
+        draft = ghe.GeminiHydrogenEngine.score_platform({"name": platform_name, "domain": domain, "url": f"https://{domain}", "category": category})
         verdict = "HIGH_PRIORITY" if draft.get("tier") == "tier_1" else ("QUALIFIED" if draft.get("is_qualified") else "REQUIRES_MANUAL_REVIEW")
 
         headline = "Eupnea UK Accelerator: Scaling Seed-Stage High-Growth Startups"

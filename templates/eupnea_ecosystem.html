@@ -2005,6 +2005,7 @@
             <div>
               <div class="flex items-center gap-2 flex-wrap">
                 <span class="font-syne font-bold text-base text-white light:text-slate-900">📊 Platform Search Quality & Scoring Calibration</span>
+                <span id="dash-engine-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-sky-500/20 text-sky-300 light:text-sky-800 border border-sky-500/40">⚛️ Gemini 4 Hydrogen</span>
                 <span id="dash-calibration-pill" class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 light:text-emerald-800 border border-emerald-500/40">Checking calibration...</span>
               </div>
               <p id="dash-calibration-msg" class="text-xs text-slate-400 light:text-slate-600 mt-1">Evaluating status-score correlation, Form & Portal link health, and latest discovery additions.</p>
@@ -2016,6 +2017,31 @@
               </button>
               <button onclick="toggleQualityDefinitions()" class="px-3 py-1.5 rounded-xl bg-slate-800 light:bg-slate-100 hover:bg-slate-700 text-slate-200 light:text-slate-800 border border-slate-700 light:border-slate-300 text-xs font-mono font-bold cursor-pointer">
                 📖 Quality Score Definitions
+              </button>
+            </div>
+          </div>
+
+          <!-- High-Yield Registration Hubs (F6S / Gust Standard) Spotlight -->
+          <div class="p-4 rounded-xl bg-gradient-to-r from-emerald-950/60 via-sky-950/50 to-slate-900/70 light:from-emerald-50 light:via-sky-50 light:to-white border border-emerald-500/40 light:border-emerald-300 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 light:text-emerald-800 border border-emerald-500/40 text-[10px] font-mono font-bold uppercase tracking-wide">🚀 High-Yield Registration Hubs (F6S / Gust Standard)</span>
+                <span id="q-reg-hubs-count" class="font-syne font-black text-xl text-white light:text-slate-900">—</span>
+                <span class="text-xs font-mono text-emerald-300 light:text-emerald-800 font-bold">verified programme-listing & application-intake hubs</span>
+              </div>
+              <p class="text-xs text-slate-300 light:text-slate-600">Isolated from single-university labs, B2B CRMs & noise so teams jump straight to every F6S/Gust-grade marketplace for maximum startup registrations.</p>
+              <div class="flex items-center gap-4 text-[11px] font-mono text-slate-300 light:text-slate-700 flex-wrap pt-0.5">
+                <span>Form Accuracy: <strong id="q-reg-hubs-form-acc" class="text-emerald-400 light:text-emerald-700">—%</strong></span>
+                <span>Portal Accuracy: <strong id="q-reg-hubs-portal-acc" class="text-sky-400 light:text-sky-700">—%</strong></span>
+                <span>Avg Score: <strong id="q-reg-hubs-avg-score" class="text-blue-300 light:text-blue-800">—</strong> pts</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0 flex-wrap">
+              <button onclick="jumpToRegistrationHubs('presence')" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-mono font-bold cursor-pointer shadow-sm transition-colors">
+                🎯 Focus F6S/Gust Hubs in Discovery →
+              </button>
+              <button onclick="jumpToRegistrationHubs('review')" class="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-mono font-bold cursor-pointer shadow-sm transition-colors">
+                ⚡ Open Hubs in Review Queue →
               </button>
             </div>
           </div>
@@ -2307,6 +2333,9 @@
           </div>
 
           <div class="flex items-center gap-3 text-xs font-mono flex-wrap">
+            <button onclick="togglePresenceTopHubs()" id="presence-top-hubs-btn" class="px-2.5 py-1.5 rounded-xl bg-emerald-500/15 text-emerald-300 light:text-emerald-800 border border-emerald-500/40 text-xs font-bold cursor-pointer hover:bg-emerald-500/25">
+              🚀 F6S/Gust Hubs
+            </button>
             <button onclick="togglePresenceLatestOnly()" id="presence-latest-only-btn" class="px-2.5 py-1.5 rounded-xl bg-amber-500/15 text-amber-300 light:text-amber-800 border border-amber-500/40 text-xs font-bold cursor-pointer hover:bg-amber-500/25">
               ✨ Latest Search Only
             </button>
@@ -2436,6 +2465,9 @@
           </div>
 
           <div class="flex items-center gap-3 text-xs font-mono flex-wrap">
+            <button onclick="toggleReviewTopHubs()" id="review-top-hubs-btn" class="px-2.5 py-1.5 rounded-xl bg-emerald-500/15 text-emerald-300 light:text-emerald-800 border border-emerald-500/40 text-xs font-bold cursor-pointer hover:bg-emerald-500/25">
+              🚀 F6S/Gust Hubs
+            </button>
             <button onclick="toggleReviewLatestOnly()" id="review-latest-only-btn" class="px-2.5 py-1.5 rounded-xl bg-amber-500/15 text-amber-300 light:text-amber-800 border border-amber-500/40 text-xs font-bold cursor-pointer hover:bg-amber-500/25">
               ✨ Latest Search Only
             </button>
@@ -3085,7 +3117,7 @@
           <div class="flex items-center justify-between mb-1.5 flex-wrap gap-2">
             <span class="text-sky-300 font-bold flex items-center gap-1.5">
               <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>🔬 DEEPSEEK V4.1 LIVE LINK & SENTRY VERIFICATION</span>
+              <span>⚛️ GEMINI 4 HYDROGEN LIVE LINK & SENTRY VERIFICATION</span>
             </span>
             <span id="detail-sentry-health-pill" class="px-2 py-0.5 rounded text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold">CHECKING HEALTH...</span>
           </div>
@@ -3916,7 +3948,8 @@
       high_level_category: 'all',
       sortBy: 'score_desc',
       latestOnly: false,
-      total: 399,
+      topHubsOnly: false,
+      total: 400,
       pages: 16,
       items: []
     };
@@ -3930,6 +3963,7 @@
       high_level_category: 'engagement_intake',
       sortBy: 'score_desc',
       latestOnly: false,
+      topHubsOnly: false,
       page: 1,
       limit: 25,
       items: []
@@ -3985,6 +4019,59 @@
         btn.className = 'px-2.5 py-1.5 rounded-xl bg-amber-500/15 text-amber-300 light:text-amber-800 border border-amber-500/40 text-xs font-bold cursor-pointer hover:bg-amber-500/25';
         btn.innerText = '✨ Latest Search Only';
       }
+    }
+
+    let cachedRegHubsCount = 0;
+
+    function updateTopHubsBtnUi(btnId, active, countVal) {
+      if (typeof countVal === 'number') cachedRegHubsCount = countVal;
+      const btn = document.getElementById(btnId);
+      if (!btn) return;
+      const cntTxt = cachedRegHubsCount > 0 ? ` (${cachedRegHubsCount})` : '';
+      if (active) {
+        btn.className = 'px-2.5 py-1.5 rounded-xl bg-emerald-600 text-white border border-emerald-400 text-xs font-extrabold cursor-pointer shadow-sm';
+        btn.innerText = `🚀 F6S/Gust Hubs${cntTxt} (ON)`;
+      } else {
+        btn.className = 'px-2.5 py-1.5 rounded-xl bg-emerald-500/15 text-emerald-300 light:text-emerald-800 border border-emerald-500/40 text-xs font-bold cursor-pointer hover:bg-emerald-500/25';
+        btn.innerText = `🚀 F6S/Gust Hubs${cntTxt}`;
+      }
+    }
+
+    function jumpToRegistrationHubs(targetRoom = 'presence') {
+      if (targetRoom === 'review') {
+        switchRoom('review');
+        reviewState.topHubsOnly = true;
+        reviewState.high_level_category = 'all';
+        reviewState.platformType = 'all';
+        reviewState.tier = 'all_active';
+        reviewState.tab = 'all';
+        reviewState.latestOnly = false;
+        reviewState.sortBy = 'score_desc';
+        reviewState.page = 1;
+        const sortEl = document.getElementById('review-sort-by');
+        if (sortEl) sortEl.value = 'score_desc';
+        updateLatestOnlyBtnUi('review-latest-only-btn', false);
+        updateTopHubsBtnUi('review-top-hubs-btn', true);
+        setReviewHighLevelCategoryFilter('all');
+        return;
+      }
+      switchRoom('presence');
+      presenceState.topHubsOnly = true;
+      presenceState.high_level_category = 'all';
+      presenceState.tier = 'all_active';
+      presenceState.minScore = 0;
+      presenceState.latestOnly = false;
+      presenceState.sortBy = 'score_desc';
+      presenceState.page = 1;
+      const sortEl = document.getElementById('presence-sort-by');
+      if (sortEl) sortEl.value = 'score_desc';
+      const slider = document.getElementById('presence-score-slider');
+      if (slider) slider.value = 0;
+      const sVal = document.getElementById('presence-score-val');
+      if (sVal) sVal.innerText = '0+';
+      updateLatestOnlyBtnUi('presence-latest-only-btn', false);
+      updateTopHubsBtnUi('presence-top-hubs-btn', true);
+      setHighLevelCategoryFilter('all');
     }
 
     function renderCriteriaRowHtml(item, prefix) {
@@ -4634,6 +4721,24 @@
         const qAppSub = document.getElementById('q-app-sub-avg');
         if (qAppSub) qAppSub.innerText = `${qs.approved_submitted_avg_score ?? 0}`;
 
+        const regM = qs.registration_hubs_metrics || {};
+        const regCount = qs.registration_hubs_count ?? data.registration_hubs_count ?? regM.total ?? 0;
+        const qRegCnt = document.getElementById('q-reg-hubs-count');
+        if (qRegCnt) qRegCnt.innerText = regCount;
+        const qRegForm = document.getElementById('q-reg-hubs-form-acc');
+        if (qRegForm) qRegForm.innerText = `${regM.form_accuracy_pct ?? 0}%`;
+        const qRegPort = document.getElementById('q-reg-hubs-portal-acc');
+        if (qRegPort) qRegPort.innerText = `${regM.portal_accuracy_pct ?? 0}%`;
+        const qRegAvg = document.getElementById('q-reg-hubs-avg-score');
+        if (qRegAvg) qRegAvg.innerText = `${regM.avg_score ?? 0}`;
+        const engBadge = document.getElementById('dash-engine-badge');
+        if (engBadge && (data.gemini_hydrogen_engine || data.ai_engine)) {
+          const eng = data.gemini_hydrogen_engine || data.ai_engine;
+          engBadge.innerText = `⚛️ ${eng.active_model || 'gemini-4-hydrogen'} (${eng.llm_connected ? 'Live AI' : '4-Gate Verified'})`;
+        }
+        updateTopHubsBtnUi('presence-top-hubs-btn', Boolean(presenceState.topHubsOnly), regCount);
+        updateTopHubsBtnUi('review-top-hubs-btn', Boolean(reviewState.topHubsOnly), regCount);
+
         const calTbody = document.getElementById('dashboard-status-calibration-tbody');
         if (calTbody && qs.by_status) {
           const order = ['submitted', 'approved', 'in_review', 'perk_benefit', 'unqualified', 'dismissed'];
@@ -4763,7 +4868,8 @@
           search: presenceState.search,
           category: presenceState.category,
           sort_by: presenceState.sortBy || 'score_desc',
-          latest_only: presenceState.latestOnly ? 'true' : 'false'
+          latest_only: presenceState.latestOnly ? 'true' : 'false',
+          top_hubs_only: presenceState.topHubsOnly ? 'true' : 'false'
         });
         if (presenceState.tier) {
           queryParams.append('tier', presenceState.tier);
@@ -4831,6 +4937,9 @@
             const latestBadge = p.is_latest_search
               ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-amber-500/25 text-amber-300 light:text-amber-800 border border-amber-500/50 font-bold font-mono" title="Discovered in the latest search run">✨ Latest Search</span>`
               : '';
+            const regHubBadge = p.is_registration_hub
+              ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 light:text-emerald-800 border border-emerald-500/50 font-bold font-mono" title="F6S / Gust-grade High-Yield Programme Registration & Discovery Hub">🎯 F6S/GUST HUB</span>`
+              : '';
 
             const inlineDomainEl = portalOk
               ? `<a href="${escapeHtml(portalUrl)}" target="_blank" class="text-[11px] text-slate-500 hover:text-blue-600 flex items-center gap-0.5 font-normal font-mono" title="Target Directory Portal: ${escapeHtml(portalUrl)}"><span>${escapeHtml(p.domain)}</span><i data-lucide="external-link" class="w-2.5 h-2.5"></i></a>`
@@ -4855,13 +4964,14 @@
                   <button onclick="openPlatformDetail(${p.id})" class="font-bold text-slate-900 hover:text-blue-600 text-left block text-xs cursor-pointer">
                     ${escapeHtml(p.name)}
                   </button>
+                  ${regHubBadge}
                   ${latestBadge}
                   ${tierBadge}
                   ${hlBadge}
-                  <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-sky-50 text-sky-800 border border-sky-300 font-mono font-bold" title="24/7 Monitored by DeepSeek Flash v4.1 Engine"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>🤖 DeepSeek v4.1</span>
+                  <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-sky-50 text-sky-800 border border-sky-300 font-mono font-bold" title="24/7 Monitored by Gemini 4 Hydrogen Engine"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>⚛️ Gemini 4 Hydrogen</span>
                 </div>
                 ${p.intake_features ? `<div class="text-[11px] text-amber-700 dark:text-amber-300 font-mono mt-0.5 mb-1 flex items-center gap-1"><span class="text-xs">🎯</span> <span>${escapeHtml(p.intake_features)}</span></div>` : ''}
-                ${p.licensing_notes ? `<div class="text-[11px] text-purple-700 dark:text-purple-300 font-mono mt-0.5 mb-1 flex items-center gap-1.5"><span class="text-xs">${(p.is_smartmatch || p.high_level_category === 'SmartMatch & Dealflow Licensing Engines') ? '🔑' : '🔬'}</span> <span class="font-bold">${(p.is_smartmatch || p.high_level_category === 'SmartMatch & Dealflow Licensing Engines') ? 'Dealflow Licence:' : 'DeepSeek Gate:'}</span> <span>${escapeHtml(p.licensing_notes)}</span></div>` : ''}
+                ${p.licensing_notes ? `<div class="text-[11px] text-purple-700 dark:text-purple-300 font-mono mt-0.5 mb-1 flex items-center gap-1.5"><span class="text-xs">${(p.is_smartmatch || p.high_level_category === 'SmartMatch & Dealflow Licensing Engines') ? '🔑' : '⚛️'}</span> <span class="font-bold">${(p.is_smartmatch || p.high_level_category === 'SmartMatch & Dealflow Licensing Engines') ? 'Dealflow Licence:' : 'Gemini 4 Gate:'}</span> <span>${escapeHtml(p.licensing_notes)}</span></div>` : ''}
                 <div class="flex items-center gap-2 mt-0.5 flex-wrap">
                   ${inlineDomainEl}
                   ${inlineFormEl}
@@ -4971,6 +5081,20 @@
       loadPresencePlatforms();
     }
 
+    function togglePresenceTopHubs() {
+      presenceState.topHubsOnly = !presenceState.topHubsOnly;
+      presenceState.page = 1;
+      if (presenceState.topHubsOnly) {
+        presenceState.minScore = 0;
+        const slider = document.getElementById('presence-score-slider');
+        if (slider) slider.value = 0;
+        const sVal = document.getElementById('presence-score-val');
+        if (sVal) sVal.innerText = '0+';
+      }
+      updateTopHubsBtnUi('presence-top-hubs-btn', presenceState.topHubsOnly);
+      loadPresencePlatforms();
+    }
+
     function changePresencePage(delta) {
       presenceState.page += delta;
       loadPresencePlatforms();
@@ -4984,7 +5108,8 @@
           limit: reviewState.limit,
           status: reviewState.tab,
           sort_by: reviewState.sortBy || 'score_desc',
-          latest_only: reviewState.latestOnly ? 'true' : 'false'
+          latest_only: reviewState.latestOnly ? 'true' : 'false',
+          top_hubs_only: reviewState.topHubsOnly ? 'true' : 'false'
         });
         if (reviewState.tier) {
           queryParams.append('tier', reviewState.tier);
@@ -5011,7 +5136,9 @@
           if (badgeEl) badgeEl.innerText = data.total;
           const statusLbl = document.getElementById('review-active-status-label');
           if (statusLbl) {
-            if (reviewState.high_level_category === 'engagement_intake') {
+            if (reviewState.topHubsOnly) {
+              statusLbl.innerText = `Active Focus: ${data.total} Verified F6S / Gust Registration & Discovery Hubs`;
+            } else if (reviewState.high_level_category === 'engagement_intake') {
               statusLbl.innerText = `Active Focus: ${data.total} Direct Startup Engagement & Intake Platforms (Profile Creation + Direct Founder Apply)`;
             } else if (reviewState.high_level_category === 'ecosystem_visibility') {
               statusLbl.innerText = `Active: ${data.total} High-Authority Ecosystem Databases & Discovery Platforms`;
@@ -5082,6 +5209,9 @@
             const latestBadge = p.is_latest_search
               ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-amber-500/25 text-amber-300 light:text-amber-800 border border-amber-500/50 font-bold font-mono" title="Discovered in the latest search run">✨ Latest Search</span>`
               : '';
+            const regHubBadge = p.is_registration_hub
+              ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 light:text-emerald-800 border border-emerald-500/50 font-bold font-mono" title="F6S / Gust-grade High-Yield Programme Registration & Discovery Hub">🎯 F6S/GUST HUB</span>`
+              : '';
 
             const inlineDomainEl = portalOk
               ? `<a href="${escapeHtml(portalUrl)}" target="_blank" class="text-[11px] text-slate-500 hover:text-blue-600 flex items-center gap-0.5 font-normal font-mono" title="Portal: ${escapeHtml(portalUrl)}"><span>${escapeHtml(p.domain)}</span><i data-lucide="external-link" class="w-2.5 h-2.5"></i></a>`
@@ -5106,13 +5236,14 @@
                   <button onclick="openPlatformDetail(${p.id})" class="font-bold text-slate-900 hover:text-blue-600 text-left block text-xs cursor-pointer">
                     ${escapeHtml(p.name)}
                   </button>
+                  ${regHubBadge}
                   ${latestBadge}
                   ${tierBadge}
                   ${hlBadge}
-                  <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-sky-50 text-sky-800 border border-sky-300 font-mono font-bold" title="24/7 Monitored by DeepSeek Flash v4.1 Engine"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>🤖 DeepSeek v4.1</span>
+                  <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-sky-50 text-sky-800 border border-sky-300 font-mono font-bold" title="24/7 Monitored by Gemini 4 Hydrogen Engine"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>⚛️ Gemini 4 Hydrogen</span>
                 </div>
                 ${p.intake_features ? `<div class="text-[11px] text-amber-700 dark:text-amber-300 font-mono mt-0.5 mb-1 flex items-center gap-1"><span class="text-xs">🎯</span> <span>${escapeHtml(p.intake_features)}</span></div>` : ''}
-                ${p.licensing_notes ? `<div class="text-[11px] text-purple-700 dark:text-purple-300 font-mono mt-0.5 mb-1 flex items-center gap-1.5"><span class="text-xs">${(p.is_smartmatch || p.high_level_category === 'SmartMatch & Dealflow Licensing Engines') ? '🔑' : '🔬'}</span> <span class="font-bold">${(p.is_smartmatch || p.high_level_category === 'SmartMatch & Dealflow Licensing Engines') ? 'Dealflow Licence:' : 'DeepSeek Gate:'}</span> <span>${escapeHtml(p.licensing_notes)}</span></div>` : ''}
+                ${p.licensing_notes ? `<div class="text-[11px] text-purple-700 dark:text-purple-300 font-mono mt-0.5 mb-1 flex items-center gap-1.5"><span class="text-xs">${(p.is_smartmatch || p.high_level_category === 'SmartMatch & Dealflow Licensing Engines') ? '🔑' : '⚛️'}</span> <span class="font-bold">${(p.is_smartmatch || p.high_level_category === 'SmartMatch & Dealflow Licensing Engines') ? 'Dealflow Licence:' : 'Gemini 4 Gate:'}</span> <span>${escapeHtml(p.licensing_notes)}</span></div>` : ''}
                 <div class="flex items-center gap-2 mt-0.5 flex-wrap">
                   ${inlineDomainEl}
                   <span class="text-[11px] text-slate-400">· ${escapeHtml(p.category)}</span>
@@ -5173,6 +5304,19 @@
       reviewState.page = 1;
       updateLatestOnlyBtnUi('review-latest-only-btn', reviewState.latestOnly);
       loadReviewQueue();
+    }
+
+    function toggleReviewTopHubs() {
+      reviewState.topHubsOnly = !reviewState.topHubsOnly;
+      reviewState.page = 1;
+      updateTopHubsBtnUi('review-top-hubs-btn', reviewState.topHubsOnly);
+      if (reviewState.topHubsOnly) {
+        reviewState.platformType = 'all';
+        reviewState.tier = 'all_active';
+        setReviewHighLevelCategoryFilter('all');
+      } else {
+        loadReviewQueue();
+      }
     }
 
     function setReviewPlatformType(type) {
@@ -5532,7 +5676,7 @@
               return `<span class="px-2 py-0.5 rounded border text-[10px] font-mono font-bold ${cls}">${escapeHtml(c.label)} (${pts})</span>`;
             }).join('');
           } else {
-            critBox.innerHTML = `<span class="text-[11px] text-slate-500">Evaluated via DeepSeek Flash v4.1 Benchmark & Four-Gate Pre-Qualification.</span>`;
+            critBox.innerHTML = `<span class="text-[11px] text-slate-500">Evaluated via Gemini 4 Hydrogen Benchmark & Four-Gate Pre-Qualification.</span>`;
           }
         }
 

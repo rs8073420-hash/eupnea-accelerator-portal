@@ -1,8 +1,8 @@
 """
 Eupnea v2 Presence Agent - Official Scoring & Pre-Qualification Engine
-Powered strictly by DeepSeek Flash v4.1 Multi-Layer Verification Engine.
+Powered strictly by Gemini 4 Hydrogen Multi-Layer Verification Engine.
 Specification: "Web Presence and Listing Creation AI Agent Brief (October 2026)" + Sree Audit Standards
-+ Panagiotis Editable Point System & Quality Telemetry Specification.
++ Panagiotis Editable Point System, Quality Telemetry & F6S/Gust Hub Classification.
 """
 
 import os
@@ -10,17 +10,17 @@ import json
 import sqlite3
 from datetime import datetime
 from typing import Dict, Any, List, Optional
-import deepseek_flash_engine as dfe
+import gemini_hydrogen_engine as ghe
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_DB_PATH = os.path.join(BASE_DIR, "presence_agent.db")
 
-ENGINE_NAME = dfe.ENGINE_VERSION
+ENGINE_NAME = ghe.ENGINE_VERSION
 
-TIER_1_BENCHMARKS = {k: (v["score"], v["reasoning"]) for k, v in dfe.DEEPSEEK_TIER_1_GROUNDING.items()}
-TIER_2_BENCHMARKS = {k: (v["score"], v["reasoning"]) for k, v in dfe.DEEPSEEK_TIER_2_GROUNDING.items()}
-UNSUITABLE_DOMAINS = dfe.DEEPSEEK_HARD_REJECT_DOMAINS
-PERK_DOMAINS = dfe.DEEPSEEK_PERK_DOMAINS
+TIER_1_BENCHMARKS = {k: (v["score"], v["reasoning"]) for k, v in ghe.GEMINI_TIER_1_GROUNDING.items()}
+TIER_2_BENCHMARKS = {k: (v["score"], v["reasoning"]) for k, v in ghe.GEMINI_TIER_2_GROUNDING.items()}
+UNSUITABLE_DOMAINS = ghe.HARD_REJECT_DOMAINS
+PERK_DOMAINS = ghe.PERK_DOMAINS
 
 POSITIVE_CRITERIA = {
     "real_directory": (30, "Real directory or programme page (+30)"),
@@ -411,17 +411,19 @@ def extract_platform_criteria_flags(platform: Dict[str, Any]) -> Dict[str, bool]
         return {"no_programme_intake": True}
 
     is_chamber = ("chamber" in hl or "chamber" in cat) and tier == "deprioritized"
+    is_single = ghe.GeminiHydrogenEngine.is_single_entity_domain(dom)
+    is_reg_hub = bool(platform.get("is_registration_hub")) and not is_single
     flags: Dict[str, bool] = {
         "real_directory": not is_chamber,
         "clear_submit_path": bool(form_url) and bool(form_ok) and (
-            tier == "tier_1" or is_sm or "direct startup" in hl or "investor" in hl or "uk accelerator" in hl or "submit" in form_url.lower() or "apply" in form_url.lower() or "program" in form_url.lower() or "add" in form_url.lower()
+            is_reg_hub or tier == "tier_1" or is_sm or "direct startup" in hl or "investor" in hl or "uk accelerator" in hl or "submit" in form_url.lower() or "apply" in form_url.lower() or "program" in form_url.lower() or "add" in form_url.lower()
         ),
         "target_audience": (not is_chamber) or ("startup" in features),
         "target_geography": True,
-        "structured_fields": bool(features) or is_sm or tier in ("tier_1", "tier_2") or dom in dfe.DEEPSEEK_TIER_1_GROUNDING or dom in dfe.DEEPSEEK_TIER_2_GROUNDING,
+        "structured_fields": bool(features) or is_sm or tier in ("tier_1", "tier_2") or dom in ghe.GEMINI_TIER_1_GROUNDING or dom in ghe.GEMINI_TIER_2_GROUNDING,
         "established_directory": bool(portal_ok) and not is_chamber,
-        "tier_1_intake": (tier == "tier_1") or is_sm or ("direct startup" in hl and score >= 93) or dom in dfe.DEEPSEEK_TIER_1_GROUNDING,
-        "tier_2_discovery": (tier == "tier_2") or ("uk accelerator" in hl) or ("investor" in hl) or ("ecosystem" in hl) or dom in dfe.DEEPSEEK_TIER_2_GROUNDING,
+        "tier_1_intake": (not is_single) and (is_reg_hub and (tier == "tier_1" or is_sm or ("direct startup" in hl and score >= 93) or dom in ghe.GEMINI_TIER_1_GROUNDING)),
+        "tier_2_discovery": is_single or (tier == "tier_2") or ("uk accelerator" in hl) or ("investor" in hl) or ("ecosystem" in hl) or dom in ghe.GEMINI_TIER_2_GROUNDING,
         "broken_form_penalty": bool(portal_ok) and (form_ok == 0),
         "regional_chamber_penalty": is_chamber,
     }
@@ -429,12 +431,12 @@ def extract_platform_criteria_flags(platform: Dict[str, Any]) -> Dict[str, bool]
 
 
 def is_synthetic_domain(domain: str) -> bool:
-    is_synth, _ = dfe.DeepSeekFlashEngine.detect_synthetic_pattern(domain, domain)
+    is_synth, _ = ghe.GeminiHydrogenEngine.detect_synthetic_pattern(domain, domain)
     return is_synth
 
 
 def validate_prequalification_gates(platform: Dict[str, Any], verify_network: bool = False, use_llm: bool = False) -> Dict[str, Any]:
-    return dfe.DeepSeekFlashEngine.evaluate_prequalification_gates(platform, verify_network=verify_network, use_llm=use_llm)
+    return ghe.GeminiHydrogenEngine.evaluate_prequalification_gates(platform, verify_network=verify_network, use_llm=use_llm)
 
 
 def evaluate_platform_score(criteria: Dict[str, bool], weights_override: Optional[Dict[str, int]] = None) -> Dict[str, Any]:
@@ -503,7 +505,8 @@ def recalculate_all_platform_scores(db_path: str = DEFAULT_DB_PATH) -> Dict[str,
     rows = c.execute("""
         SELECT id, name, domain, category, url, form_url, score, status, tier,
                high_level_category, is_smartmatch, intake_features,
-               portal_link_ok, form_link_ok
+               portal_link_ok, form_link_ok,
+               COALESCE(is_registration_hub, 0) AS is_registration_hub
         FROM platforms
         WHERE status NOT IN ('perk_benefit', 'dismissed')
           AND NOT (status IN ('unqualified', 'not_suitable') AND COALESCE(tier, '') = 'rejected')
@@ -512,18 +515,25 @@ def recalculate_all_platform_scores(db_path: str = DEFAULT_DB_PATH) -> Dict[str,
     updated = 0
     for r in rows:
         d = dict(r)
+        dom = (d.get("domain") or "").lower().strip()
+        is_single = ghe.GeminiHydrogenEngine.is_single_entity_domain(dom)
+        is_hub = bool(d.get("is_registration_hub")) and not is_single
         flags = extract_platform_criteria_flags(d)
         res = evaluate_platform_score(flags, weights_override=weights)
         new_score = res["score"]
         cur_status = d["status"]
+        if (is_single or not is_hub) and new_score >= 93:
+            new_score = min(90, new_score)
+
+        computed_tier = "tier_1" if (is_hub and new_score >= 93) else ("tier_2" if new_score >= 80 else ("tier_3" if new_score >= 70 else "deprioritized"))
 
         if d["tier"] == "deprioritized" and cur_status == "unqualified":
-            new_tier = "tier_1" if new_score >= 93 else ("tier_2" if new_score >= 80 else ("tier_3" if new_score >= 70 else "deprioritized"))
+            new_tier = computed_tier
             new_status = "in_review" if new_score >= 70 else "unqualified"
         else:
             # Keep approved/submitted workflow status intact while updating weighted score
             new_status = cur_status
-            new_tier = "tier_1" if new_score >= 93 else ("tier_2" if new_score >= 80 else ("tier_3" if new_score >= 70 else "deprioritized"))
+            new_tier = computed_tier
 
         c.execute("""
             UPDATE platforms
@@ -590,8 +600,8 @@ def reset_criteria_weights(db_path: str = DEFAULT_DB_PATH, recalculate: bool = F
 
 
 def score_platform_record(platform: Dict[str, Any], verify_network: bool = False, use_llm: bool = False) -> Dict[str, Any]:
-    """Primary platform scoring router strictly backed by DeepSeek Flash v4.1 Engine."""
-    return dfe.DeepSeekFlashEngine.score_platform(platform, verify_network=verify_network, use_llm=use_llm)
+    """Primary platform scoring router strictly backed by Gemini 4 Hydrogen Engine."""
+    return ghe.GeminiHydrogenEngine.score_platform(platform, verify_network=verify_network, use_llm=use_llm)
 
 
 def generate_eupnea_draft_listing(platform_name: str, domain: str, category: str) -> Dict[str, str]:

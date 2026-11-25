@@ -2670,5 +2670,99 @@
     "form_requirements": "Profile details, application focus, integration points",
     "intake_features": "Gartner Ecosystem | Cross-Listing Integration | Software & Service Reviews",
     "target_category": "Software & B2B Review Platforms"
+  },
+  {
+    "name": "OpenGrants Startup Grants & Accelerator Funding Hub",
+    "domain": "opengrants.io",
+    "url": "https://www.opengrants.io/",
+    "form_url": "https://www.opengrants.io/",
+    "target_category": "Direct Startup Engagement & Intake"
+  },
+  {
+    "name": "Startup Stash Curated Accelerator & Resource Directory",
+    "domain": "startupstash.com",
+    "url": "https://startupstash.com/",
+    "form_url": "https://startupstash.com/submit/",
+    "target_category": "Ecosystem Visibility & Program Discovery"
+  },
+  {
+    "name": "Find UK Accelerators Directory",
+    "domain": "findukaccelerator.co.uk",
+    "url": "https://findukaccelerator.co.uk/",
+    "form_url": "https://findukaccelerator.co.uk/",
+    "target_category": "Direct Startup Engagement & Intake",
+    "tier": "tier_1",
+    "score": 96,
+    "is_registration_hub": 1
+  },
+  {
+    "name": "Mentornity UK Startup Accelerators & Incubators",
+    "domain": "mentornity.com",
+    "url": "https://www.mentornity.com/",
+    "form_url": "https://www.mentornity.com/guides/accelerators-incubators/",
+    "target_category": "Direct Startup Engagement & Intake",
+    "tier": "tier_1",
+    "score": 96,
+    "is_registration_hub": 1
+  },
+  {
+    "name": "Startersss Global Accelerators Directory",
+    "domain": "startersss.com",
+    "url": "https://www.startersss.com/accelerators",
+    "form_url": "https://www.startersss.com/accelerators",
+    "target_category": "Direct Startup Engagement & Intake",
+    "tier": "tier_1",
+    "score": 96,
+    "is_registration_hub": 1
+  },
+  {
+    "name": "VentureList UK & Europe Accelerators Database",
+    "domain": "venturelist.app",
+    "url": "https://venturelist.app/",
+    "form_url": "https://venturelist.app/accelerators",
+    "target_category": "Direct Startup Engagement & Intake",
+    "tier": "tier_1",
+    "score": 96,
+    "is_registration_hub": 1
+  },
+  {
+    "name": "FreeStartupFunding Grants & Accelerators Hub",
+    "domain": "freestartupfunding.com",
+    "url": "https://freestartupfunding.com/",
+    "form_url": "https://freestartupfunding.com/accelerators",
+    "target_category": "Direct Startup Engagement & Intake",
+    "tier": "tier_1",
+    "score": 96,
+    "is_registration_hub": 1
+  },
+  {
+    "name": "SuperScout Startups & Accelerator Discovery",
+    "domain": "superscout.co",
+    "url": "https://superscout.co/",
+    "form_url": "https://superscout.co/search?q=accelerators+for+climate+startups",
+    "target_category": "Ecosystem Visibility & Program Discovery",
+    "tier": "tier_1",
+    "score": 96,
+    "is_registration_hub": 1
+  },
+  {
+    "name": "Seed-DB Seed Accelerator & Programme Database",
+    "domain": "seed-db.com",
+    "url": "https://jedchristiansen.com/seed-db/",
+    "form_url": "https://jedchristiansen.com/seed-db/",
+    "target_category": "Ecosystem Visibility & Program Discovery",
+    "tier": "tier_1",
+    "score": 96,
+    "is_registration_hub": 1
+  },
+  {
+    "name": "StartupNation Programme & Founder Resource Directory",
+    "domain": "startupnation.com",
+    "url": "https://startupnation.com/",
+    "form_url": "https://startupnation.com/",
+    "target_category": "Direct Startup Engagement & Intake",
+    "tier": "tier_1",
+    "score": 96,
+    "is_registration_hub": 1
   }
 ]

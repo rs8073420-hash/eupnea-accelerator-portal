@@ -54,7 +54,7 @@ from pydantic import BaseModel
 
 import presence_scoring_engine as pse
 import orchestration_engine as orch_eng
-import deepseek_flash_engine as dfe
+import gemini_hydrogen_engine as ghe
 
 try:
     from eupnea_presence_agent_upgrade import presence_upgrade_controller
@@ -96,6 +96,7 @@ def ensure_platform_columns():
         ("link_checked_at", "TIMESTAMP"),
         ("last_search_run_id", "INTEGER DEFAULT 0"),
         ("criteria_breakdown", "TEXT DEFAULT ''"),
+        ("is_registration_hub", "INTEGER DEFAULT 0"),
     ]
     for col, ddl in additions:
         if col not in existing:
@@ -465,6 +466,7 @@ def _compute_quality_summary(c: sqlite3.Cursor, runs: List[Dict[str, Any]]) -> D
 
     active_where = "status NOT IN ('unqualified', 'not_suitable', 'perk_benefit', 'dismissed')"
     active_metrics = _compute_tab_quality_metrics(c, active_where, [], latest_run_id)
+    reg_hub_metrics = _compute_tab_quality_metrics(c, f"COALESCE(is_registration_hub, 0) = 1 AND {active_where}", [], latest_run_id)
     all_raw_metrics = _compute_tab_quality_metrics(c, "1=1", [], latest_run_id)
 
     # Hard-rejected (tier='rejected') vs Deprioritized Chambers avg score inside unqualified
@@ -509,6 +511,7 @@ def _compute_quality_summary(c: sqlite3.Cursor, runs: List[Dict[str, Any]]) -> D
         "by_status": by_status,
         "by_tab": {
             "all": active_metrics,
+            "registration_hubs": reg_hub_metrics,
             "all_raw": all_raw_metrics,
             "in_review": by_status["in_review"],
             "approved": by_status["approved"],
@@ -537,6 +540,8 @@ def _compute_quality_summary(c: sqlite3.Cursor, runs: List[Dict[str, Any]]) -> D
         "dual_link_integrity_pct": active_metrics["dual_link_integrity_pct"],
         "intake_readiness_pct": intake_readiness_pct,
         "gate_pass_yield_pct": gate_pass_yield_pct,
+        "registration_hubs_count": reg_hub_metrics["total"],
+        "registration_hubs_metrics": reg_hub_metrics,
         "latest_search": {
             "run_id": latest_run["id"] if latest_run else latest_run_id,
             "tagged_run_id": latest_run_id,
@@ -563,6 +568,16 @@ def api_update_scoring_criteria(req: CriteriaWeightsUpdateRequest):
 @app.post("/api/scoring/criteria/reset")
 def api_reset_scoring_criteria(recalculate: bool = Query(True)):
     return pse.reset_criteria_weights(DB_PATH, recalculate=recalculate)
+
+
+@app.get("/health")
+def health_check():
+    return {
+        "status": "ok",
+        "engine": ghe.ENGINE_VERSION,
+        "model": ghe.MODEL_PROFILE,
+        "deepseek_disabled": True,
+    }
 
 
 @app.get("/api/dashboard/stats")
@@ -688,7 +703,9 @@ def get_dashboard_stats():
         "unqualified": unqualified_count,
         "perk_benefit": perk_benefit_count,
         "dismissed": dismissed_count,
-        "deepseek_engine": dfe.DeepSeekFlashEngine.get_engine_status(),
+        "gemini_hydrogen_engine": ghe.GeminiHydrogenEngine.get_engine_status(),
+        "ai_engine": ghe.GeminiHydrogenEngine.get_engine_status(),
+        "registration_hubs_count": quality_summary["registration_hubs_count"],
         "quality_summary": quality_summary,
         "quality_definitions": criteria_state["quality_definitions"],
         "modified_weights_count": criteria_state["modified_count"],
@@ -713,6 +730,7 @@ def get_platforms(
     smartmatch_filter: Optional[str] = Query(None),
     sort_by: Optional[str] = Query("score_desc"),
     latest_only: bool = Query(False),
+    top_hubs_only: bool = Query(False),
     page: int = Query(1, ge=1),
     limit: int = Query(25, ge=1, le=100)
 ):
@@ -727,6 +745,7 @@ def get_platforms(
     if hasattr(smartmatch_filter, "default"): smartmatch_filter = smartmatch_filter.default
     if hasattr(sort_by, "default"): sort_by = sort_by.default or "score_desc"
     if hasattr(latest_only, "default"): latest_only = bool(latest_only.default)
+    if hasattr(top_hubs_only, "default"): top_hubs_only = bool(top_hubs_only.default)
     if hasattr(page, "default"): page = page.default or 1
     if hasattr(limit, "default"): limit = limit.default or 25
 
@@ -785,6 +804,8 @@ def get_platforms(
             query_parts.append("tier = 'tier_2'")
         elif tier in ("core", "all_active"):
             query_parts.append("is_core_target = 1 AND status NOT IN ('unqualified', 'not_suitable', 'perk_benefit', 'dismissed')")
+        elif tier == "registration_hubs":
+            query_parts.append("COALESCE(is_registration_hub, 0) = 1 AND status NOT IN ('unqualified', 'not_suitable', 'perk_benefit', 'dismissed')")
         elif tier == "deprioritized":
             query_parts.append("tier = 'deprioritized'")
 
@@ -815,6 +836,9 @@ def get_platforms(
         query_parts.append("COALESCE(last_search_run_id, 0) = ?")
         params.append(latest_run_id)
 
+    if top_hubs_only:
+        query_parts.append("COALESCE(is_registration_hub, 0) = 1 AND status NOT IN ('unqualified', 'not_suitable', 'perk_benefit', 'dismissed')")
+
     if search:
         query_parts.append("(name LIKE ? OR domain LIKE ? OR draft_pitch LIKE ?)")
         search_param = f"%{search}%"
@@ -837,13 +861,15 @@ def get_platforms(
         order_params = [latest_run_id, latest_run_id]
     else:
         order_sql = """ORDER BY CASE 
-            WHEN tier = 'tier_1' THEN 1
-            WHEN tier = 'tier_2' THEN 2
-            WHEN is_core_target = 1 THEN 3
-            WHEN tier = 'tier_3' THEN 4
-            WHEN status = 'ready' THEN 5
-            WHEN status = 'in_review' THEN 6
-            ELSE 7 
+            WHEN COALESCE(is_registration_hub, 0) = 1 AND tier = 'tier_1' THEN 1
+            WHEN COALESCE(is_registration_hub, 0) = 1 THEN 2
+            WHEN tier = 'tier_1' THEN 3
+            WHEN tier = 'tier_2' THEN 4
+            WHEN is_core_target = 1 THEN 5
+            WHEN tier = 'tier_3' THEN 6
+            WHEN status = 'ready' THEN 7
+            WHEN status = 'in_review' THEN 8
+            ELSE 9 
         END, score DESC, id DESC"""
 
     offset = (page - 1) * limit
@@ -861,6 +887,7 @@ def get_platforms(
                COALESCE(link_error, '') AS link_error,
                link_checked_at,
                COALESCE(last_search_run_id, 0) AS last_search_run_id,
+               COALESCE(is_registration_hub, 0) AS is_registration_hub,
                COALESCE(criteria_breakdown, '[]') AS criteria_breakdown
         FROM platforms
         WHERE {where_clause}
@@ -875,6 +902,7 @@ def get_platforms(
         item["exact_date_added"] = dt_fmt["exact"]
         item["date_added_label"] = dt_fmt["label"]
         item["is_latest_search"] = bool(latest_run_id > 0 and item.get("last_search_run_id") == latest_run_id)
+        item["is_registration_hub"] = bool(item.get("is_registration_hub"))
         try:
             item["criteria_breakdown_list"] = json.loads(item.get("criteria_breakdown") or "[]")
         except Exception:
@@ -982,13 +1010,14 @@ def verify_batch_links_endpoint(limit: int = Query(25, ge=1, le=100)):
     def _probe_row(r_dict):
         u = r_dict["url"] or f"https://{r_dict['domain']}"
         fu = r_dict["form_url"] or u
-        pr = dfe.DeepSeekFlashEngine.probe_live_website(u, fu)
+        pr = ghe.GeminiHydrogenEngine.probe_live_website(u, fu)
         return r_dict["id"], pr
 
     with ThreadPoolExecutor(max_workers=10) as ex:
         for pid, pr in ex.map(_probe_row, [dict(r) for r in rows]):
             p_ok = 1 if pr.get("portal_link_ok") else 0
             f_ok = 1 if pr.get("form_link_ok") else 0
+            healed_fu = (pr.get("healed_form_url") or "").strip()
             if p_ok:
                 portal_ok_cnt += 1
             if f_ok:
@@ -997,11 +1026,13 @@ def verify_batch_links_endpoint(limit: int = Query(25, ge=1, le=100)):
                 UPDATE platforms
                 SET portal_link_ok = ?, portal_http_status = ?,
                     form_link_ok = ?, form_http_status = ?,
+                    form_url = CASE WHEN ? = 1 AND ? != '' THEN ? ELSE form_url END,
                     link_error = ?, link_checked_at = ?
                 WHERE id = ?
             """, (
                 p_ok, pr.get("portal_http_status") or 0,
                 f_ok, pr.get("form_http_status") or 0,
+                f_ok, healed_fu, healed_fu,
                 pr.get("link_error") or "", now_str, pid
             ))
             checked += 1
@@ -1029,6 +1060,7 @@ def get_platform_detail(platform_id: int):
     item["exact_date_added"] = dt_fmt["exact"]
     item["date_added_label"] = dt_fmt["label"]
     item["is_latest_search"] = bool(latest_run_id > 0 and item.get("last_search_run_id") == latest_run_id)
+    item["is_registration_hub"] = bool(item.get("is_registration_hub"))
     try:
         item["criteria_breakdown_list"] = json.loads(item.get("criteria_breakdown") or "[]")
     except Exception:
@@ -1049,14 +1081,15 @@ def add_platform_manual(req: AddManualPlatformRequest):
         "url": f"https://{clean_domain}",
         "form_url": req.submitted_url or f"https://{clean_domain}",
         "category": req.category,
+        "high_level_category": req.high_level_category or "Direct Startup Engagement & Intake",
         "score": req.score
     }
-    score_eval = dfe.DeepSeekFlashEngine.score_platform(cand_payload, verify_network=True)
+    score_eval = ghe.GeminiHydrogenEngine.score_platform(cand_payload, verify_network=True, use_llm=True)
     if not score_eval.get("is_qualified") or score_eval.get("score", 0) <= 0:
         conn.close()
         raise HTTPException(
             status_code=400,
-            detail=score_eval.get("score_reasons_summary") or "Failed DeepSeek Flash v4.1 4-Gate Pre-Qualification (dead website, synthetic domain, or unsuitable portal)."
+            detail=score_eval.get("score_reasons_summary") or "Failed Gemini 4 Hydrogen 4-Gate Pre-Qualification (dead website, synthetic domain, or unsuitable portal)."
         )
 
     pitch = f"Eupnea is a premier management consulting firm and startup accelerator headquartered in London, supporting founders and enterprise leaders across the UK and internationally."
@@ -1066,7 +1099,9 @@ def add_platform_manual(req: AddManualPlatformRequest):
     final_tier = score_eval.get("tier", "tier_2")
     healed_url = score_eval.get("healed_url") or f"https://{clean_domain}"
     healed_form = score_eval.get("healed_form_url") or req.submitted_url or healed_url
-    reasons = score_eval.get("score_reasons_summary") or "Verified by DeepSeek Flash v4.1 Four-Gate Engine."
+    reasons = score_eval.get("score_reasons_summary") or "Verified by Gemini 4 Hydrogen Four-Gate Engine."
+    is_reg_hub = int(score_eval.get("is_registration_hub", 0))
+    criteria_json = json.dumps(score_eval.get("criteria_breakdown") or [])
 
     try:
         p_ok = int(score_eval.get("portal_link_ok", 1))
@@ -1079,19 +1114,20 @@ def add_platform_manual(req: AddManualPlatformRequest):
                 name, category, url, domain, form_url, score, score_reasons, draft_pitch,
                 tracking_url, submitted_url, status, discovered_at, bot_verified, submission_mode, submitted_at,
                 category_type, tier, intake_type, is_core_target, high_level_category,
-                portal_link_ok, portal_http_status, form_link_ok, form_http_status, link_error, link_checked_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, 1, 'manual', CURRENT_TIMESTAMP, 'submittable_directory', ?, 'direct_intake', 1, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+                portal_link_ok, portal_http_status, form_link_ok, form_http_status, link_error, link_checked_at,
+                is_registration_hub, criteria_breakdown
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, 1, 'manual', CURRENT_TIMESTAMP, 'submittable_directory', ?, 'direct_intake', 1, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?)
         """, (
             req.name.strip(), req.category, healed_url, clean_domain, healed_form,
             final_score, reasons,
             pitch, tracking_url, req.submitted_url or "",
             status_target, final_tier, hl_cat,
-            p_ok, p_code, f_ok, f_code, l_err
+            p_ok, p_code, f_ok, f_code, l_err, is_reg_hub, criteria_json
         ))
         conn.commit()
         new_id = c.lastrowid
         conn.close()
-        return {"status": "success", "id": new_id, "score": final_score, "tier": final_tier, "form_link_ok": f_ok, "portal_link_ok": p_ok, "message": f"Platform '{req.name}' verified by DeepSeek Flash v4.1 ({final_score}/100) and saved."}
+        return {"status": "success", "id": new_id, "score": final_score, "tier": final_tier, "is_registration_hub": bool(is_reg_hub), "form_link_ok": f_ok, "portal_link_ok": p_ok, "message": f"Platform '{req.name}' verified by Gemini 4 Hydrogen ({final_score}/100) and saved."}
     except sqlite3.IntegrityError:
         conn.close()
         raise HTTPException(
@@ -1152,19 +1188,25 @@ async def verify_platform_live_endpoint(platform_id: int):
 
     target_url = row["url"] or f"https://{row['domain']}"
     target_form = row["form_url"] or target_url
-    probe = dfe.DeepSeekFlashEngine.probe_live_website(target_url, target_form)
+    probe = ghe.GeminiHydrogenEngine.probe_live_website(target_url, target_form)
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    f_ok = 1 if probe.get("form_link_ok") else 0
+    healed_fu = (probe.get("healed_form_url") or "").strip()
     c.execute("""
         UPDATE platforms
         SET portal_link_ok = ?, portal_http_status = ?,
             form_link_ok = ?, form_http_status = ?,
+            form_url = CASE WHEN ? = 1 AND ? != '' THEN ? ELSE form_url END,
             link_error = ?, link_checked_at = ?
         WHERE id = ?
     """, (
         1 if probe.get("portal_link_ok") else 0,
         probe.get("portal_http_status") or 0,
-        1 if probe.get("form_link_ok") else 0,
+        f_ok,
         probe.get("form_http_status") or 0,
+        f_ok,
+        healed_fu,
+        healed_fu,
         probe.get("link_error") or "",
         now_str,
         platform_id,
@@ -1406,7 +1448,7 @@ DYNAMIC_CATEGORY_ROSTERS: Dict[str, List[Dict[str, Any]]] = {
         {"name": "Round Funded Investor & Accelerator Matchmaking", "domain": "roundfunded.com", "url": "https://www.roundfunded.com/en", "form_url": "https://www.roundfunded.com/en"},
         {"name": "OpenVC Pro Dealflow SmartMatch", "domain": "openvc.app", "url": "https://openvc.app/", "form_url": "https://openvc.app/"},
         {"name": "Vestbee Dealflow Engine & Partner Network", "domain": "vestbee.com", "url": "https://www.vestbee.com/", "form_url": "https://www.vestbee.com/accelerators"},
-        {"name": "Dealum Dealflow Management Network", "domain": "dealum.com", "url": "https://dealum.com/", "form_url": "https://dealum.com/"},
+        {"name": "FundingCake Global Accelerator Directory", "domain": "fundingcake.com", "url": "https://fundingcake.com/", "form_url": "https://fundingcake.com/"},
         {"name": "InnMind Global Web3 & Tech Dealflow Hub", "domain": "innmind.com", "url": "https://innmind.com/", "form_url": "https://innmind.com/"},
         {"name": "OneValley Passport Dealflow Matchmaker", "domain": "theonevalley.com", "url": "https://www.onevalley.com/", "form_url": "https://www.onevalley.com/"},
         {"name": "Gust Accelerator SmartMatch Pipeline", "domain": "gust.com", "url": "https://gust.com/accelerators", "form_url": "https://gust.com/accelerators"},
@@ -1436,6 +1478,13 @@ DYNAMIC_CATEGORY_ROSTERS: Dict[str, List[Dict[str, Any]]] = {
         {"name": "GAN Global Accelerator Network", "domain": "gan.co", "url": "https://www.gan.co/", "form_url": "https://www.gan.co/"},
         {"name": "Submittable Accelerator & Grant Intake", "domain": "submittable.com", "url": "https://www.submittable.com/", "form_url": "https://www.submittable.com/"},
         {"name": "Agorize Global Innovation & Accelerator Challenges", "domain": "agorize.com", "url": "https://www.agorize.com/web/en/challenges", "form_url": "https://www.agorize.com/web/en/challenges"},
+        {"name": "Find UK Accelerators Directory", "domain": "findukaccelerator.co.uk", "url": "https://findukaccelerator.co.uk/", "form_url": "https://findukaccelerator.co.uk/"},
+        {"name": "Mentornity UK Startup Accelerators & Incubators", "domain": "mentornity.com", "url": "https://www.mentornity.com/", "form_url": "https://www.mentornity.com/guides/accelerators-incubators/"},
+        {"name": "Startersss Global Accelerators Directory", "domain": "startersss.com", "url": "https://startersss.com/accelerators", "form_url": "https://www.startersss.com/accelerators"},
+        {"name": "VentureList UK & Europe Accelerators Database", "domain": "venturelist.app", "url": "https://venturelist.app/", "form_url": "https://venturelist.app/accelerators"},
+        {"name": "FreeStartupFunding Grants & Accelerators Hub", "domain": "freestartupfunding.com", "url": "https://freestartupfunding.com/", "form_url": "https://freestartupfunding.com/accelerators"},
+        {"name": "OpenGrants Startup Grants & Accelerator Hub", "domain": "opengrants.io", "url": "https://opengrants.io/", "form_url": "https://opengrants.io/"},
+        {"name": "ApplySeed Global Accelerators & Fellowships", "domain": "applyseed.com", "url": "https://www.applyseed.com/", "form_url": "https://www.applyseed.com/"},
         {"name": "Barclays Eagle Labs UK Incubator Network", "domain": "labs.uk.barclays", "url": "https://labs.uk.barclays/", "form_url": "https://labs.uk.barclays/"},
         {"name": "Founders Factory London Venture Studio", "domain": "foundersfactory.com", "url": "https://foundersfactory.com/", "form_url": "https://foundersfactory.com/"},
         {"name": "SETsquared UK University Accelerator Partnership", "domain": "setsquared.co.uk", "url": "https://www.setsquared.co.uk/", "form_url": "https://www.setsquared.co.uk/"},
@@ -1551,8 +1600,9 @@ def run_single_category_browser_worker(run_id: int, spec: Dict[str, Any], pool_c
         tracking_url = f"https://eupnea.co.uk/?utm_source={domain.replace('.', '_')}&utm_medium=directory&utm_campaign=accelerator_2026"
         category = get_master_category(name, domain, "")
 
-        # Strict DeepSeek Flash v4.1 Algorithmic & Live Network Gate
-        score_eval = dfe.DeepSeekFlashEngine.score_platform(cand, verify_network=True)
+        # Strict Gemini 4 Hydrogen Algorithmic, Hub Classifier & Live Network Gate
+        cand_with_cat = {**cand, "high_level_category": cat_name}
+        score_eval = ghe.GeminiHydrogenEngine.score_platform(cand_with_cat, verify_network=True, use_llm=True)
         if not score_eval.get("is_qualified") or score_eval.get("score", 0) <= 0:
             continue
 
@@ -1561,6 +1611,8 @@ def run_single_category_browser_worker(run_id: int, spec: Dict[str, Any], pool_c
         final_score = score_eval.get("score", spec["score"])
         final_tier = score_eval.get("tier", spec["tier"])
         final_reasons = score_eval.get("score_reasons_summary") or spec["score_reasons"]
+        is_reg_hub = int(score_eval.get("is_registration_hub", 0))
+        criteria_json = json.dumps(score_eval.get("criteria_breakdown") or [])
 
         draft_pitch = f"{spec['pitch_prefix']} Direct intake & partnership via {domain}."
         draft_full = f"Eupnea UK Accelerator Cohort 2026 invites applications from early-stage founders and co-investors. Providing seed capital (£50k-£250k), executive partner mentorship, and commercial pilot deployment in London. Categorized under {cat_name}."
@@ -1575,14 +1627,14 @@ def run_single_category_browser_worker(run_id: int, spec: Dict[str, Any], pool_c
         with DB_WRITE_LOCK:
             c.execute("""
                 INSERT OR IGNORE INTO platforms
-                (name, category, url, domain, score, score_reasons, draft_pitch, draft_full, tracking_url, status, discovered_at, submitted_url, visit_count, form_url, category_type, tier, intake_type, is_core_target, intake_features, high_level_category, is_smartmatch, smartmatch_free, smartmatch_paid, smartmatch_model, licensing_notes, ranking_scope, portal_link_ok, portal_http_status, form_link_ok, form_http_status, link_error, link_checked_at, last_search_run_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'in_review', ?, '', 0, ?, 'submittable_directory', ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (name, category, url, domain, score, score_reasons, draft_pitch, draft_full, tracking_url, status, discovered_at, submitted_url, visit_count, form_url, category_type, tier, intake_type, is_core_target, intake_features, high_level_category, is_smartmatch, smartmatch_free, smartmatch_paid, smartmatch_model, licensing_notes, ranking_scope, portal_link_ok, portal_http_status, form_link_ok, form_http_status, link_error, link_checked_at, last_search_run_id, is_registration_hub, criteria_breakdown)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'in_review', ?, '', 0, ?, 'submittable_directory', ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 name, category, healed_url, domain, final_score, final_reasons, draft_pitch, draft_full, tracking_url, now_str, healed_form_url,
                 final_tier, spec["intake_type"], spec["intake_features"], cat_name, is_sm, sm_free, sm_paid, sm_model, lic_notes, r_scope,
                 int(score_eval.get("portal_link_ok", 1)), int(score_eval.get("portal_http_status") or 200),
                 int(score_eval.get("form_link_ok", 1)), int(score_eval.get("form_http_status") or 200),
-                score_eval.get("link_error") or "", now_str, run_id
+                score_eval.get("link_error") or "", now_str, run_id, is_reg_hub, criteria_json
             ))
 
             if c.rowcount > 0:

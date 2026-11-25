@@ -1,10 +1,11 @@
 """
-Eupnea Ecosystem - Autonomous Category Agent Fleet Engine (Upgraded Infinite Hunter)
+Eupnea Ecosystem - Autonomous Category Agent Fleet Engine (Upgraded Infinite Hub Hunter)
+Powered strictly by Gemini 4 Hydrogen (Zero DeepSeek).
 Dedicated AI Specialist Agents assigned to continuously expand each high-level category:
 1. Astra-R01: LinkedIn Accelerator Ranker & Curator Hunter (VIP)
 2. Astra-S01: SmartMatch Dealflow & Licensing Scout (Panagiotis Key Directive)
 3. Astra-U01: UK Accelerator Review & Ranking Auditor (Panagiotis Key Directive)
-4. Astra-I01: Direct Startup Intake & Founder Hub Scout
+4. Astra-I01: F6S/Gust Multi-Programme Registration Hub Hunter
 5. Astra-V01: Investor Syndicate & Matchmaking Hunter
 6. Astra-E01: Ecosystem Visibility & Directory Crawler
 7. Astra-C01: UK Regional Chambers & Tech Clusters Lead
@@ -17,7 +18,7 @@ import time
 import random
 from datetime import datetime
 from typing import Dict, Any, List
-import deepseek_flash_engine as dfe
+import gemini_hydrogen_engine as ghe
 
 WORKSPACE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(WORKSPACE_DIR, "presence_agent.db")
@@ -71,15 +72,16 @@ CATEGORY_AGENTS_CONFIG = [
     {
         "id": "astra_i01",
         "agent_code": "Astra-I01",
-        "name": "Direct Startup Intake & Founder Hub Scout",
+        "name": "F6S/Gust Registration Hub & Programme Hunter",
         "category_key": "engagement_intake",
         "category_name": "Direct Startup Application Intake Hubs",
         "avatar_badge": "🚀 AMBER",
-        "specialization": "Hunts direct application intake portals, university venture competitions, and tech founder credit networks (AWS Activate, Google for Startups, Station F).",
+        "specialization": "Powered by Gemini 4 Hydrogen: Hunts F6S/Gust-grade multi-programme accelerator marketplaces, built-in founder application forms, and public programme listing portals. Excludes single campus labs & perk-only sites.",
         "search_query_patterns": [
-            '"apply to startup accelerator" direct cohort intake form 2026',
-            '"startup founder credits" intake portal application directory',
-            '"university accelerator application" direct submit portal UK'
+            '"list your accelerator" OR "register your programme" directory f6s gust',
+            '"submit accelerator" OR "add your program" startup accelerator directory',
+            '"startup accelerator marketplace" built-in founder application form 2026',
+            '"apply to accelerators" searchable programme directory UK Europe global'
         ]
     },
     {
@@ -1262,148 +1264,24 @@ LINKEDIN_RANKERS_POOL: List[Dict[str, str]] = [
     },
 ]
 
-# Targeted Expansion Pool for Direct Startup Intake (Astra-I01 - Live Verified Only)
+# Targeted Expansion Pool for Direct F6S/Gust Registration & Multi-Programme Intake Hubs (Astra-I01 - Live Verified Only)
 INTAKE_EXPANSION_POOL = [
-    {
-        "name": "Oxford University Innovation & Startup Incubator",
-        "url": "https://innovation.ox.ac.uk/",
-        "domain": "innovation.ox.ac.uk",
-        "form_url": "https://innovation.ox.ac.uk/",
-        "score": 97
-    },
-    {
-        "name": "Cambridge Judge Entrepreneurship Centre Accelerator",
-        "url": "https://www.jbs.cam.ac.uk/entrepreneurship/",
-        "domain": "jbs.cam.ac.uk",
-        "form_url": "https://www.jbs.cam.ac.uk/entrepreneurship/",
-        "score": 98
-    },
-    {
-        "name": "Imperial Enterprise Lab & Venture Catalyst",
-        "url": "https://www.imperialenterpriselab.com/",
-        "domain": "imperialenterpriselab.com",
-        "form_url": "https://www.imperialenterpriselab.com/",
-        "score": 97
-    },
-    {
-        "name": "UCL Enterprise & Hatchery Incubator",
-        "url": "https://www.ucl.ac.uk/enterprise/",
-        "domain": "ucl.ac.uk",
-        "form_url": "https://www.ucl.ac.uk/enterprise/",
-        "score": 97
-    },
-    {
-        "name": "King's Entrepreneurship Institute Accelerator",
-        "url": "https://www.kcl.ac.uk/entrepreneurship",
-        "domain": "kcl.ac.uk",
-        "form_url": "https://www.kcl.ac.uk/entrepreneurship",
-        "score": 96
-    },
-    {
-        "name": "Edinburgh Innovations & Student Venture Accelerator",
-        "url": "https://edinburgh-innovations.ed.ac.uk/",
-        "domain": "edinburgh-innovations.ed.ac.uk",
-        "form_url": "https://edinburgh-innovations.ed.ac.uk/",
-        "score": 96
-    },
-    {
-        "name": "Manchester Innovation Factory Spinout Portal",
-        "url": "https://www.uominnovationfactory.com/",
-        "domain": "uominnovationfactory.com",
-        "form_url": "https://www.uominnovationfactory.com/",
-        "score": 95
-    },
-    {
-        "name": "Warwick Enterprise Venture Accelerator",
-        "url": "https://warwick.ac.uk/",
-        "domain": "warwick.ac.uk",
-        "form_url": "https://warwick.ac.uk/",
-        "score": 93
-    },
-    {
-        "name": "SETsquared Bristol & South West Tech Accelerator",
-        "url": "https://www.setsquared.co.uk/",
-        "domain": "setsquared.co.uk",
-        "form_url": "https://www.setsquared.co.uk/",
-        "score": 97
-    },
-    {
-        "name": "Baltic Ventures North West Tech Accelerator",
-        "url": "https://balticventures.uk/",
-        "domain": "balticventures.uk",
-        "form_url": "https://balticventures.uk/",
-        "score": 96
-    },
-    {
-        "name": "Nexus Leeds University Innovation Hub",
-        "url": "https://nexusleeds.co.uk/",
-        "domain": "nexusleeds.co.uk",
-        "form_url": "https://nexusleeds.co.uk/",
-        "score": 95
-    },
-    {
-        "name": "Southampton Future Worlds Venture Incubator",
-        "url": "https://futureworlds.com/",
-        "domain": "futureworlds.com",
-        "form_url": "https://futureworlds.com/",
-        "score": 95
-    },
-    {
-        "name": "Digital Catapult UK Innovation Programmes",
-        "url": "https://www.digicatapult.org.uk/",
-        "domain": "digicatapult.org.uk",
-        "form_url": "https://www.digicatapult.org.uk/",
-        "score": 97
-    },
-    {
-        "name": "Satellite Applications Catapult Sprint Intake",
-        "url": "https://sa.catapult.org.uk/",
-        "domain": "sa.catapult.org.uk",
-        "form_url": "https://sa.catapult.org.uk/",
-        "score": 94
-    },
-    {
-        "name": "Connected Places Catapult Innovation Accelerator",
-        "url": "https://cp.catapult.org.uk/",
-        "domain": "cp.catapult.org.uk",
-        "form_url": "https://cp.catapult.org.uk/",
-        "score": 94
-    },
-    {
-        "name": "Barclays Eagle Labs Incubator Network",
-        "url": "https://labs.uk.barclays/",
-        "domain": "labs.uk.barclays",
-        "form_url": "https://labs.uk.barclays/",
-        "score": 97
-    },
-    {
-        "name": "NatWest Accelerator Programme for Entrepreneurs",
-        "url": "https://www.natwest.com/business/business-services/entrepreneur-accelerator.html",
-        "domain": "natwest.com",
-        "form_url": "https://www.natwest.com/business/business-services/entrepreneur-accelerator.html",
-        "score": 96
-    },
-    {
-        "name": "Founders Factory London Accelerator Hub",
-        "url": "https://foundersfactory.com/",
-        "domain": "foundersfactory.com",
-        "form_url": "https://foundersfactory.com/",
-        "score": 96
-    },
-    {
-        "name": "LMarks Corporate Innovation & Accelerator Network",
-        "url": "https://lmarks.com/",
-        "domain": "lmarks.com",
-        "form_url": "https://lmarks.com/",
-        "score": 94
-    },
-    {
-        "name": "Wayra UK Open Future Innovation Hub",
-        "url": "https://wayra.com/",
-        "domain": "wayra.uk",
-        "form_url": "https://wayra.com/",
-        "score": 95
-    }
+    {"name": "OpenGrants Startup Grants & Accelerator Funding Hub", "url": "https://opengrants.io/", "domain": "opengrants.io", "form_url": "https://opengrants.io/", "score": 94},
+    {"name": "FundingCake Global Accelerator Directory (+ Submit Listing)", "url": "https://fundingcake.com/", "domain": "fundingcake.com", "form_url": "https://fundingcake.com/", "score": 96},
+    {"name": "AcceleratorApp Global Accelerator OS & Program Application Portal", "url": "https://www.acceleratorapp.co/", "domain": "acceleratorapp.co", "form_url": "https://www.acceleratorapp.co/", "score": 96},
+    {"name": "ApplySeed Global Startup Accelerators & Fellowships Directory", "url": "https://www.applyseed.com/", "domain": "applyseed.com", "form_url": "https://www.applyseed.com/", "score": 96},
+    {"name": "StartupCorners Curated Accelerator Index", "url": "https://startupcorners.com/accelerators", "domain": "startupcorners.com", "form_url": "https://startupcorners.com/accelerators", "score": 95},
+    {"name": "Listed Startups Venture & Accelerator Hub", "url": "https://listedstartups.com/accelerators", "domain": "listedstartups.com", "form_url": "https://listedstartups.com/submit", "score": 95},
+    {"name": "PitGrowth Startup & Accelerator Portal", "url": "https://pitgrowth.com/", "domain": "pitgrowth.com", "form_url": "https://pitgrowth.com/auth/register", "score": 96},
+    {"name": "Submittable Accelerator & Venture Grant Intake Portal", "url": "https://www.submittable.com/", "domain": "submittable.com", "form_url": "https://www.submittable.com/", "score": 94},
+    {"name": "YouNoodle Startup Competition & Accelerator Intake", "url": "https://www.younoodle.com/", "domain": "younoodle.com", "form_url": "https://www.younoodle.com/", "score": 95},
+    {"name": "VC4A Global Accelerator & Venture Programs Hub", "url": "https://vc4a.com/", "domain": "vc4a.com", "form_url": "https://vc4a.com/", "score": 95},
+    {"name": "Agorize Global Accelerator & Challenge Portal", "url": "https://www.agorize.com/web/en/challenges", "domain": "agorize.com", "form_url": "https://www.agorize.com/web/en/challenges", "score": 94},
+    {"name": "Bridge for Billions Global Incubator & Accelerator Platform", "url": "https://www.bridgeforbillions.org/programs/", "domain": "bridgeforbillions.org", "form_url": "https://www.bridgeforbillions.org/programs/", "score": 94},
+    {"name": "StartupXS Global Accelerators, Grants & Competitions", "url": "https://startupxs.com/", "domain": "startupxs.com", "form_url": "https://startupxs.com/", "score": 94},
+    {"name": "StartupStash Curated Ecosystem Index", "url": "https://startupstash.com/", "domain": "startupstash.com", "form_url": "https://startupstash.com/", "score": 91},
+    {"name": "Skipso Open Innovation & Accelerator Portal", "url": "https://www.skipso.com/", "domain": "skipso.com", "form_url": "https://www.skipso.com/", "score": 94},
+    {"name": "Eventornado Incubator & Hackathon Application Platform", "url": "https://eventornado.com/", "domain": "eventornado.com", "form_url": "https://eventornado.com/", "score": 93}
 ]
 
 # Targeted Expansion Pool for SmartMatch Dealflow Engines (Astra-S01)
@@ -1719,12 +1597,12 @@ def run_linkedin_ranker_hunter(agent_id: str = "astra_r01", batch_size: int = 2)
     discovered = []
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # Step 1: Ingest strictly verified curators from Curated Pool with DeepSeek Flash v4.1 Audit
+    # Step 1: Ingest strictly verified curators from Curated Pool with Gemini 4 Hydrogen Audit
     for candidate in LINKEDIN_RANKERS_POOL:
         if "verified" not in (candidate.get("notes") or "").lower() or "/in/" not in candidate.get("profile_url", ""):
             continue
         if candidate["author_name"].lower() not in existing_names:
-            audit = dfe.DeepSeekFlashEngine.audit_linkedin_curator(candidate)
+            audit = ghe.GeminiHydrogenEngine.audit_linkedin_curator(candidate)
             if not audit.get("valid", True) or "fallback" in (audit.get("audit_note") or "").lower():
                 continue
             c.execute("""
@@ -1838,16 +1716,19 @@ def run_category_platform_hunter(agent_id: str, category_key: str, batch_size: i
         lic_notes = cand.get("licensing_notes", "") if is_sm else ""
         r_scope = cand.get("ranking_scope", "uk" if category_key == "uk_reviews" else "global")
 
-        # DeepSeek Flash v4.1 Algorithmic Gate & Live Network Verification
-        score_eval = dfe.DeepSeekFlashEngine.score_platform(cand, verify_network=True)
+        # Gemini 4 Hydrogen Algorithmic Gate, Live Probe & F6S/Gust Hub Classification
+        cand_with_cat = {**cand, "high_level_category": mapped_hl_cat}
+        score_eval = ghe.GeminiHydrogenEngine.score_platform(cand_with_cat, verify_network=True, use_llm=True)
         if not score_eval.get("is_qualified") or score_eval.get("score", 0) <= 0:
             return False  # Hard reject unverified / dead / synthetic / unsuitable platform
 
         cand_score = score_eval.get("score", cand.get("score", 85))
         cand_tier = score_eval.get("tier", "tier_2")
-        score_reasons = score_eval.get("score_reasons_summary") or "Verified by DeepSeek Flash v4.1"
+        score_reasons = score_eval.get("score_reasons_summary") or "Verified by Gemini 4 Hydrogen"
         healed_url = score_eval.get("healed_url") or cand["url"]
         healed_form_url = score_eval.get("healed_form_url") or cand.get("form_url", healed_url)
+        is_reg_hub = int(score_eval.get("is_registration_hub", 0))
+        criteria_json = json.dumps(score_eval.get("criteria_breakdown") or [])
 
         c.execute("""
         INSERT OR IGNORE INTO platforms (
@@ -1856,8 +1737,9 @@ def run_category_platform_hunter(agent_id: str, category_key: str, batch_size: i
             form_url, tier, intake_type, is_core_target, high_level_category,
             is_smartmatch, smartmatch_free, smartmatch_paid, smartmatch_model,
             licensing_notes, ranking_scope, draft_pitch, draft_full,
-            portal_link_ok, portal_http_status, form_link_ok, form_http_status, link_error, link_checked_at
-        ) VALUES (?, 'Accelerator Ecosystem', ?, ?, ?, ?, 'in_review', ?, 1, 'bot_assisted', 'submittable_directory', ?, ?, 'intake', 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            portal_link_ok, portal_http_status, form_link_ok, form_http_status, link_error, link_checked_at,
+            is_registration_hub, criteria_breakdown
+        ) VALUES (?, 'Accelerator Ecosystem', ?, ?, ?, ?, 'in_review', ?, 1, 'bot_assisted', 'submittable_directory', ?, ?, 'intake', 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             nm,
             healed_url,
@@ -1881,7 +1763,9 @@ def run_category_platform_hunter(agent_id: str, category_key: str, batch_size: i
             int(score_eval.get("form_link_ok", 1)),
             int(score_eval.get("form_http_status") or 200),
             score_eval.get("link_error") or "",
-            now
+            now,
+            is_reg_hub,
+            criteria_json
         ))
         existing_domains.add(dom)
         existing_names.add(nm.lower())

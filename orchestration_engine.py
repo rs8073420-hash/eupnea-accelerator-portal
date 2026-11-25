@@ -29,7 +29,7 @@ for i in range(1, 91):
     os.makedirs(os.path.join(PROFILES_BASE_DIR, f"agent_{i:02d}"), exist_ok=True)
 
 import presence_scoring_engine as pse
-import deepseek_flash_engine as dfe
+import gemini_hydrogen_engine as ghe
 
 DB_PATH = os.path.join(WORKSPACE_DIR, "presence_agent.db")
 
@@ -442,13 +442,13 @@ def run_coordinated_orchestration_cycle():
                 "name": name, "domain": domain, "url": f"https://{domain}",
                 "form_url": form_url, "category": category, "score": score
             }
-            score_eval = dfe.DeepSeekFlashEngine.score_platform(cand_payload, verify_network=True)
+            score_eval = ghe.GeminiHydrogenEngine.score_platform(cand_payload, verify_network=True, use_llm=True)
             if not score_eval.get("is_qualified") or score_eval.get("score", 0) <= 0:
                 continue
 
             draft = pse.generate_eupnea_draft_listing(name, domain, category)
             investor_kw = ["angelmatch", "investorhunt", "angel", "seedblink", "crowdcube", "seedrs", "shizune", "vcsheet", "republic", "syndicate", "capital"]
-            intake_kw = ["f6s", "gust", "theonevalley", "younoodle", "vc4a", "innoget", "gan.co", "agorize", "challengerocket", "submittable", "bridgeforbillions", "hello-tomorrow", "startupbootcamp", "foundersspace", "vestbee", "openvc", "incubatorlist", "roundfunded", "pitgrowth", "startupcorners", "listedstartups"]
+            intake_kw = ["f6s", "gust", "theonevalley", "younoodle", "vc4a", "innoget", "gan.co", "agorize", "challengerocket", "submittable", "bridgeforbillions", "hello-tomorrow", "startupbootcamp", "foundersspace", "vestbee", "openvc", "incubatorlist", "roundfunded", "pitgrowth", "startupcorners", "listedstartups", "opengrants", "applyseed", "acceleratorapp", "fundingcake"]
             
             is_investor = any(k in domain or k in name.lower() for k in investor_kw)
             is_intake = any(k in domain or k in name.lower() for k in intake_kw) and not is_investor
@@ -466,36 +466,40 @@ def run_coordinated_orchestration_cycle():
                 high_level_category = "Ecosystem Visibility & Program Discovery"
                 intake_type = "ecosystem_database"
                 intake_features = "Ecosystem Database Profile, Accelerator Tagging & SEO Discoverability"
+            is_reg_hub = int(score_eval.get("is_registration_hub", 0))
+            criteria_json = json.dumps(score_eval.get("criteria_breakdown") or [])
             c.execute("""
-                INSERT INTO platforms (name, domain, url, form_url, category, score, score_reasons, draft_pitch, draft_full, tracking_url, status, discovered_at, bot_verified, category_type, submission_mode, tier, intake_type, is_core_target, intake_features, high_level_category, portal_link_ok, portal_http_status, form_link_ok, form_http_status, link_error, link_checked_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'in_review', ?, 1, 'submittable_directory', 'Direct Portal', ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO platforms (name, domain, url, form_url, category, score, score_reasons, draft_pitch, draft_full, tracking_url, status, discovered_at, bot_verified, category_type, submission_mode, tier, intake_type, is_core_target, intake_features, high_level_category, portal_link_ok, portal_http_status, form_link_ok, form_http_status, link_error, link_checked_at, is_registration_hub, criteria_breakdown)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'in_review', ?, 1, 'submittable_directory', 'Direct Portal', ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 name, domain, score_eval.get("healed_url") or f"https://{domain}",
                 score_eval.get("healed_form_url") or form_url, category, score_eval["score"],
-                score_eval.get("score_reasons_summary") or "DeepSeek Flash v4.1 Verified Portal",
+                score_eval.get("score_reasons_summary") or "Gemini 4 Hydrogen Verified Portal",
                 draft["draft_pitch"], draft["draft_full"], draft["tracking_url"], now_str,
                 tier, intake_type, intake_features, high_level_category,
                 int(score_eval.get("portal_link_ok", 1)), int(score_eval.get("portal_http_status") or 200),
                 int(score_eval.get("form_link_ok", 1)), int(score_eval.get("form_http_status") or 200),
-                score_eval.get("link_error") or "", now_str
+                score_eval.get("link_error") or "", now_str, is_reg_hub, criteria_json
             ))
             existing_domains.add(domain)
             new_injections += 1
     if new_injections > 0:
         conn.commit()
 
-    # Fetch 90 qualified candidate platforms prioritizing Tier 1 & Direct Startup Engagement & Intake first
+    # Fetch 90 qualified candidate platforms prioritizing F6S/Gust Registration Hubs & Tier 1 first
     total_plat = c.execute("SELECT COUNT(*) FROM platforms WHERE is_core_target = 1 AND status NOT IN ('unqualified', 'not_suitable', 'dismissed', 'perk_benefit') AND score >= 70").fetchone()[0]
     offset = (_swarm_cycle_count * 90) % max(1, total_plat)
     platforms = [dict(r) for r in c.execute("""
-        SELECT id, name, domain, category, score, url, form_url, submitted_url, tracking_url, status, high_level_category, tier
+        SELECT id, name, domain, category, score, url, form_url, submitted_url, tracking_url, status, high_level_category, tier, COALESCE(is_registration_hub, 0) AS is_registration_hub
         FROM platforms
         WHERE status NOT IN ('unqualified', 'not_suitable', 'dismissed', 'perk_benefit') AND score >= 70
         ORDER BY CASE 
-            WHEN tier = 'tier_1' THEN 1 
-            WHEN high_level_category = 'Direct Startup Engagement & Intake' THEN 2 
-            WHEN tier = 'tier_2' THEN 3 
-            ELSE 4 
+            WHEN COALESCE(is_registration_hub, 0) = 1 AND tier = 'tier_1' THEN 1 
+            WHEN COALESCE(is_registration_hub, 0) = 1 THEN 2
+            WHEN tier = 'tier_1' THEN 3
+            WHEN high_level_category = 'Direct Startup Engagement & Intake' THEN 4 
+            WHEN tier = 'tier_2' THEN 5 
+            ELSE 6 
         END, score DESC, id ASC
         LIMIT 90 OFFSET ?
     """, (offset,)).fetchall()]
@@ -503,10 +507,10 @@ def run_coordinated_orchestration_cycle():
     if len(platforms) < 90:
         wrap_needed = 90 - len(platforms)
         wrap_platforms = [dict(r) for r in c.execute("""
-            SELECT id, name, domain, category, score, url, form_url, submitted_url, tracking_url, status, high_level_category, tier
+            SELECT id, name, domain, category, score, url, form_url, submitted_url, tracking_url, status, high_level_category, tier, COALESCE(is_registration_hub, 0) AS is_registration_hub
             FROM platforms
             WHERE status NOT IN ('unqualified', 'not_suitable', 'dismissed', 'perk_benefit') AND score >= 70
-            ORDER BY CASE WHEN tier = 'tier_1' THEN 1 WHEN tier = 'tier_2' THEN 2 ELSE 3 END, score DESC, id ASC
+            ORDER BY COALESCE(is_registration_hub, 0) DESC, CASE WHEN tier = 'tier_1' THEN 1 WHEN tier = 'tier_2' THEN 2 ELSE 3 END, score DESC, id ASC
             LIMIT ?
         """, (wrap_needed,)).fetchall()]
         platforms.extend(wrap_platforms)
@@ -539,16 +543,17 @@ def run_coordinated_orchestration_cycle():
         stage_num = squad_idx + 1
         latency = round((time.time() - t0) * 1000 + random.uniform(8.0, 22.0), 2)
 
-        # Run strict DeepSeek Flash v4.1 algorithmic pre-qualification & scoring
-        score_eval = dfe.DeepSeekFlashEngine.score_platform(target_platform, verify_network=False)
+        # Run strict Gemini 4 Hydrogen algorithmic pre-qualification, scoring & hub detection
+        score_eval = ghe.GeminiHydrogenEngine.score_platform(target_platform, verify_network=False)
         final_score = score_eval["score"] if score_eval.get("is_qualified") else 0
         eval_classification = score_eval.get("tier", "tier_2").upper()
+        hub_tag = "F6S/GUST HUB" if score_eval.get("is_registration_hub") else eval_classification
         draft = pse.generate_eupnea_draft_listing(name, domain, category)
 
         # Functional specialization task generation based on assigned Squad:
         if squad_idx == 0:
             # Squad Alpha: New Website Discovery & Rubric Rating (10 Agents)
-            current_task_text = f"🎯 [Browser: {browser_profile} | ALPHA #{squad_pos}] DEEPSEEK V4.1 GATE: Auditing '{domain}' | 4-Gate Rubric: {final_score}/100 ({eval_classification})."
+            current_task_text = f"🎯 [Browser: {browser_profile} | ALPHA #{squad_pos}] GEMINI 4 HYDROGEN GATE: Auditing '{domain}' | Rubric: {final_score}/100 ({hub_tag})."
             report = f"[{squad}] {agent_id}: Discovered '{name}' ({domain}). Computed prestige score: {final_score}/100. Handed off to Squad Beta for direct form extraction."
         elif squad_idx == 1:
             # Squad Beta: Direct Form Pathfinding & DOM Inputs (10 Agents)
@@ -722,9 +727,9 @@ def run_coordinated_orchestration_cycle():
         (
             "Agent-M10",
             "Astra-M10 (Knowledge Base Master)",
-            f"🏷️ Structuring ecosystem taxonomy across {total_plat} verified platforms & 22 distinct sectors (DeepTech, FinTech, HealthTech, AI Enterprise, University Labs).",
+            f"🏷️ Structuring ecosystem taxonomy across {total_plat} verified platforms (prioritizing F6S/Gust multi-programme hubs, SmartMatch engines, and UK rankings).",
             f"Indexed platforms into category graphs. Verified direct form URLs & domain relationships for '{sample_domains[0]}' and '{sample_domains[1]}'",
-            f"Taxonomy Report: {total_plat} platforms cataloged with exact sector tags and verified direct application form URLs. Clean domain graph maintained."
+            f"Taxonomy Report: {total_plat} platforms cataloged under Gemini 4 Hydrogen with F6S/Gust hub classification and direct form verification."
         )
     ]
 

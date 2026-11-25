@@ -31,11 +31,11 @@ CATEGORY_AGENTS_CONFIG = [
     {
         "id": "astra_r01",
         "agent_code": "Astra-R01",
-        "name": "LinkedIn Accelerator Ranker Hunter",
+        "name": "LinkedIn Accelerator Ranker Specialist",
         "category_key": "linkedin_rankers",
         "category_name": "LinkedIn Rankers & Influential Curators",
-        "avatar_badge": "⭐ VIP PINK",
-        "specialization": "Exclusively hunts LinkedIn curators, VCs, angel investors, and analysts who publish viral 'Top Accelerators' lists. Extracts reach, URLs, and synthesizes tailored Eupnea pitches.",
+        "avatar_badge": "Curators",
+        "specialization": "Identifies LinkedIn curators, VCs, angel investors, and analysts who publish top accelerator lists. Extracts reach, profile URLs, and tailored Eupnea outreach pitches.",
         "search_query_patterns": [
             'site:linkedin.com/posts "startup accelerators" "early stage" OR "UK" OR "top 20"',
             'site:linkedin.com/posts "best accelerators" "early stage" OR "pre-seed" "ranking"',
@@ -46,11 +46,11 @@ CATEGORY_AGENTS_CONFIG = [
     {
         "id": "astra_s01",
         "agent_code": "Astra-S01",
-        "name": "SmartMatch & Dealflow Engine Scout",
+        "name": "SmartMatch & Dealflow Engine Specialist",
         "category_key": "smartmatch",
         "category_name": "SmartMatch & Dealflow Licensing Engines",
-        "avatar_badge": "⚡ PURPLE",
-        "specialization": "Hunts two-sided matching platforms offering accelerator-startup SmartMatch licenses (IncubatorList, Round Funded, OpenVC, Vestbee) for continuous founder intake pipelines.",
+        "avatar_badge": "SmartMatch",
+        "specialization": "Finds two-sided matching platforms offering accelerator-startup SmartMatch licensing (IncubatorList, Round Funded, OpenVC, Vestbee) for founder intake.",
         "search_query_patterns": [
             '"startup accelerator smartmatch" OR "dealflow licensing" platform',
             'platforms like "incubatorlist.com" OR "roundfunded.com" startup matching',
@@ -64,8 +64,8 @@ CATEGORY_AGENTS_CONFIG = [
         "name": "UK Accelerator Review & Ranking Auditor",
         "category_key": "uk_reviews",
         "category_name": "UK Accelerator Review & Ranking Platforms",
-        "avatar_badge": "🏆 SKY BLUE",
-        "specialization": "Identifies UK-only accelerator rankings and analyst reviews (SeedLegals, Tracxn UK, PartnershipsBuddy). Strictly filters out self-promoting peer accelerators.",
+        "avatar_badge": "UK Rankings",
+        "specialization": "Identifies UK-only accelerator rankings and analyst reviews (SeedLegals, Tracxn UK, PartnershipsBuddy). Excludes individual peer accelerators.",
         "search_query_patterns": [
             '"Top UK startup accelerators" ranking list -site:accelerator.com',
             '"accelerators in united kingdom" analyst review directory list',
@@ -76,11 +76,11 @@ CATEGORY_AGENTS_CONFIG = [
     {
         "id": "astra_i01",
         "agent_code": "Astra-I01",
-        "name": "F6S/Gust Registration Hub & Programme Hunter",
+        "name": "F6S/Gust Registration Hub Specialist",
         "category_key": "engagement_intake",
         "category_name": "Direct Startup Application Intake Hubs",
-        "avatar_badge": "🚀 AMBER",
-        "specialization": "Powered by Gemini 4 Hydrogen: Hunts F6S/Gust-grade multi-programme accelerator marketplaces, built-in founder application forms, and public programme listing portals. Excludes single campus labs & perk-only sites.",
+        "avatar_badge": "Intake Hubs",
+        "specialization": "Powered by Gemini 4 Hydrogen: Identifies F6S/Gust-grade multi-programme accelerator marketplaces, built-in founder application forms, and public programme listing portals. Excludes single campus labs and perk-only sites.",
         "search_query_patterns": [
             '"list your accelerator" OR "register your programme" directory f6s gust',
             '"submit accelerator" OR "add your program" startup accelerator directory',
@@ -91,11 +91,11 @@ CATEGORY_AGENTS_CONFIG = [
     {
         "id": "astra_v01",
         "agent_code": "Astra-V01",
-        "name": "Investor Syndicate & Matchmaking Hunter",
+        "name": "Investor Syndicate & Matchmaking Specialist",
         "category_key": "investor_networks",
         "category_name": "Investor Match & Syndicate Networks",
-        "avatar_badge": "💼 EMERALD",
-        "specialization": "Discovers angel syndicates, venture matchmaking clubs, and private dealflow distribution networks.",
+        "avatar_badge": "Investors",
+        "specialization": "Identifies angel syndicates, venture matchmaking clubs, and structured dealflow distribution networks.",
         "search_query_patterns": [
             '"angel syndicate" accelerator dealflow matchmaking club UK',
             '"venture partner network" startup matchmaking portal directory',
@@ -105,11 +105,11 @@ CATEGORY_AGENTS_CONFIG = [
     {
         "id": "astra_e01",
         "agent_code": "Astra-E01",
-        "name": "Ecosystem Visibility & Directory Crawler",
+        "name": "Ecosystem Visibility & Directory Researcher",
         "category_key": "ecosystem_visibility",
         "category_name": "Venture Databases & Ecosystem Visibility",
-        "avatar_badge": "🌐 SLATE",
-        "specialization": "Crawls high-authority startup directories, SaaS launchpads, and venture registries to maximize programmatic SEO visibility.",
+        "avatar_badge": "Directories",
+        "specialization": "Finds high-authority startup directories, venture databases, and ecosystem registries to strengthen search visibility.",
         "search_query_patterns": [
             '"startup directory" submit accelerator profile high DA',
             '"venture capital database" list accelerator cohort',
@@ -122,8 +122,8 @@ CATEGORY_AGENTS_CONFIG = [
         "name": "UK Regional Chambers & Tech Clusters Lead",
         "category_key": "regional_chambers",
         "category_name": "UK Regional Chambers & Growth Hubs",
-        "avatar_badge": "🏛️ STONE",
-        "specialization": "Maps UK regional chambers of commerce, Local Enterprise Partnerships (LEPs), and civic innovation clusters (Manchester, Birmingham, Scotland, Bristol).",
+        "avatar_badge": "UK Chambers",
+        "specialization": "Maps UK regional chambers of commerce, Local Enterprise Partnerships (LEPs), and regional innovation clusters (Manchester, Birmingham, Scotland, Bristol).",
         "search_query_patterns": [
             '"chamber of commerce" tech accelerator business directory UK',
             '"regional growth hub" innovation accelerator program directory',
@@ -1942,7 +1942,7 @@ def run_linkedin_ranker_hunter(agent_id: str = "astra_r01", batch_size: int = 2)
     return {
         "success": True,
         "agent_code": "Astra-R01",
-        "agent_name": "LinkedIn Accelerator Ranker Hunter",
+        "agent_name": "LinkedIn Accelerator Ranker Specialist",
         "category": "linkedin_rankers",
         "newly_discovered": discovered,
         "count_added": len(discovered),

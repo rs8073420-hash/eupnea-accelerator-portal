@@ -37,196 +37,196 @@ SQUAD_CONFIG = [
     {
         "squad": "Squad Alpha",
         "role_title": "Discovery & Rubric Scoring",
-        "tag": "🎯 NEW WEBSITE DISCOVERY & SCORING",
-        "specialization": "Autonomous Web Scraping & 0-100 Prestige Rubric Rating",
+        "tag": "DISCOVERY & SCORING",
+        "specialization": "Directory Discovery & 0-100 Suitability Scoring",
         "range": (1, 10),
         "stage_duty": 1,
-        "description": "Sirf new websites aur startup directories dhundhna aur unhe strict rubric par rate karna."
+        "description": "Identifies startup directories and evaluates them against programme suitability criteria."
     },
     {
         "squad": "Squad Beta",
         "role_title": "Form Pathfinding & DOM Inputs",
-        "tag": "📝 FORM PATHFINDING & INPUT MAPPING",
-        "specialization": "Direct Form URL Discovery (/apply, /submit) & Input Mapping",
+        "tag": "FORM PATHFINDING",
+        "specialization": "Direct Application Form Verification & Field Mapping",
         "range": (11, 20),
         "stage_duty": 2,
-        "description": "Directory ke andar direct application form link aur input fields (Name, Bio, Tracking) extract karna."
+        "description": "Extracts direct submission form URLs and verifies form field accessibility."
     },
     {
         "squad": "Squad Gamma",
         "role_title": "Bespoke Pitch Synthesis",
-        "tag": "✍️ BESPOKE PITCH & CONTENT SYNTHESIS",
-        "specialization": "Tailored £50k–£250k Seed Pitch & 150-Word Listing Abstract",
+        "tag": "EDITORIAL COPY",
+        "specialization": "Tailored £50k-£250k Programme Abstract & Listing Copy",
         "range": (21, 30),
         "stage_duty": 3,
-        "description": "Har platform ke liye tailored Eupnea accelerator profile aur custom seed pitch draft karna."
+        "description": "Prepares tailored Eupnea UK accelerator copy and structured directory descriptions."
     },
     {
         "squad": "Squad Delta",
         "role_title": "Technical Integrity & SSL Gate",
-        "tag": "🛡️ TECHNICAL INTEGRITY & SSL GATE",
-        "specialization": "HTTP 200 Verification, SSL Expiry & Honeypot Filtering",
+        "tag": "LINK & SSL VERIFICATION",
+        "specialization": "HTTP 200 Verification, SSL Checks & Soft-404 Filtering",
         "range": (31, 40),
         "stage_duty": 4,
-        "description": "Live HTTP status checks, SSL validation, aur broken/dead redirects ko eliminate karna."
+        "description": "Verifies live HTTP status codes, SSL certificates, and removes dead or invalid URLs."
     },
     {
         "squad": "Squad Epsilon",
         "role_title": "Review Queue Staging",
-        "tag": "📋 REVIEW QUEUE STAGING & TRIAGE",
-        "specialization": "Review Queue Dispatch & Founder Decision Structuring",
+        "tag": "REVIEW STAGING",
+        "specialization": "Review Queue Preparation & Team Triage",
         "range": (41, 50),
         "stage_duty": 5,
-        "description": "Verified directory listings ko Review Queue me stage karna for Founder Human-in-the-Loop triage."
+        "description": "Stages verified directory candidates into the Review Queue for staff approval."
     },
     {
         "squad": "Squad Zeta",
         "role_title": "Headless Form Automation",
-        "tag": "🤖 HEADLESS FORM FILLING ENGINE",
-        "specialization": "Automated Browser-Use Pre-Fill with Eupnea UTM Parameters",
+        "tag": "SUBMISSION ASSIST",
+        "specialization": "Browser-Use Pre-Fill with Eupnea UTM Parameters",
         "range": (51, 60),
         "stage_duty": 6,
-        "description": "Approved platforms ke online forms par automated browser session chala ke credentials pre-fill karna."
+        "description": "Pre-fills approved external submission forms with consistent programme details."
     },
     {
         "squad": "Squad Eta",
         "role_title": "Live Listing URL Auditor",
-        "tag": "🌐 LIVE LISTING VERIFIER & URL AUDITOR",
-        "specialization": "External Directory Crawling & Submitted URL Verification",
+        "tag": "LISTING AUDIT",
+        "specialization": "Published Directory Verification & URL Capture",
         "range": (61, 70),
         "stage_duty": 7,
-        "description": "External portals par published listing crawl karke live submitted_url verify aur store karna."
+        "description": "Confirms published directory pages remain publicly accessible."
     },
     {
         "squad": "Squad Theta",
         "role_title": "Visitor UTM Attribution",
-        "tag": "📈 VISITOR TRACKING & TRAFFIC ATTRIBUTION",
-        "specialization": "Deterministic UTM Tracking & Real-Time Visitor Telemetry",
+        "tag": "TRAFFIC ATTRIBUTION",
+        "specialization": "Deterministic UTM Attribution & Referral Telemetry",
         "range": (71, 80),
         "stage_duty": 8,
-        "description": "Live traffic session capture karna, UTM tags attribute karna, aur visit counts dynamically update karna."
+        "description": "Captures referral traffic and attributes inbound clicks via UTM query parameters."
     },
     {
         "squad": "Squad Iota",
-        "role_title": "24/7 Uptime & Backlink Sentry",
-        "tag": "⚡ 24/7 BACKLINK MONITOR & UPTIME SENTRY",
-        "specialization": "Continuous Uptime Sentry & Broken Link Guard across 536+ Sites",
+        "role_title": "Uptime & Link Monitor",
+        "tag": "LINK HEALTH MONITOR",
+        "specialization": "Continuous Link Health Checks across Indexed Sites",
         "range": (81, 90),
         "stage_duty": 9,
-        "description": "Sabhi 536+ directory backlinks ko round-the-clock ping karke 100% uptime aur link health monitor karna."
+        "description": "Monitors indexed directory and form URLs for HTTP errors or link rot."
     },
 ]
 
 MANAGEMENT_AGENTS_DEF = [
     {
         "agent_id": "Agent-M01",
-        "name": "Astra-M01 (Supreme Commander)",
-        "role": "Chief Fleet Commander & Defcon-1 Watchdog",
+        "name": "Astra-M01 (Lead Coordinator)",
+        "role": "Operations Coordinator & Pipeline Lead",
         "category": "management",
-        "squad": "Executive Directorate",
-        "target_scope": "Continuous 24/7 Surveillance over all 9 Specialized Squads",
-        "current_task": "🚨 [DEFCON-1 STRICT SUPERVISION] Superintending 90 specialists across 9 specialized squads (Alpha to Iota). Sub-20ms latency mandated, zero slacking tolerated.",
-        "last_action": "Supreme Fleet Inspection: Audited 90 specialists. All 9 functional squads operational. Accuracy strictly locked at 100.0%.",
-        "last_report": "Defcon-1 Surveillance active: 9 specialized squads operating with dedicated division of labor. Quota targeting 10,000+ directories."
+        "squad": "Operations Lead",
+        "target_scope": "Coordinating all 9 operational squads across verification and discovery",
+        "current_task": "Coordinating 90 worker tasks across 9 functional squads covering discovery, form checks, and review staging.",
+        "last_action": "Completed scheduled fleet review across 9 squads and verified intake metrics.",
+        "last_report": "All 9 functional squads operating nominally across verified directories and application hubs."
     },
     {
         "agent_id": "Agent-M02",
         "name": "Astra-M02 (Discovery Monitor)",
-        "role": "Squad Alpha Supervisor: Discovery & Rubric Rating",
+        "role": "Squad Alpha Supervisor: Discovery & Rubric Scoring",
         "category": "management",
-        "squad": "Executive Directorate",
-        "target_scope": "Surveillance over Squad Alpha (Agents 01–10: Discovery & Rating)",
-        "current_task": "🎯 Monitoring Squad Alpha: Inspecting autonomous directory scrapers and validating 0-100 rubric calculations.",
-        "last_action": "Supervised Squad Alpha: Ingested fresh candidate directories, verified domain prestige, and confirmed rubric integrity.",
-        "last_report": "Squad Alpha Audit: 10 discovery specialists active. Continuous web search and rubric rating operating with zero false positives."
+        "squad": "Operations Lead",
+        "target_scope": "Squad Alpha (Agents 01-10: Discovery & Scoring)",
+        "current_task": "Reviewing candidate directories and checking Gemini 4 Hydrogen rubric classifications.",
+        "last_action": "Reviewed candidate domains submitted by Squad Alpha and confirmed scoring rules.",
+        "last_report": "Squad Alpha check complete: 10 discovery specialists active and aligned to category rules."
     },
     {
         "agent_id": "Agent-M03",
         "name": "Astra-M03 (Form Pathfinding Monitor)",
-        "role": "Squad Beta Supervisor: Form Extraction & DOM Mapping",
+        "role": "Squad Beta Supervisor: Form Extraction & URL Mapping",
         "category": "management",
-        "squad": "Executive Directorate",
-        "target_scope": "Surveillance over Squad Beta (Agents 11–20: Direct Forms)",
-        "current_task": "📝 Monitoring Squad Beta: Verifying direct application links (/apply, /submit) and DOM input mappings across directories.",
-        "last_action": "Supervised Squad Beta: Audited 10 form pathfinders. All candidate directories mapped with direct submission routes.",
-        "last_report": "Squad Beta Audit: 10 form pathfinders active. Zero 404 dead links permitted on application routes."
+        "squad": "Operations Lead",
+        "target_scope": "Squad Beta (Agents 11-20: Direct Forms)",
+        "current_task": "Verifying direct application URLs (/apply, /submit) and registration routes across active platforms.",
+        "last_action": "Audited 10 form specialists; verified direct registration routes and flagged 404 endpoints.",
+        "last_report": "Squad Beta check complete: form links audited and broken links flagged before review."
     },
     {
         "agent_id": "Agent-M04",
-        "name": "Astra-M04 (Pitch QA Monitor)",
-        "role": "Squad Gamma Supervisor: Pitch & Copy Synthesis",
+        "name": "Astra-M04 (Editorial QA Monitor)",
+        "role": "Squad Gamma Supervisor: Pitch & Copy Review",
         "category": "management",
-        "squad": "Executive Directorate",
-        "target_scope": "Surveillance over Squad Gamma (Agents 21–30: Content)",
-        "current_task": "✍️ Monitoring Squad Gamma: Reviewing 150-word abstracts and canonical £50k–£250k seed accelerator pitch copy.",
-        "last_action": "Supervised Squad Gamma: Standardized bespoke pitch copy across all newly discovered accelerator directories.",
-        "last_report": "Squad Gamma Audit: 10 copy specialists active. 100% adherence to Eupnea London accelerator value proposition."
+        "squad": "Operations Lead",
+        "target_scope": "Squad Gamma (Agents 21-30: Content)",
+        "current_task": "Reviewing 150-word abstracts and £50k-£250k accelerator descriptions for clarity and accuracy.",
+        "last_action": "Reviewed bespoke programme copy across newly staged accelerator directories.",
+        "last_report": "Squad Gamma check complete: pitch drafts aligned with Eupnea programme guidelines."
     },
     {
         "agent_id": "Agent-M05",
-        "name": "Astra-M05 (Technical Integrity Monitor)",
-        "role": "Squad Delta Supervisor: SSL Gate & Connectivity",
+        "name": "Astra-M05 (Link Integrity Monitor)",
+        "role": "Squad Delta Supervisor: HTTP & SSL Checks",
         "category": "management",
-        "squad": "Executive Directorate",
-        "target_scope": "Surveillance over Squad Delta (Agents 31–40: Health & SSL)",
-        "current_task": "🛡️ Monitoring Squad Delta: Auditing HTTP status codes, SSL certificate expirations, and anti-bot firewall responses.",
-        "last_action": "Supervised Squad Delta: Verified live endpoint ping responses (200 OK). Filtered expired certificates and broken routes.",
-        "last_report": "Squad Delta Audit: 10 integrity specialists active. Zero connection failures or security breaches detected."
+        "squad": "Operations Lead",
+        "target_scope": "Squad Delta (Agents 31-40: Health & SSL)",
+        "current_task": "Checking HTTP status codes, SSL certificate validity, and soft-404 error responses.",
+        "last_action": "Verified live HTTP responses and separated unreachable or parked domains.",
+        "last_report": "Squad Delta check complete: technical health checks updated across active links."
     },
     {
         "agent_id": "Agent-M06",
-        "name": "Astra-M06 (Review Staging Supervisor)",
-        "role": "Squad Epsilon Supervisor: Review Queue Dispatch",
+        "name": "Astra-M06 (Review Queue Lead)",
+        "role": "Squad Epsilon Supervisor: Review Queue Staging",
         "category": "management",
-        "squad": "Executive Directorate",
-        "target_scope": "Surveillance over Squad Epsilon (Agents 41–50: Review Staging)",
-        "current_task": "📋 Monitoring Squad Epsilon: Staging qualified listings into Review Queue for Founder Human-in-the-Loop triage.",
-        "last_action": "Supervised Squad Epsilon: Staged qualified candidates into Review Queue with 1-click action buttons.",
-        "last_report": "Squad Epsilon Audit: 10 staging architects active. Review queue populated with verified directory candidates."
+        "squad": "Operations Lead",
+        "target_scope": "Squad Epsilon (Agents 41-50: Review Staging)",
+        "current_task": "Staging qualified listings into the Review Queue for staff sign-off.",
+        "last_action": "Updated Review Queue priorities by suitability score and link health.",
+        "last_report": "Squad Epsilon check complete: Review Queue ready for team triage."
     },
     {
         "agent_id": "Agent-M07",
-        "name": "Astra-M07 (Form Automation Monitor)",
-        "role": "Squad Zeta Supervisor: Headless Browser-Use Engine",
+        "name": "Astra-M07 (Submission Assist Monitor)",
+        "role": "Squad Zeta Supervisor: Form Automation",
         "category": "management",
-        "squad": "Executive Directorate",
-        "target_scope": "Surveillance over Squad Zeta (Agents 51–60: Form Automation)",
-        "current_task": "🤖 Monitoring Squad Zeta: Inspecting automated headless browser-use sessions pre-filling submission forms.",
-        "last_action": "Supervised Squad Zeta: Audited automated form inputs, name formatting, and UTM parameter placements.",
-        "last_report": "Squad Zeta Audit: 10 automation specialists active. Headless form pre-fill sessions running with 100% accuracy."
+        "squad": "Operations Lead",
+        "target_scope": "Squad Zeta (Agents 51-60: Form Automation)",
+        "current_task": "Inspecting browser-use form pre-fill templates and UTM parameter formatting.",
+        "last_action": "Verified form field mapping and tracking link formatting.",
+        "last_report": "Squad Zeta check complete: submission templates verified."
     },
     {
         "agent_id": "Agent-M08",
         "name": "Astra-M08 (Listing URL Auditor)",
         "role": "Squad Eta Supervisor: Live Listing Verification",
         "category": "management",
-        "squad": "Executive Directorate",
-        "target_scope": "Surveillance over Squad Eta (Agents 61–70: URL Verification)",
-        "current_task": "🌐 Monitoring Squad Eta: Crawling external portals to verify published directory listings and capture submitted URLs.",
-        "last_action": "Supervised Squad Eta: Confirmed published listings on external portals and locked verified live URLs.",
-        "last_report": "Squad Eta Audit: 10 listing verifiers active. External directory listings confirmed with valid live addresses."
+        "squad": "Operations Lead",
+        "target_scope": "Squad Eta (Agents 61-70: URL Verification)",
+        "current_task": "Checking published directory pages and verifying recorded submitted URLs.",
+        "last_action": "Confirmed submitted URL status across external listings.",
+        "last_report": "Squad Eta check complete: live listing URLs verified."
     },
     {
         "agent_id": "Agent-M09",
         "name": "Astra-M09 (Traffic Attribution Monitor)",
         "role": "Squad Theta Supervisor: UTM Traffic Attribution",
         "category": "management",
-        "squad": "Executive Directorate",
-        "target_scope": "Surveillance over Squad Theta (Agents 71–80: Visitor Attribution)",
-        "current_task": "📈 Monitoring Squad Theta: Tracking incoming traffic sessions via deterministic UTM parameters (?utm_source=...).",
-        "last_action": "Supervised Squad Theta: Attributed live visitor sessions to submitted platforms. Verified listing sources counts.",
-        "last_report": "Squad Theta Audit: 10 attribution specialists active. Real-time visitor attribution operating with zero latency."
+        "squad": "Operations Lead",
+        "target_scope": "Squad Theta (Agents 71-80: Visitor Attribution)",
+        "current_task": "Monitoring referral traffic tagged with deterministic UTM parameters (?utm_source=...).",
+        "last_action": "Reconciled referral visit telemetry against active directory domains.",
+        "last_report": "Squad Theta check complete: attribution tracking operational."
     },
     {
         "agent_id": "Agent-M10",
-        "name": "Astra-M10 (24/7 Uptime Sentry Watchdog)",
-        "role": "Squad Iota Supervisor: 24/7 Uptime & SQLite WAL",
+        "name": "Astra-M10 (Link Health Monitor)",
+        "role": "Squad Iota Supervisor: Continuous Uptime Checks",
         "category": "management",
-        "squad": "Executive Directorate",
-        "target_scope": "Surveillance over Squad Iota (Agents 81–90: Uptime Sentry)",
-        "current_task": "⚡ Monitoring Squad Iota: Round-the-clock ping monitoring of 536+ directory listings and continuous SQLite WAL sync.",
-        "last_action": "Supervised Squad Iota: Continuous ping verification completed across 536+ listings. Zero link decay detected.",
-        "last_report": "Squad Iota Audit: 10 uptime sentries active. 100% ecosystem link health and real-time database synchronization."
+        "squad": "Operations Lead",
+        "target_scope": "Squad Iota (Agents 81-90: Uptime Monitor)",
+        "current_task": "Monitoring active directory and form URLs for HTTP availability and database consistency.",
+        "last_action": "Completed scheduled link health pass across active platform records.",
+        "last_report": "Squad Iota check complete: ecosystem health telemetry synchronized."
     }
 ]
 
@@ -395,18 +395,17 @@ def compute_fleet_evaluation() -> Dict[str, Any]:
     trailing_performer = agents[-1] if agents else top_performer
 
     disciplinary_logs = [
-        f"[{now_hms}] 🚨 Astra-M01 DEFCON-1 SURVEILLANCE: Auditing 90 search specialists in real-time. Zero slacking tolerated.",
-        f"[{now_hms}] 🎖️ Astra-M01 COMMENDATION: {top_performer['agent_id']} ({top_performer['name']}) leading in {top_performer['squad']} ({top_performer['latency_ms']}ms). Approved S-Tier pace.",
-        f"[{now_hms}] 👁️ Astra-M01 AGENT INSPECTION: Scrutinized {mid_performer['agent_id']} in {mid_performer['squad']} -> Current Task active & verified nominal.",
-        f"[{now_hms}] ⚠️ Astra-M01 SCRUTINY NOTICE: Squad '{lagging_squad}' placed on disciplinary watch. Trailing unit {trailing_performer['agent_id']} ordered to accelerate CDP speed.",
-        f"[{now_hms}] 🛡️ Astra-M01 DIRECTIVE: Enforcing 100% verified genuine domain intake. All {total_plat_count} platforms actively monitored & round-robin sharded across 90 agents."
+        f"[{now_hms}] Operations Review: 90 worker tasks synchronized across 9 functional squads.",
+        f"[{now_hms}] Benchmark Leader: {top_performer['agent_id']} ({top_performer['name']}) in {top_performer['squad']} ({top_performer['latency_ms']}ms).",
+        f"[{now_hms}] Spot Check: {mid_performer['agent_id']} ({mid_performer['squad']}) verified nominal.",
+        f"[{now_hms}] Latency Flag: {lagging_squad} queued for optimization ({trailing_performer['agent_id']}).",
+        f"[{now_hms}] Intake Policy: 100% genuine domain verification active across {total_plat_count} indexed platforms."
     ]
 
     strict_assessment = (
-        f"🚨 DEFCON-1 STRICT SUPERVISION ACTIVE (Directive by Commander Aadarsh). "
-        f"Astra-M01 has placed all 90 browser specialists under zero-tolerance inspection. "
-        f"{best_squad} is meeting S-Tier quotas, but {lagging_squad} has been placed under HIGH SCRUTINY to eliminate latency lag. "
-        f"Zero slacking, zero excuses: Quota set to 10,000+ global innovation portals. Accuracy strictly locked at 100.0%."
+        f"Operations summary: 90 pipeline tasks audited across 9 squads under Gemini 4 Hydrogen verification. "
+        f"{best_squad} is leading throughput, while {lagging_squad} is flagged for latency optimization. "
+        f"All {total_plat_count} platforms are subject to strict HTTP/form health checks and exclusion of non-eligible domains."
     )
 
     return {
@@ -553,40 +552,40 @@ def run_coordinated_orchestration_cycle():
         # Functional specialization task generation based on assigned Squad:
         if squad_idx == 0:
             # Squad Alpha: New Website Discovery & Rubric Rating (10 Agents)
-            current_task_text = f"🎯 [Browser: {browser_profile} | ALPHA #{squad_pos}] GEMINI 4 HYDROGEN GATE: Auditing '{domain}' | Rubric: {final_score}/100 ({hub_tag})."
-            report = f"[{squad}] {agent_id}: Discovered '{name}' ({domain}). Computed prestige score: {final_score}/100. Handed off to Squad Beta for direct form extraction."
+            current_task_text = f"[{browser_profile} | Alpha #{squad_pos}] Gemini 4 Hydrogen Gate: Auditing '{domain}' | Score: {final_score}/100 ({hub_tag})."
+            report = f"[{squad}] {agent_id}: Evaluated '{name}' ({domain}). Suitability score: {final_score}/100. Handed off to Squad Beta for form verification."
         elif squad_idx == 1:
             # Squad Beta: Direct Form Pathfinding & DOM Inputs (10 Agents)
-            current_task_text = f"📝 [Browser: {browser_profile} | BETA #{squad_pos}] FORM PATHFINDING: Crawling '{domain}' | Located direct form '{form_url}' | DOM input fields mapped."
-            report = f"[{squad}] {agent_id}: Extracted application endpoint '{form_url}' for '{name}'. DOM inputs mapped for submission."
+            current_task_text = f"[{browser_profile} | Beta #{squad_pos}] Form Pathfinding: Checking '{domain}' | Direct form: '{form_url}'."
+            report = f"[{squad}] {agent_id}: Extracted application endpoint '{form_url}' for '{name}'."
         elif squad_idx == 2:
             # Squad Gamma: Bespoke Pitch Synthesis (10 Agents)
-            current_task_text = f"✍️ [Browser: {browser_profile} | GAMMA #{squad_pos}] PITCH SYNTHESIS: Synthesizing tailored 150-word Eupnea seed pitch (£50k–£250k) for '{name}'."
-            report = f"[{squad}] {agent_id}: Generated bespoke listing copy and canonical London accelerator value proposition for '{name}'."
+            current_task_text = f"[{browser_profile} | Gamma #{squad_pos}] Copy Preparation: Preparing 150-word Eupnea seed pitch (£50k-£250k) for '{name}'."
+            report = f"[{squad}] {agent_id}: Prepared listing copy and London accelerator value proposition for '{name}'."
         elif squad_idx == 3:
             # Squad Delta: Technical Integrity & SSL Gate (10 Agents)
-            current_task_text = f"🛡️ [Browser: {browser_profile} | DELTA #{squad_pos}] TECHNICAL INTEGRITY: Pinging '{target_url}' (HTTP 200 OK) | SSL certificate valid | Zero honeypots."
-            report = f"[{squad}] {agent_id}: Technical audit passed for '{domain}'. Live HTTP response confirmed, SSL valid."
+            current_task_text = f"[{browser_profile} | Delta #{squad_pos}] Link Health: Checking '{target_url}' HTTP status and SSL validity."
+            report = f"[{squad}] {agent_id}: Technical link check completed for '{domain}'."
         elif squad_idx == 4:
             # Squad Epsilon: Review Queue Staging (10 Agents)
-            current_task_text = f"📋 [Browser: {browser_profile} | EPSILON #{squad_pos}] REVIEW STAGING: Staging verified directory draft for '{name}' in Review Queue for Founder approval."
-            report = f"[{squad}] {agent_id}: Staged '{name}' with direct form in Review Queue. Enforcing Founder Human-in-the-Loop decision gate."
+            current_task_text = f"[{browser_profile} | Epsilon #{squad_pos}] Review Staging: Staging verified listing for '{name}' into Review Queue."
+            report = f"[{squad}] {agent_id}: Staged '{name}' in Review Queue for staff review."
         elif squad_idx == 5:
             # Squad Zeta: Headless Form Automation (10 Agents)
-            current_task_text = f"🤖 [Browser: {browser_profile} | ZETA #{squad_pos}] FORM AUTOMATION: Pre-filling submission fields for '{name}' via headless browser-use with Eupnea UTM parameters."
-            report = f"[{squad}] {agent_id}: Automated form pre-fill executed for '{name}'. Prepared draft preview for external listing."
+            current_task_text = f"[{browser_profile} | Zeta #{squad_pos}] Submission Prep: Preparing form pre-fill template for '{name}' with UTM parameters."
+            report = f"[{squad}] {agent_id}: Form pre-fill template ready for '{name}'."
         elif squad_idx == 6:
             # Squad Eta: Live Listing URL Auditor (10 Agents)
-            current_task_text = f"🌐 [Browser: {browser_profile} | ETA #{squad_pos}] URL AUDIT: Crawling external portal to verify published listing & recording live submitted URL for '{name}'."
-            report = f"[{squad}] {agent_id}: Verified live published listing on '{domain}'. Confirmed external public visibility."
+            current_task_text = f"[{browser_profile} | Eta #{squad_pos}] URL Audit: Checking published directory page for '{name}'."
+            report = f"[{squad}] {agent_id}: Verified published listing status on '{domain}'."
         elif squad_idx == 7:
             # Squad Theta: Visitor UTM Attribution (10 Agents)
-            current_task_text = f"📈 [Browser: {browser_profile} | THETA #{squad_pos}] VISITOR ATTRIBUTION: Tracking incoming traffic sessions via UTM parameters: utm_source={domain.replace('.', '_')}."
-            report = f"[{squad}] {agent_id}: Attribution monitor active on '{domain}'. Telemetry listening for inbound visitor clicks."
+            current_task_text = f"[{browser_profile} | Theta #{squad_pos}] Attribution: Tracking referral visits via utm_source={domain.replace('.', '_')}."
+            report = f"[{squad}] {agent_id}: Attribution tracking active for '{domain}'."
         else:
-            # Squad Iota: 24/7 Uptime & Backlink Sentry (10 Agents)
-            current_task_text = f"⚡ [Browser: {browser_profile} | IOTA #{squad_pos}] 24/7 UPTIME SENTRY: Continuous ping monitoring of '{domain}' backlink to prevent link decay & 404 errors."
-            report = f"[{squad}] {agent_id}: 24/7 backlink ping completed for '{name}'. Uptime confirmed 100%, zero link decay."
+            # Squad Iota: Uptime & Backlink Monitor (10 Agents)
+            current_task_text = f"[{browser_profile} | Iota #{squad_pos}] Uptime Monitor: Checking availability and link integrity for '{domain}'."
+            report = f"[{squad}] {agent_id}: Scheduled link health check completed for '{name}'."
 
         return {
             "agent_id": agent_id,
@@ -663,73 +662,73 @@ def run_coordinated_orchestration_cycle():
     management_updates = [
         (
             "Agent-M01",
-            "Astra-M01 (General Manager)",
-            f"🚨 [DEFCON-1 STRICT SUPERVISION] Scrutinizing 90 search specialists across {total_plat} genuine platforms (Shard {shard_idx}/{total_shards}). Fastest: {fastest_res['agent_id']} ({fastest_res['latency_ms']}ms). Top: {best_squad}. Zero slacking tolerated.",
-            f"Audited 90 agents in {duration_worker}ms across {total_plat} platforms. Inspected {fastest_res['agent_id']} on '{fastest_res['target_domain']}'. Scrutinizing {lagging_squad}.",
-            f"Astra-M01 Live Command: Fleet processing 500+ genuine platforms (Total: {total_plat}, 100% active DNS). Avg latency: {avg_lat}ms. Active targets: {', '.join(sample_domains)}. 90/90 browser profiles locked to peak performance."
+            "Astra-M01 (Lead Coordinator)",
+            f"Coordinating 90 worker tasks across {total_plat} verified platforms (Batch {shard_idx}/{total_shards}). Fastest worker: {fastest_res['agent_id']} ({fastest_res['latency_ms']}ms). Lead squad: {best_squad}.",
+            f"Reviewed 90 worker states in {duration_worker}ms across {total_plat} platforms. Inspected {fastest_res['agent_id']} on '{fastest_res['target_domain']}'. Monitoring {lagging_squad}.",
+            f"Operations summary: Tracking {total_plat} genuine platforms. Avg latency: {avg_lat}ms. Sample domains: {', '.join(sample_domains)}."
         ),
         (
             "Agent-M02",
             "Astra-M02 (Data Collector)",
-            f"📥 Ingesting live DOM trees & candidate dossiers from 90 dedicated browser-use profiles across {best_squad} and regional squads.",
-            f"Ingested 90 real-time DOM snapshots from '{sample_domains[0]}', '{sample_domains[1]}', '{sample_domains[2]}'. Direct forms parsed.",
-            f"Data Ingestion Report: 90 live dossiers received for Shard {shard_idx}/{total_shards}. 100% verified domains, 0 synthetic links. Form inputs parsed for Eupnea intake."
+            f"Collecting candidate records and DOM metadata from active profiles across {best_squad}.",
+            f"Collected snapshots for '{sample_domains[0]}', '{sample_domains[1]}', '{sample_domains[2]}'.",
+            f"Data Ingestion Report: 90 candidate updates processed for Batch {shard_idx}/{total_shards} with zero synthetic links."
         ),
         (
             "Agent-M03",
             "Astra-M03 (Compliance Auditor)",
-            "⚖️ Real-time audit of 90 scoring calculations against strict +30/+15/+10 arithmetic rubric & hard-reject filters.",
-            f"Audited {sample_targets[0]} & {sample_targets[1]}. Verified points arithmetic: real directory (+30), submit path (+15). 0 compliance errors.",
-            "Compliance Audit Report: 90/90 candidate evaluations verified against October 2026 PDF Brief. Zero hallucinations, 100% mathematical integrity."
+            "Checking scoring calculations against configurable rubric points and strict hard-reject filters.",
+            f"Audited {sample_targets[0]} & {sample_targets[1]}. Confirmed point rubric weights and gate compliance.",
+            "Compliance Report: All active candidate scores verified against Panagiotis suitability checklist."
         ),
         (
             "Agent-M04",
-            "Astra-M04 (Approval Queue Master)",
-            f"📋 Staging qualified directory candidates with direct form links in Review Queue across {total_plat} platforms. Enforcing Founder Human-in-the-Loop policy.",
-            f"Dispatched verified candidates from Shard {shard_idx} to Review Queue. Awaiting Human Founder sign-off.",
-            f"Approval Gateway Report: Staging verified platforms in Review Queue (Room 2). Founder approval gate strictly enforced with direct form deep-links."
+            "Astra-M04 (Review Queue Lead)",
+            f"Staging qualified directories with verified form links into Review Queue across {total_plat} platforms.",
+            f"Dispatched verified candidates from Batch {shard_idx} to Review Queue for staff approval.",
+            "Review Queue Report: Staged platforms prioritized by suitability score and link health."
         ),
         (
             "Agent-M05",
-            "Astra-M05 (Website Live Sync)",
-            f"🔄 Pushing live 100-agent swarm telemetry to http://localhost:8855, Door 1 Public Portal, and SQLite WAL.",
-            f"Pushed cycle #{_swarm_cycle_count} payload to website UI in {duration_worker}ms. Active WebSocket & polling stream synced.",
-            f"Website Live Sync Report: Real-time UI refresh active at 1.5s interval. 100 agents live on screen. 0 dropped frames."
+            "Astra-M05 (Portal Operations Sync)",
+            "Syncing workspace telemetry to the portal UI and SQLite WAL database.",
+            f"Updated cycle #{_swarm_cycle_count} state in {duration_worker}ms.",
+            "Portal Sync Report: Telemetry and workspace views synchronized."
         ),
         (
             "Agent-M06",
-            "Astra-M06 (Fleet Health Monitor)",
-            f"🩺 Continuous health telemetry on 90 parallel threads and 10 executive officer daemons. Zero memory leak monitoring.",
-            f"Measured memory RSS delta: +0.00 MB. Thread pool health: 100% nominal. Latency: {fastest_res['latency_ms']}ms - {slowest_res['latency_ms']}ms.",
-            "Fleet Health Report: All 100 agent nodes healthy. SQLite WAL concurrency optimal with 0 database locks. Self-healing supervisor standing by."
+            "Astra-M06 (System Health Monitor)",
+            "Monitoring worker threads and SQLite connection health.",
+            f"Measured response latency: {fastest_res['latency_ms']}ms - {slowest_res['latency_ms']}ms. Zero database locks.",
+            "System Health Report: All worker processes and WAL storage operating normally."
         ),
         (
             "Agent-M07",
             "Astra-M07 (Attribution Engine)",
-            "📈 Live visitor tracking on submitted directories with deterministic UTM parameters (?utm_source=...&utm_medium=directory).",
-            "Logged incoming attribution telemetry for Eupnea Accelerator 2026. Top referrer: Y Combinator & Techstars.",
-            "Attribution Report: Submitted directories active. Verified visit logs matching PDF Brief Page 9 session isolation rules."
+            "Tracking referral visits on submitted directories using deterministic UTM tags.",
+            "Updated attribution telemetry for active accelerator listings.",
+            "Attribution Report: Referral tracking and UTM visit logs operational."
         ),
         (
             "Agent-M08",
-            "Astra-M08 (Listing Copy Specialist)",
-            f"✍️ Synthesizing bespoke £50k–£250k seed funding listing copy, 60-word abstracts, and 300-word deep pitches for newly discovered directories.",
-            f"Generated tailored pitch copy for '{sample_targets[0]}' and '{sample_targets[1]}'. Highlights Discover-Design-Deliver methodology.",
-            "Editorial Report: 90 bespoke Eupnea directory pitches generated. Copy aligns 100% with Eupnea Brand Guidelines."
+            "Astra-M08 (Editorial Copy Specialist)",
+            "Preparing £50k-£250k seed accelerator abstracts and custom directory descriptions.",
+            f"Prepared draft copy for '{sample_targets[0]}' and '{sample_targets[1]}'.",
+            "Editorial Report: Listing copy aligned with Eupnea UK Accelerator guidelines."
         ),
         (
             "Agent-M09",
-            "Astra-M09 (Dynamic Discovery Scaler)",
-            f"🌐 Continuous discovery scaling across UK, European & Global innovation hubs. Managing {total_plat} verified genuine platforms.",
-            f"Rotated 90 search agents to Platform Shard #{shard_idx} of {total_shards} ({offset+1} to {min(offset+90, total_plat)} of {total_plat}).",
-            f"Discovery Scaler Report: {total_plat} verified genuine platforms indexed (0 synthetic/dead). Continuous round-robin sharding active across all 9 regional squads."
+            "Astra-M09 (Discovery Coordinator)",
+            f"Coordinating UK, European & Global directory discovery across {total_plat} genuine platforms.",
+            f"Rotated batch #{shard_idx} of {total_shards} ({offset+1} to {min(offset+90, total_plat)} of {total_plat}).",
+            f"Discovery Report: {total_plat} verified platforms indexed across ecosystem categories."
         ),
         (
             "Agent-M10",
-            "Astra-M10 (Knowledge Base Master)",
-            f"🏷️ Structuring ecosystem taxonomy across {total_plat} verified platforms (prioritizing F6S/Gust multi-programme hubs, SmartMatch engines, and UK rankings).",
-            f"Indexed platforms into category graphs. Verified direct form URLs & domain relationships for '{sample_domains[0]}' and '{sample_domains[1]}'",
-            f"Taxonomy Report: {total_plat} platforms cataloged under Gemini 4 Hydrogen with F6S/Gust hub classification and direct form verification."
+            "Astra-M10 (Taxonomy Lead)",
+            f"Maintaining category taxonomy across {total_plat} platforms (prioritizing F6S/Gust registration hubs, SmartMatch engines, and UK rankings).",
+            f"Indexed category metadata and form routes for '{sample_domains[0]}' and '{sample_domains[1]}'.",
+            f"Taxonomy Report: {total_plat} platforms organized under Gemini 4 Hydrogen hub classifications."
         )
     ]
 

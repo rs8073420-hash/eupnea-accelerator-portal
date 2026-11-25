@@ -85,7 +85,9 @@ CATEGORY_TRAINING_BLUEPRINTS: Dict[str, Dict[str, Any]] = {
         "positive_keywords": [
             "match", "matching", "smartmatch", "dealflow", "deal flow", "syndicate",
             "startup-investor", "accelerator", "licensing", "pipeline", "connect startups",
-            "matching platform", "founder matching", "scouting", "venture"
+            "matching platform", "founder matching", "scouting", "venture", "investability",
+            "co-investment", "investor", "connectd", "equitymatch", "shipshape", "pitchwise",
+            "startupradar", "fundinghero"
         ],
         "negative_keywords": [
             "wordpress plugin", "chrome extension", "news article only", "generic chamber of commerce"
@@ -239,7 +241,22 @@ SEARCH_ENGINE_NOISE_DOMAINS = {
     "google.com", "bing.com", "duckduckgo.com", "yahoo.com", "youtube.com",
     "facebook.com", "instagram.com", "twitter.com", "x.com", "tiktok.com",
     "wikipedia.org", "reddit.com", "quora.com", "medium.com", "substack.com",
-    "linkedin.com", "github.com", "amazon.com", "apple.com", "microsoft.com",
+    "linkedin.com", "github.com", "raw.githubusercontent.com", "gist.github.com",
+    "amazon.com", "apple.com", "microsoft.com", "copilot.com", "learn.microsoft.com",
+    "w3.org", "schema.org", "fonts.googleapis.com", "fonts.gstatic.com",
+    "googletagmanager.com", "google-analytics.com", "cloudflare.com",
+    "cloudflareinsights.com", "jsdelivr.net", "cdnjs.cloudflare.com",
+    "wordpress.org", "wordpress.com", "wp.com", "api.w.org", "s.w.org",
+    "gravatar.com", "shields.io", "tawk.to", "embed.tawk.to", "freshdesk.com",
+    "howtogeek.com", "goodreturns.in", "forbes.com", "techcrunch.com",
+    "investopedia.com", "cnbc.com", "bbc.com", "bbc.co.uk", "theguardian.com",
+    "nytimes.com", "bloomberg.com", "reuters.com", "yoast.com", "gmpg.org",
+    "dictionary.cambridge.org", "merriam-webster.com", "collinsdictionary.com",
+    "stripe.com", "cnet.com", "g2digitalmarkets.com", "cybo.com", "raddle.me",
+    "news.ycombinator.com", "designernews.co", "slashdot.org", "alistapart.com",
+    "changelog.com", "zapier.com", "slack.com", "productschool.com",
+    "cnn.com", "businessinsider.com", "mashable.com", "inc.com", "fastcompany.com",
+    "wired.com", "theverge.com", "zdnet.com",
 }
 
 
@@ -402,7 +419,15 @@ def classify_candidate_for_category(
         uk_signals = (
             domain.endswith(".uk")
             or domain.endswith(".co.uk")
-            or any(w in text_blob for w in ("uk", "united kingdom", "british", "london", "scotland", "wales", "england", "manchester", "birmingham", "bristol", "cambridge", "oxford", "seedlegals", "beauhurst", "tracxn", "sifted", "ukbaa", "startups.co.uk", "enterprisenation", "enterprise nation", "british business bank", "techround", "uktech", "partnershipsbuddy", "growthbusiness", "scotlandis"))
+            or any(w in text_blob for w in (
+                "uk", "united kingdom", "british", "london", "scotland", "scottish", "wales",
+                "england", "manchester", "birmingham", "bristol", "cambridge", "oxford",
+                "seedlegals", "beauhurst", "tracxn", "sifted", "ukbaa", "startups.co.uk",
+                "enterprisenation", "enterprise nation", "british business bank", "techround",
+                "uktech", "partnershipsbuddy", "growthbusiness", "scotlandis", "smeweb",
+                "bmmagazine", "realbusiness", "bytestart", "businessadvice",
+                "elitebusinessmagazine", "entrepreneurplus", "entrepreneurhandbook"
+            ))
         )
         if not uk_signals:
             return {
@@ -660,8 +685,57 @@ def get_training_profile(agent_id: str, db_path: str = DEFAULT_DB_PATH) -> Optio
 
 
 # ==============================================================================
-# 5. LIVE WEB DISCOVERY ENGINE (WHEN LOCAL POOLS ARE EXHAUSTED)
+# 5. LIVE WEB DISCOVERY ENGINE (MULTI-SOURCE HUBS + GITHUB + HN + FILTERED RSS)
 # ==============================================================================
+CATEGORY_LIVE_HUB_SOURCES: Dict[str, List[Dict[str, str]]] = {
+    "engagement_intake": [
+        {"type": "md_readme", "url": "https://raw.githubusercontent.com/alvinunreal/awesome-submitlist/main/README.md", "label": "Awesome SubmitList"},
+        {"type": "md_readme", "url": "https://raw.githubusercontent.com/trekhleb/promote-your-next-startup/master/README.md", "label": "Promote Next Startup"},
+        {"type": "html_links", "url": "https://submit.co/", "label": "Submit.co Startup Hub"},
+    ],
+    "smartmatch": [
+        {"type": "hn_query", "url": "startup investor matchmaking OR dealflow", "label": "HN SmartMatch"},
+        {"type": "github_repos", "url": "startup dealflow matching investors list", "label": "GitHub SmartMatch"},
+    ],
+    "uk_reviews": [
+        {"type": "hn_query", "url": "UK startup accelerator list directory", "label": "HN UK Accelerators"},
+        {"type": "github_repos", "url": "uk startup accelerator list", "label": "GitHub UK StartUp"},
+    ],
+    "investor_networks": [
+        {"type": "hn_query", "url": "angel syndicate investor network startups", "label": "HN Investor Networks"},
+        {"type": "github_repos", "url": "startup investors angels list", "label": "GitHub Investors"},
+    ],
+    "ecosystem_visibility": [
+        {"type": "md_readme", "url": "https://raw.githubusercontent.com/trekhleb/promote-your-next-startup/master/README.md", "label": "Promote Next Startup"},
+        {"type": "md_readme", "url": "https://raw.githubusercontent.com/alvinunreal/awesome-submitlist/main/README.md", "label": "Awesome SubmitList"},
+        {"type": "hn_query", "url": "startup directory database accelerator", "label": "HN Ecosystem"},
+    ],
+    "regional_chambers": [
+        {"type": "html_links", "url": "https://www.scottishchambers.org.uk/about-us/our-network/", "label": "Scottish Chambers Network"},
+    ],
+}
+
+
+def _clean_live_domain(raw_url: str) -> str:
+    try:
+        parsed = urllib.parse.urlparse(raw_url if raw_url.startswith("http") else f"https://{raw_url}")
+        dom = parsed.netloc.lower().replace("www.", "").split(":")[0]
+        if not dom or "." not in dom or len(dom) > 65:
+            return ""
+        if any(dom.startswith(sub) for sub in ("docs.", "support.", "help.", "status.", "mail.", "blog.", "dictionary.", "wiki.")):
+            return ""
+        if any(dom == n or dom.endswith("." + n) for n in SEARCH_ENGINE_NOISE_DOMAINS):
+            return ""
+        if any(ext in dom for ext in (".png", ".jpg", ".svg", ".css", ".js")):
+            return ""
+        is_synth, _ = ghe.GeminiHydrogenEngine.detect_synthetic_pattern(dom, raw_url)
+        if is_synth:
+            return ""
+        return dom
+    except Exception:
+        return ""
+
+
 def search_live_web_for_category(
     category_key: str,
     existing_domains: set,
@@ -669,8 +743,9 @@ def search_live_web_for_category(
     db_path: str = DEFAULT_DB_PATH,
 ) -> List[Dict[str, Any]]:
     """
-    Executes live DuckDuckGo HTML web discovery using the agent's trained search queries
-    to surface genuinely new domains matching that exact category.
+    Executes multi-source live internet discovery (Outbound Hub crawling, GitHub Awesome Lists/API,
+    HN Algolia API, and relevance-filtered Bing RSS + DuckDuckGo fallback) using the agent's
+    trained category rules so all 6 categories discover real, unadded live platforms cleanly.
     """
     prof = get_training_profile(
         CATEGORY_TRAINING_BLUEPRINTS.get(category_key, {}).get("agent_id", ""),
@@ -678,62 +753,134 @@ def search_live_web_for_category(
     )
     bp = CATEGORY_TRAINING_BLUEPRINTS.get(category_key, {})
     queries = (prof or {}).get("search_queries") or bp.get("default_search_queries") or []
-    if not queries:
-        return []
+    pos_kws = [k.lower() for k in bp.get("positive_keywords", [])]
 
     discovered: List[Dict[str, Any]] = []
-    seen_domains = set(d.lower() for d in existing_domains)
+    seen_domains = set(d.lower().replace("www.", "") for d in existing_domains)
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
     }
 
-    for q in queries[:3]:
-        if len(discovered) >= max_candidates:
-            break
-        try:
-            r = httpx.get(
-                "https://html.duckduckgo.com/html/",
-                params={"q": q},
-                headers=headers,
-                timeout=8.0,
-                follow_redirects=True,
-            )
-            if r.status_code != 200:
+    def _try_add(raw_url: str, title: str, source_tag: str, notes: str = "") -> bool:
+        dom = _clean_live_domain(raw_url)
+        if not dom or dom in seen_domains:
+            return False
+        if ghe.GeminiHydrogenEngine.is_single_entity_domain(dom) and bp.get("disallow_single_entity"):
+            return False
+        clean_title = re.sub(r'<[^>]+>', ' ', title or "")
+        clean_title = re.sub(r'\s+', ' ', clean_title).strip()[:95] or dom
+        cand = {
+            "name": clean_title,
+            "domain": dom,
+            "url": f"https://{dom}/",
+            "form_url": raw_url if raw_url.startswith("http") else f"https://{dom}/",
+            "notes": notes or f"Discovered live via {source_tag}",
+            "discovered_via": source_tag,
+        }
+        pre = classify_candidate_for_category(cand, category_key, use_llm=False)
+        if not pre.get("match"):
+            return False
+        seen_domains.add(dom)
+        discovered.append(cand)
+        return True
+
+    with httpx.Client(timeout=6.0, follow_redirects=True, verify=False, headers=headers) as cli:
+        # Source 1: Category Outbound Hubs (Markdown Awesome Lists, Live Directories, HN API, GitHub API)
+        for src in CATEGORY_LIVE_HUB_SOURCES.get(category_key, []):
+            if len(discovered) >= max_candidates:
+                break
+            stype = src["type"]
+            try:
+                if stype == "md_readme":
+                    r = cli.get(src["url"])
+                    if r.status_code == 200:
+                        for link_txt, raw_u in re.findall(r'\[([^\]]{2,75})\]\((https?://[^\)\s]+)\)', r.text):
+                            if len(discovered) >= max_candidates:
+                                break
+                            blob = (link_txt + " " + raw_u).lower()
+                            if not any(k in blob for k in ("startup", "accelerator", "incubator", "venture", "angel", "seed", "grant", "pitch", "cohort", "launch", "founder")):
+                                continue
+                            _try_add(raw_u, link_txt, src["label"], notes=link_txt)
+
+                elif stype == "html_links":
+                    r = cli.get(src["url"])
+                    if r.status_code == 200:
+                        for raw_u, anchor in re.findall(r'<a[^>]*href=["\'](https?://[^"\']+)["\'][^>]*>(.*?)</a>', r.text, re.I | re.S):
+                            if len(discovered) >= max_candidates:
+                                break
+                            anc = re.sub(r'<[^>]+>', ' ', anchor)
+                            anc = re.sub(r'\s+', ' ', anc).strip()
+                            if category_key == "regional_chambers" and ("chamber" not in raw_u.lower() and "chamber" not in anc.lower()):
+                                continue
+                            _try_add(raw_u, anc or raw_u, src["label"], notes=anc)
+
+                elif stype == "hn_query":
+                    r = cli.get("https://hn.algolia.com/api/v1/search", params={"query": src["url"], "tags": "story", "hitsPerPage": 20})
+                    if r.status_code == 200:
+                        for hit in (r.json().get("hits") or []):
+                            if len(discovered) >= max_candidates:
+                                break
+                            hu = hit.get("url") or ""
+                            ht = hit.get("title") or ""
+                            if hu and any(k in (ht + " " + hu).lower() for k in pos_kws):
+                                _try_add(hu, ht, src["label"], notes=ht)
+
+                elif stype == "github_repos":
+                    r = cli.get(
+                        "https://api.github.com/search/repositories",
+                        params={"q": src["url"], "sort": "stars", "per_page": 3},
+                        headers={**headers, "Accept": "application/vnd.github+json"},
+                    )
+                    if r.status_code == 200:
+                        for repo in (r.json().get("items") or [])[:2]:
+                            full_name = repo.get("full_name")
+                            branch = repo.get("default_branch") or "main"
+                            if not full_name:
+                                continue
+                            rr = cli.get(f"https://raw.githubusercontent.com/{full_name}/{branch}/README.md")
+                            if rr.status_code == 200:
+                                for link_txt, raw_u in re.findall(r'\[([^\]]{2,75})\]\((https?://[^\)\s]+)\)', rr.text):
+                                    if len(discovered) >= max_candidates:
+                                        break
+                                    _try_add(raw_u, link_txt, f"GitHub:{full_name}", notes=link_txt)
+            except Exception:
                 continue
-            links = re.findall(
-                r'<a[^>]*class="result__a"[^>]*href="([^"]+)"[^>]*>(.*?)</a>',
-                r.text,
-                flags=re.S | re.I,
-            )
-            for raw_href, raw_title in links:
-                actual_url = raw_href
-                if "uddg=" in raw_href:
-                    qs = urllib.parse.parse_qs(urllib.parse.urlparse(raw_href).query)
-                    actual_url = (qs.get("uddg") or [raw_href])[0]
-                if not actual_url.startswith("http"):
-                    continue
-                parsed = urllib.parse.urlparse(actual_url)
-                dom = parsed.netloc.lower().replace("www.", "").split(":")[0]
-                if not dom or "." not in dom or dom in seen_domains:
-                    continue
-                if any(noise == dom or dom.endswith("." + noise) for noise in SEARCH_ENGINE_NOISE_DOMAINS):
-                    continue
-                is_synth, _ = ghe.GeminiHydrogenEngine.detect_synthetic_pattern(dom, actual_url)
-                if is_synth:
-                    continue
-                clean_title = re.sub(r'<[^>]+>', ' ', raw_title)
-                clean_title = re.sub(r'\s+', ' ', clean_title).strip()[:90] or dom
-                seen_domains.add(dom)
-                discovered.append({
-                    "name": clean_title,
-                    "domain": dom,
-                    "url": f"https://{dom}/",
-                    "form_url": actual_url,
-                    "discovered_via": f"Live Web Search ({q[:45]})",
-                })
-                if len(discovered) >= max_candidates:
-                    break
-        except Exception:
-            continue
+
+        # Source 2: Strict Relevance-Filtered Bing RSS Search + DDG HTML fallback
+        for q in queries[:2]:
+            if len(discovered) >= max_candidates:
+                break
+            try:
+                rrss = cli.get("https://www.bing.com/search", params={"q": q, "format": "rss"})
+                if rrss.status_code == 200 and "<item>" in rrss.text:
+                    for item_xml in re.findall(r'<item>(.*?)</item>', rrss.text, re.S):
+                        if len(discovered) >= max_candidates:
+                            break
+                        t_m = re.search(r'<title>(.*?)</title>', item_xml, re.S)
+                        l_m = re.search(r'<link>(.*?)</link>', item_xml, re.S)
+                        d_m = re.search(r'<description>(.*?)</description>', item_xml, re.S)
+                        raw_t = (t_m.group(1) if t_m else "").strip()
+                        raw_l = (l_m.group(1) if l_m else "").strip()
+                        raw_d = (d_m.group(1) if d_m else "").strip()
+                        if raw_l.startswith("http") and any(k in f"{raw_t} {raw_d}".lower() for k in pos_kws):
+                            _try_add(raw_l, raw_t, f"Live Bing RSS ({q[:32]})", notes=raw_d[:140])
+            except Exception:
+                pass
+
+            if len(discovered) < max_candidates:
+                try:
+                    rddg = cli.get("https://html.duckduckgo.com/html/", params={"q": q})
+                    if rddg.status_code == 200:
+                        for raw_href, raw_title in re.findall(r'<a[^>]*class="result__a"[^>]*href="([^"]+)"[^>]*>(.*?)</a>', rddg.text, re.S | re.I):
+                            if len(discovered) >= max_candidates:
+                                break
+                            actual_url = raw_href
+                            if "uddg=" in raw_href:
+                                qs = urllib.parse.parse_qs(urllib.parse.urlparse(raw_href).query)
+                                actual_url = (qs.get("uddg") or [raw_href])[0]
+                            if actual_url.startswith("http"):
+                                _try_add(actual_url, raw_title, f"Live DDG ({q[:32]})")
+                except Exception:
+                    pass
 
     return discovered

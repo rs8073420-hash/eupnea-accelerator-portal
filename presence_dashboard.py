@@ -977,17 +977,25 @@ def run_category_agent(agent_id: str, batch_size: int = Query(3, ge=1, le=10)):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/category-agents/run-all")
-def run_all_category_agents():
+def run_all_category_agents(batch_size: int = Query(3, ge=1, le=6)):
     try:
-        results = []
-        for agent in caf.CATEGORY_AGENTS_CONFIG:
+        from concurrent.futures import ThreadPoolExecutor
+
+        def _exec_agent(agent: Dict[str, Any]) -> Dict[str, Any]:
             aid = agent["id"]
             if agent["category_key"] == "linkedin_rankers":
-                res = caf.run_linkedin_ranker_hunter(aid, batch_size=2)
-            else:
-                res = caf.run_category_platform_hunter(aid, agent["category_key"], batch_size=2)
-            results.append(res)
-        return {"success": True, "executed_agents": len(results), "results": results}
+                return caf.run_linkedin_ranker_hunter(aid, batch_size=min(batch_size, 3))
+            return caf.run_category_platform_hunter(aid, agent["category_key"], batch_size=batch_size)
+
+        with ThreadPoolExecutor(max_workers=min(7, len(caf.CATEGORY_AGENTS_CONFIG))) as pool:
+            results = list(pool.map(_exec_agent, caf.CATEGORY_AGENTS_CONFIG))
+        total_new = sum(int(r.get("count_added", 0)) for r in results)
+        return {
+            "success": True,
+            "executed_agents": len(results),
+            "total_new_discovered": total_new,
+            "results": results,
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

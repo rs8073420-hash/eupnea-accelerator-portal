@@ -16,6 +16,8 @@ import sqlite3
 import json
 import time
 import random
+import threading
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from typing import Dict, Any, List
 import gemini_hydrogen_engine as ghe
@@ -23,6 +25,7 @@ import category_agent_trainer as cat_trainer
 
 WORKSPACE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(WORKSPACE_DIR, "presence_agent.db")
+DB_WRITE_LOCK = threading.RLock()
 
 CATEGORY_AGENTS_CONFIG = [
     {
@@ -1282,7 +1285,14 @@ INTAKE_EXPANSION_POOL = [
     {"name": "StartupXS Global Accelerators, Grants & Competitions", "url": "https://startupxs.com/", "domain": "startupxs.com", "form_url": "https://startupxs.com/", "score": 94},
     {"name": "StartupStash Curated Ecosystem Index", "url": "https://startupstash.com/", "domain": "startupstash.com", "form_url": "https://startupstash.com/", "score": 91},
     {"name": "Skipso Open Innovation & Accelerator Portal", "url": "https://www.skipso.com/", "domain": "skipso.com", "form_url": "https://www.skipso.com/", "score": 94},
-    {"name": "Eventornado Incubator & Hackathon Application Platform", "url": "https://eventornado.com/", "domain": "eventornado.com", "form_url": "https://eventornado.com/", "score": 93}
+    {"name": "Eventornado Incubator & Hackathon Application Platform", "url": "https://eventornado.com/", "domain": "eventornado.com", "form_url": "https://eventornado.com/", "score": 93},
+    {"name": "Accelerator.Directory Global Startup Accelerators Hub", "url": "https://accelerator.directory/", "domain": "accelerator.directory", "form_url": "https://accelerator.directory/", "score": 96},
+    {"name": "European Startups & Accelerators Portal", "url": "https://europeanstartups.co/", "domain": "europeanstartups.co", "form_url": "https://europeanstartups.co/", "score": 92},
+    {"name": "Innovate UK Business Connect Funding & Programmes Hub", "url": "https://iuk-business-connect.org.uk/", "domain": "iuk-business-connect.org.uk", "form_url": "https://iuk-business-connect.org.uk/opportunities/", "score": 93},
+    {"name": "Grantify UK Startup Grant & Accelerator Intake Portal", "url": "https://grantify.io/", "domain": "grantify.io", "form_url": "https://grantify.io/", "score": 91},
+    {"name": "Swoop Funding UK Startup & Accelerator Match Portal", "url": "https://swoopfunding.com/", "domain": "swoopfunding.com", "form_url": "https://swoopfunding.com/", "score": 93},
+    {"name": "Submit.co Startup Directories & Launch Index", "url": "https://submit.co/", "domain": "submit.co", "form_url": "https://submit.co/", "score": 92},
+    {"name": "StartupFame Global Startup Directory & Showcase", "url": "https://startupfa.me/", "domain": "startupfa.me", "form_url": "https://startupfa.me/", "score": 90}
 ]
 
 # Targeted Expansion Pool for SmartMatch Dealflow Engines (Astra-S01)
@@ -1363,6 +1373,72 @@ SMARTMATCH_EXPANSION_POOL = [
         "smartmatch_paid": 1,
         "smartmatch_model": "licence",
         "licensing_notes": "UK equity research platform providing enterprise dealflow tracking for accelerator pipelines."
+    },
+    {
+        "name": "EquityMatch Global Startup & Investor Matchmaking Engine",
+        "url": "https://equitymatch.co/",
+        "domain": "equitymatch.co",
+        "form_url": "https://equitymatch.co/",
+        "score": 95,
+        "smartmatch_free": 1,
+        "smartmatch_paid": 1,
+        "smartmatch_model": "freemium",
+        "licensing_notes": "Global equity matchmaking and venture dealflow portal connecting founders with angel investors and accelerators."
+    },
+    {
+        "name": "Connectd UK Startup, Investor & Advisor SmartMatch Portal",
+        "url": "https://connectd.co/",
+        "domain": "connectd.co",
+        "form_url": "https://connectd.co/",
+        "score": 94,
+        "smartmatch_free": 1,
+        "smartmatch_paid": 1,
+        "smartmatch_model": "freemium",
+        "licensing_notes": "UK SmartMatch engine connecting growth startups, fractional advisors, and active investors."
+    },
+    {
+        "name": "PitchWise European Startup & Capital Matchmaking Engine",
+        "url": "https://pitchwise.se/",
+        "domain": "pitchwise.se",
+        "form_url": "https://pitchwise.se/",
+        "score": 92,
+        "smartmatch_free": 1,
+        "smartmatch_paid": 1,
+        "smartmatch_model": "licence",
+        "licensing_notes": "Automated pitch and dealflow screening matching European startups with partners."
+    },
+    {
+        "name": "ShipShape.vc Venture Capital & Dealflow Search Engine",
+        "url": "https://shipshape.vc/",
+        "domain": "shipshape.vc",
+        "form_url": "https://shipshape.vc/",
+        "score": 91,
+        "smartmatch_free": 1,
+        "smartmatch_paid": 0,
+        "smartmatch_model": "freemium",
+        "licensing_notes": "Searchable investor and accelerator-match intelligence portal."
+    },
+    {
+        "name": "VentureGiant UK Angel & Entrepreneur Match Portal",
+        "url": "https://www.venturegiant.com/",
+        "domain": "venturegiant.com",
+        "form_url": "https://www.venturegiant.com/",
+        "score": 91,
+        "smartmatch_free": 1,
+        "smartmatch_paid": 1,
+        "smartmatch_model": "licence",
+        "licensing_notes": "UK active angel investor matchmaking network for pre-seed and seed cohorts."
+    },
+    {
+        "name": "StartupRadar Autonomous Venture Deal-Sourcing Portal",
+        "url": "https://startupradar.co/",
+        "domain": "startupradar.co",
+        "form_url": "https://startupradar.co/",
+        "score": 92,
+        "smartmatch_free": 0,
+        "smartmatch_paid": 1,
+        "smartmatch_model": "licence",
+        "licensing_notes": "Autonomous venture scouting and dealflow matchmaking platform."
     }
 ]
 
@@ -1403,6 +1479,69 @@ UK_REVIEWS_EXPANSION_POOL = [
         "score": 88,
         "ranking_scope": "uk",
         "notes": "Trade body for digital tech in Scotland covering regional acceleration hubs."
+    },
+    {
+        "name": "EntrepreneurPlus UK Business & Accelerator Directory",
+        "url": "https://entrepreneurplus.co.uk/",
+        "domain": "entrepreneurplus.co.uk",
+        "form_url": "https://entrepreneurplus.co.uk/",
+        "score": 90,
+        "ranking_scope": "uk",
+        "notes": "UK entrepreneurship guide and accelerator directory."
+    },
+    {
+        "name": "Elite Business Magazine UK Fast-Growth & Startup Rankings",
+        "url": "https://elitebusinessmagazine.co.uk/",
+        "domain": "elitebusinessmagazine.co.uk",
+        "form_url": "https://elitebusinessmagazine.co.uk/",
+        "score": 91,
+        "ranking_scope": "uk",
+        "notes": "Leading UK SME & Top 100 startup rankings publication."
+    },
+    {
+        "name": "BusinessAdvice.co.uk UK Startup & Growth Resource Hub",
+        "url": "https://businessadvice.co.uk/",
+        "domain": "businessadvice.co.uk",
+        "form_url": "https://businessadvice.co.uk/",
+        "score": 89,
+        "ranking_scope": "uk",
+        "notes": "UK founder advice & accelerator ecosystem guide."
+    },
+    {
+        "name": "Business Matters UK SME News & Growth Guide",
+        "url": "https://bmmagazine.co.uk/",
+        "domain": "bmmagazine.co.uk",
+        "form_url": "https://bmmagazine.co.uk/",
+        "score": 90,
+        "ranking_scope": "uk",
+        "notes": "UK SME business magazine reviewing accelerators and startup funding."
+    },
+    {
+        "name": "Real Business UK SME & Growth Programme Reviews",
+        "url": "https://realbusiness.co.uk/",
+        "domain": "realbusiness.co.uk",
+        "form_url": "https://realbusiness.co.uk/",
+        "score": 90,
+        "ranking_scope": "uk",
+        "notes": "Established UK SME insights and high-growth programme journalism."
+    },
+    {
+        "name": "ByteStart UK Startup & Small Business Guides",
+        "url": "https://www.bytestart.co.uk/",
+        "domain": "bytestart.co.uk",
+        "form_url": "https://www.bytestart.co.uk/",
+        "score": 88,
+        "ranking_scope": "uk",
+        "notes": "UK startup founding and venture finance guides."
+    },
+    {
+        "name": "SME Web UK Enterprise & Scaleup Directory",
+        "url": "https://www.smeweb.com/",
+        "domain": "smeweb.com",
+        "form_url": "https://www.smeweb.com/",
+        "score": 88,
+        "ranking_scope": "uk",
+        "notes": "UK SME growth and accelerator support directory."
     }
 ]
 
@@ -1442,6 +1581,62 @@ CHAMBERS_EXPANSION_POOL = [
         "domain": "businesswest.co.uk",
         "form_url": "https://businesswest.co.uk/accelerators",
         "score": 95
+    },
+    {
+        "name": "North East England Chamber of Commerce Enterprise Hub",
+        "url": "https://www.necc.co.uk/",
+        "domain": "necc.co.uk",
+        "form_url": "https://www.necc.co.uk/",
+        "score": 68
+    },
+    {
+        "name": "Dumfries & Galloway Chamber of Commerce Business Network",
+        "url": "https://dgchamber.co.uk/",
+        "domain": "dgchamber.co.uk",
+        "form_url": "https://dgchamber.co.uk/",
+        "score": 65
+    },
+    {
+        "name": "Dunbartonshire Chamber of Commerce Enterprise Portal",
+        "url": "https://dunbartonshirechamber.co.uk/",
+        "domain": "dunbartonshirechamber.co.uk",
+        "form_url": "https://dunbartonshirechamber.co.uk/",
+        "score": 65
+    },
+    {
+        "name": "Inverclyde Chamber of Commerce Venture & Business Hub",
+        "url": "https://inverclydechamber.co.uk/",
+        "domain": "inverclydechamber.co.uk",
+        "form_url": "https://inverclydechamber.co.uk/",
+        "score": 66
+    },
+    {
+        "name": "Lanarkshire Chamber of Commerce Regional Support Portal",
+        "url": "https://lanarkshirechamber.org.uk/",
+        "domain": "lanarkshirechamber.org.uk",
+        "form_url": "https://lanarkshirechamber.org.uk/",
+        "score": 65
+    },
+    {
+        "name": "Scottish Borders Chamber of Commerce Business Hub",
+        "url": "https://borderschamber.com/",
+        "domain": "borderschamber.com",
+        "form_url": "https://borderschamber.com/",
+        "score": 65
+    },
+    {
+        "name": "East Renfrewshire Chamber of Commerce Enterprise Network",
+        "url": "https://eastrenchamber.org.uk/",
+        "domain": "eastrenchamber.org.uk",
+        "form_url": "https://eastrenchamber.org.uk/",
+        "score": 65
+    },
+    {
+        "name": "Moray Chamber of Commerce Regional Business Hub",
+        "url": "https://moraychamber.co.uk/",
+        "domain": "moraychamber.co.uk",
+        "form_url": "https://moraychamber.co.uk/",
+        "score": 65
     }
 ]
 
@@ -1474,6 +1669,48 @@ INVESTOR_EXPANSION_POOL = [
         "domain": "greenangelsyndicate.com",
         "form_url": "https://greenangelsyndicate.com/invest/",
         "score": 92
+    },
+    {
+        "name": "Oxford Innovation Finance (OION) Angel Investor Network",
+        "url": "https://oion.co.uk/",
+        "domain": "oion.co.uk",
+        "form_url": "https://oion.co.uk/",
+        "score": 95
+    },
+    {
+        "name": "Angel CoFund (ACF Investors) UK Seed Capital Hub",
+        "url": "https://acfinvestors.com/",
+        "domain": "acfinvestors.com",
+        "form_url": "https://acfinvestors.com/",
+        "score": 94
+    },
+    {
+        "name": "Business Angels Europe (BAE) Confederation Network",
+        "url": "https://www.businessangelseurope.com/",
+        "domain": "businessangelseurope.com",
+        "form_url": "https://www.businessangelseurope.com/",
+        "score": 93
+    },
+    {
+        "name": "SFC Capital (Startup Funding Club) UK SEIS & Angel Network",
+        "url": "https://startupfundingclub.com/",
+        "domain": "startupfundingclub.com",
+        "form_url": "https://startupfundingclub.com/",
+        "score": 95
+    },
+    {
+        "name": "Newable Ventures UK Angel & Innovation Finance",
+        "url": "https://www.newable.co.uk/",
+        "domain": "newable.co.uk",
+        "form_url": "https://www.newable.co.uk/",
+        "score": 91
+    },
+    {
+        "name": "FundingHero UK Investor Readiness & Angel Capital Portal",
+        "url": "https://fundinghero.co.uk/",
+        "domain": "fundinghero.co.uk",
+        "form_url": "https://fundinghero.co.uk/",
+        "score": 90
     }
 ]
 
@@ -1491,11 +1728,16 @@ ECOSYSTEM_VISIBILITY_EXPANSION_POOL = [
     {"name": "UKSPA UK Science & Innovation Hubs Association", "url": "https://www.ukspa.org.uk/", "domain": "ukspa.org.uk", "form_url": "https://www.ukspa.org.uk/", "score": 88},
     {"name": "TechIreland National Innovation Directory", "url": "https://www.techireland.org/", "domain": "techireland.org", "form_url": "https://www.techireland.org/", "score": 88},
     {"name": "Techleap Netherlands Startup Directory", "url": "https://www.techleap.nl/", "domain": "techleap.nl", "form_url": "https://www.techleap.nl/", "score": 88},
-    {"name": "Startup Genome Global Ecosystem Reports & Directory", "url": "https://startupgenome.com/", "domain": "startupgenome.com", "form_url": "https://startupgenome.com/", "score": 90}
+    {"name": "Startup Genome Global Ecosystem Reports & Directory", "url": "https://startupgenome.com/", "domain": "startupgenome.com", "form_url": "https://startupgenome.com/", "score": 90},
+    {"name": "Nordic9 European Venture & Startup Intelligence Database", "url": "https://nordic9.com/", "domain": "nordic9.com", "form_url": "https://nordic9.com/", "score": 92},
+    {"name": "Global Startup Ecosystem (GSE) Digital Accelerator Directory", "url": "https://www.globalstartupecosystem.com/", "domain": "globalstartupecosystem.com", "form_url": "https://www.globalstartupecosystem.com/", "score": 92},
+    {"name": "Startup Commons Global Innovation Ecosystem Registry", "url": "https://www.startupcommons.org/", "domain": "startupcommons.org", "form_url": "https://www.startupcommons.org/", "score": 90},
+    {"name": "StartupDope Global Venture & Innovation Media Hub", "url": "https://startupdope.com/", "domain": "startupdope.com", "form_url": "https://startupdope.com/", "score": 89},
+    {"name": "DealStreetAsia Venture Capital & Startup Ecosystem Monitor", "url": "https://www.dealstreetasia.com/", "domain": "dealstreetasia.com", "form_url": "https://www.dealstreetasia.com/", "score": 90}
 ]
 
 def get_db():
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=30.0)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -1636,67 +1878,66 @@ def run_linkedin_ranker_hunter(agent_id: str = "astra_r01", batch_size: int = 2)
     Checks for existing records to prevent duplicates and adds tailored pitch drafts.
     Falls back to dynamic synthesis when seeds are exhausted.
     """
-    conn = get_db()
-    c = conn.cursor()
+    with DB_WRITE_LOCK:
+        conn = get_db()
+        c = conn.cursor()
 
-    existing_names = set(row[0].lower() for row in c.execute("SELECT author_name FROM accelerator_rankers").fetchall())
-    
-    discovered = []
-    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        existing_names = set(row[0].lower() for row in c.execute("SELECT author_name FROM accelerator_rankers").fetchall())
 
-    # Step 1: Ingest strictly verified curators from Curated Pool with Gemini 4 Hydrogen Audit
-    for candidate in LINKEDIN_RANKERS_POOL:
-        if "verified" not in (candidate.get("notes") or "").lower() or "/in/" not in candidate.get("profile_url", ""):
-            continue
-        if candidate["author_name"].lower() not in existing_names:
-            audit = ghe.GeminiHydrogenEngine.audit_linkedin_curator(candidate)
-            if not audit.get("valid", True) or "fallback" in (audit.get("audit_note") or "").lower():
+        discovered = []
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        # Step 1: Ingest strictly verified curators from Curated Pool with Gemini 4 Hydrogen Audit
+        for candidate in LINKEDIN_RANKERS_POOL:
+            if "verified" not in (candidate.get("notes") or "").lower() or "/in/" not in candidate.get("profile_url", ""):
                 continue
+            if candidate["author_name"].lower() not in existing_names:
+                audit = ghe.GeminiHydrogenEngine.audit_linkedin_curator(candidate)
+                if not audit.get("valid", True) or "fallback" in (audit.get("audit_note") or "").lower():
+                    continue
+                c.execute("""
+                INSERT INTO accelerator_rankers (
+                    author_name, platform, profile_url, post_url, headline,
+                    estimated_reach, ranking_title, status, pitch_draft, notes, created_at
+                ) VALUES (?, 'LinkedIn', ?, ?, ?, ?, ?, 'identified', ?, ?, ?)
+                """, (
+                    candidate["author_name"],
+                    audit.get("profile_url", candidate["profile_url"]),
+                    audit.get("verified_post_url", candidate["post_url"]),
+                    audit.get("headline", candidate["headline"]),
+                    candidate["estimated_reach"],
+                    candidate["ranking_title"],
+                    audit.get("pitch_draft", candidate["pitch_draft"]),
+                    audit.get("audit_note", candidate["notes"]),
+                    now
+                ))
+                existing_names.add(candidate["author_name"].lower())
+                discovered.append(candidate["author_name"])
+                if len(discovered) >= batch_size:
+                    break
+
+        total_count = c.execute("SELECT COUNT(*) FROM accelerator_rankers").fetchone()[0]
+        if discovered:
+            last_name = discovered[-1]
             c.execute("""
-            INSERT INTO accelerator_rankers (
-                author_name, platform, profile_url, post_url, headline,
-                estimated_reach, ranking_title, status, pitch_draft, notes, created_at
-            ) VALUES (?, 'LinkedIn', ?, ?, ?, ?, ?, 'identified', ?, ?, ?)
-            """, (
-                candidate["author_name"],
-                audit.get("profile_url", candidate["profile_url"]),
-                audit.get("verified_post_url", candidate["post_url"]),
-                audit.get("headline", candidate["headline"]),
-                candidate["estimated_reach"],
-                candidate["ranking_title"],
-                audit.get("pitch_draft", candidate["pitch_draft"]),
-                audit.get("audit_note", candidate["notes"]),
-                now
-            ))
-            existing_names.add(candidate["author_name"].lower())
-            discovered.append(candidate["author_name"])
-            if len(discovered) >= batch_size:
-                break
+            UPDATE category_agents
+            SET status = 'active',
+                items_discovered = ?,
+                last_run = ?,
+                last_discovered_item = ?
+            WHERE id = ?
+            """, (total_count, now, f"Discovered: {last_name}", agent_id))
+        else:
+            c.execute("""
+            UPDATE category_agents
+            SET status = 'active',
+                items_discovered = ?,
+                last_run = ?
+            WHERE id = ?
+            """, (total_count, now, agent_id))
 
-    # Step 2: Live Verification & Metric Refresh (No Synthetic / No Fake Records)
-    # Strict rule: NEVER generate fake names or broken URL suffixes.
-    total_count = c.execute("SELECT COUNT(*) FROM accelerator_rankers").fetchone()[0]
-    if discovered:
-        last_name = discovered[-1]
-        c.execute("""
-        UPDATE category_agents
-        SET status = 'active',
-            items_discovered = ?,
-            last_run = ?,
-            last_discovered_item = ?
-        WHERE id = ?
-        """, (total_count, now, f"Discovered: {last_name}", agent_id))
-    else:
-        c.execute("""
-        UPDATE category_agents
-        SET status = 'active',
-            items_discovered = ?,
-            last_run = ?
-        WHERE id = ?
-        """, (total_count, now, agent_id))
-
-    conn.commit()
-    conn.close()
+        conn.commit()
+        conn.close()
 
     return {
         "success": True,
@@ -1713,41 +1954,38 @@ def run_linkedin_ranker_hunter(agent_id: str = "astra_r01", batch_size: int = 2)
 def run_category_platform_hunter(agent_id: str, category_key: str, batch_size: int = 3, use_live_web: bool = True) -> Dict[str, Any]:
     """
     Executes a category-trained specialist agent (Gemini 4 Hydrogen) to hunt and verify
-    new platforms strictly belonging to `category_key`. Combines curated pools + live
-    DuckDuckGo web discovery + Strict Category Alignment Gate + 4-Gate Verification.
+    new platforms strictly belonging to `category_key`. Combines expanded verified pools +
+    concurrent multi-source live discovery + Strict Category Alignment Gate + 4-Gate Verification.
     """
     if category_key == "linkedin_rankers":
         return run_linkedin_ranker_hunter(agent_id, batch_size)
 
-    training_prof = cat_trainer.get_training_profile(agent_id, db_path=DB_PATH)
-    if not training_prof:
-        training_prof = cat_trainer.train_category_agent(agent_id, db_path=DB_PATH, use_llm=False)
+    with DB_WRITE_LOCK:
+        training_prof = cat_trainer.get_training_profile(agent_id, db_path=DB_PATH)
+        if not training_prof:
+            training_prof = cat_trainer.train_category_agent(agent_id, db_path=DB_PATH, use_llm=False)
 
-    conn = get_db()
-    c = conn.cursor()
+        conn = get_db()
+        c = conn.cursor()
+        existing_domains = set(row[0].lower().replace("www.", "") for row in c.execute("SELECT domain FROM platforms WHERE domain IS NOT NULL").fetchall())
+        existing_names = set(row[0].lower() for row in c.execute("SELECT name FROM platforms WHERE name IS NOT NULL").fetchall())
+        conn.close()
 
-    existing_domains = set(row[0].lower() for row in c.execute("SELECT domain FROM platforms WHERE domain IS NOT NULL").fetchall())
-    existing_names = set(row[0].lower() for row in c.execute("SELECT name FROM platforms WHERE name IS NOT NULL").fetchall())
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     discovered: List[str] = []
     discovered_domains: List[str] = []
     rejected_mismatch: List[Dict[str, str]] = []
     live_web_checked = 0
 
-    # Select curated category pool
-    target_pool: List[Dict[str, Any]] = []
-    if category_key == "engagement_intake":
-        target_pool = INTAKE_EXPANSION_POOL
-    elif category_key == "smartmatch":
-        target_pool = SMARTMATCH_EXPANSION_POOL
-    elif category_key == "uk_reviews":
-        target_pool = UK_REVIEWS_EXPANSION_POOL
-    elif category_key == "investor_networks":
-        target_pool = INVESTOR_EXPANSION_POOL
-    elif category_key == "ecosystem_visibility":
-        target_pool = ECOSYSTEM_VISIBILITY_EXPANSION_POOL
-    elif category_key == "regional_chambers":
-        target_pool = CHAMBERS_EXPANSION_POOL
+    pool_map = {
+        "engagement_intake": INTAKE_EXPANSION_POOL,
+        "smartmatch": SMARTMATCH_EXPANSION_POOL,
+        "uk_reviews": UK_REVIEWS_EXPANSION_POOL,
+        "investor_networks": INVESTOR_EXPANSION_POOL,
+        "ecosystem_visibility": ECOSYSTEM_VISIBILITY_EXPANSION_POOL,
+        "regional_chambers": CHAMBERS_EXPANSION_POOL,
+    }
+    target_pool = pool_map.get(category_key, [])
 
     db_cat_map = {
         "linkedin_rankers": "accelerator_rankers",
@@ -1760,147 +1998,179 @@ def run_category_platform_hunter(agent_id: str, category_key: str, batch_size: i
     }
     mapped_hl_cat = db_cat_map.get(category_key, category_key)
 
-    run_id = 0
+    # Check LLM availability once per agent run to avoid redundant 1.2s timeouts in cloud
+    llm_active = bool(ghe.GeminiHydrogenEngine.get_llm_endpoint_info()[0])
 
-    def _ensure_run_id() -> int:
-        nonlocal run_id
-        if run_id == 0:
-            agent_lbl = (training_prof or {}).get("agent_code", agent_id)
-            c.execute("""
-                INSERT INTO activity_runs (query, target_count, discovered_count, status, stage, started_at, completed_at)
-                VALUES (?, ?, 0, 'completed', ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-            """, (f"[{agent_lbl}] Trained Category Hunt: {mapped_hl_cat}", batch_size, f"Gemini 4 Hydrogen Trained Hunt ({category_key})"))
-            run_id = c.lastrowid
-        return run_id
-
-    def insert_platform(cand: Dict[str, Any]) -> bool:
+    def evaluate_candidate(cand: Dict[str, Any]) -> Dict[str, Any]:
         dom = cand["domain"].lower().strip().replace("www.", "")
-        nm = (cand["name"] or dom).strip()
-
-        # Step A: Live Network Probe & Title/Snippet extraction
         probe = ghe.GeminiHydrogenEngine.probe_live_website(cand["url"], cand.get("form_url") or cand["url"])
-
-        # Step B: STRICT CATEGORY ALIGNMENT GATE (Trained Rule + Gemini 4 Hydrogen Classifier)
-        cat_gate = cat_trainer.classify_candidate_for_category(cand, category_key, probe=probe, use_llm=True)
+        cat_gate = cat_trainer.classify_candidate_for_category(cand, category_key, probe=probe, use_llm=llm_active)
         if not cat_gate.get("match"):
-            rejected_mismatch.append({"domain": dom, "reason": cat_gate.get("reason", "Category mismatch")})
-            return False
+            return {"ok": False, "domain": dom, "reason": cat_gate.get("reason", "Category mismatch")}
 
-        is_sm = 1 if (category_key == "smartmatch" or cand.get("is_smartmatch")) else 0
-        sm_free = cand.get("smartmatch_free", 1 if is_sm else 0)
-        sm_paid = cand.get("smartmatch_paid", 1 if is_sm else 0)
-        sm_model = cand.get("smartmatch_model", "licence" if is_sm else "none")
-        lic_notes = cand.get("licensing_notes", "") if is_sm else ""
-        r_scope = cand.get("ranking_scope", "uk" if category_key == "uk_reviews" else "global")
-
-        # Step C: Gemini 4 Hydrogen Algorithmic 4-Gate & F6S/Gust Hub Classifier
         cand_with_cat = {**cand, "domain": dom, "high_level_category": mapped_hl_cat}
-        score_eval = ghe.GeminiHydrogenEngine.score_platform(cand_with_cat, verify_network=True, use_llm=True)
-        if not score_eval.get("is_qualified") or score_eval.get("score", 0) <= 0:
-            rejected_mismatch.append({"domain": dom, "reason": score_eval.get("score_reasons_summary", "Failed 4-Gate")})
-            return False
+        score_eval = ghe.GeminiHydrogenEngine.score_platform(cand_with_cat, verify_network=True, use_llm=False, probe=probe)
+        is_accepted = bool(score_eval.get("is_qualified") and score_eval.get("score", 0) > 0)
+        if not is_accepted and category_key == "regional_chambers":
+            if probe.get("is_alive") and not probe.get("is_parked") and not probe.get("is_unsuitable_content") and score_eval.get("score", 0) >= 45:
+                is_accepted = True
+        if not is_accepted:
+            return {"ok": False, "domain": dom, "reason": score_eval.get("score_reasons_summary", "Failed 4-Gate")}
+        return {"ok": True, "cand": cand, "dom": dom, "cat_gate": cat_gate, "score_eval": score_eval, "probe": probe}
 
-        cand_score = score_eval.get("score", cand.get("score", 85))
-        cand_tier = score_eval.get("tier", "tier_2")
-        score_reasons = f"{cat_gate.get('reason', '')} | {score_eval.get('score_reasons_summary') or 'Verified by Gemini 4 Hydrogen'}".strip(" |")
-        healed_url = score_eval.get("healed_url") or cand["url"]
-        healed_form_url = score_eval.get("healed_form_url") or cand.get("form_url", healed_url)
-        is_reg_hub = int(score_eval.get("is_registration_hub", 0))
-        criteria_json = json.dumps(score_eval.get("criteria_breakdown") or [])
-        rid = _ensure_run_id()
+    # Gather unseen curated pool candidates + live internet web fallback if pool has fewer than batch_size
+    unseen_pool = [
+        cand for cand in target_pool
+        if cand["domain"].lower().replace("www.", "") not in existing_domains
+        and cand["name"].lower() not in existing_names
+    ]
 
-        draft_pitch = f"Eupnea Accelerator in London operates an intensive enterprise acceleration program offering £50k–£250k initial checks. Tailored for {mapped_hl_cat} partner {nm}."
-        draft_full = f"Eupnea is a management consulting firm and venture accelerator in London partnering with visionary enterprises and ambitious founders. Active cohort intake across Enterprise AI, DeepTech, and B2B software."
-
-        c.execute("""
-        INSERT OR IGNORE INTO platforms (
-            name, category, url, domain, score, score_reasons, status,
-            discovered_at, bot_verified, submission_mode, category_type,
-            form_url, tier, intake_type, is_core_target, high_level_category,
-            is_smartmatch, smartmatch_free, smartmatch_paid, smartmatch_model,
-            licensing_notes, ranking_scope, draft_pitch, draft_full,
-            portal_link_ok, portal_http_status, form_link_ok, form_http_status, link_error, link_checked_at,
-            is_registration_hub, criteria_breakdown, last_search_run_id
-        ) VALUES (?, 'Accelerator Ecosystem', ?, ?, ?, ?, 'in_review', ?, 1, 'category_trained_agent', 'submittable_directory', ?, ?, 'intake', 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            nm,
-            healed_url,
-            dom,
-            cand_score,
-            score_reasons,
-            now,
-            healed_form_url,
-            cand_tier,
-            mapped_hl_cat,
-            is_sm,
-            sm_free,
-            sm_paid,
-            sm_model,
-            lic_notes,
-            r_scope,
-            draft_pitch,
-            draft_full,
-            int(score_eval.get("portal_link_ok", 1)),
-            int(score_eval.get("portal_http_status") or 200),
-            int(score_eval.get("form_link_ok", 1)),
-            int(score_eval.get("form_http_status") or 200),
-            score_eval.get("link_error") or "",
-            now,
-            is_reg_hub,
-            criteria_json,
-            rid
-        ))
-        if c.rowcount > 0:
-            existing_domains.add(dom)
-            existing_names.add(nm.lower())
-            discovered_domains.append(dom)
-            return True
-        return False
-
-    # Phase 1: Trained Curated Pool Targets (Filtered Strictly by Category Gate)
-    for candidate in target_pool:
-        domain = candidate["domain"].lower().replace("www.", "")
-        name = candidate["name"].lower()
-        if domain not in existing_domains and name not in existing_names:
-            if insert_platform(candidate):
-                discovered.append(candidate["name"])
-                if len(discovered) >= batch_size:
-                    break
-
-    # Phase 2: Live Internet Web Search Using Agent's Trained Queries (When Pool Exhausted)
-    if use_live_web and len(discovered) < batch_size:
-        needed = batch_size - len(discovered)
+    web_cands: List[Dict[str, Any]] = []
+    if use_live_web and len(unseen_pool) < batch_size:
+        pool_doms = {c_item["domain"].lower().replace("www.", "") for c_item in unseen_pool}
+        needed_live = max(6, (batch_size - len(unseen_pool)) * 3)
         web_cands = cat_trainer.search_live_web_for_category(
-            category_key, existing_domains, max_candidates=max(4, needed * 3), db_path=DB_PATH
+            category_key, existing_domains | pool_doms, max_candidates=needed_live, db_path=DB_PATH
         )
         live_web_checked = len(web_cands)
-        for wc in web_cands:
-            dom_w = wc["domain"].lower().replace("www.", "")
-            nm_w = wc["name"].lower()
-            if dom_w not in existing_domains and nm_w not in existing_names:
-                if insert_platform(wc):
-                    discovered.append(wc["name"])
-                    if len(discovered) >= batch_size:
-                        break
 
-    if run_id > 0:
-        c.execute("UPDATE activity_runs SET discovered_count = ? WHERE id = ?", (len(discovered), run_id))
+    eval_queue = (unseen_pool[: max(batch_size * 3, 9)] + web_cands)
+    eval_results: List[Dict[str, Any]] = []
+    if eval_queue:
+        with ThreadPoolExecutor(max_workers=min(5, len(eval_queue))) as ex:
+            eval_results = list(ex.map(evaluate_candidate, eval_queue))
 
-    # Updated category qualified total (excluding rejected/perk entries)
-    total_count = c.execute("SELECT COUNT(*) FROM platforms WHERE high_level_category = ? AND status NOT IN ('unqualified','not_suitable','perk_benefit','dismissed')", (mapped_hl_cat,)).fetchone()[0]
-    last_item = discovered[-1] if discovered else ""
+    # If live web was not yet queried and pool had >= batch_size items that got rejected, do a quick fallback pass
+    passing = [r for r in eval_results if r.get("ok")]
+    for r in eval_results:
+        if not r.get("ok"):
+            rejected_mismatch.append({"domain": r["domain"], "reason": r["reason"]})
 
-    c.execute("""
-    UPDATE category_agents
-    SET status = 'active',
-        items_discovered = ?,
-        last_run = ?,
-        last_discovered_item = ?
-    WHERE id = ?
-    """, (total_count, now, f"Discovered: {last_item}" if last_item else "Trained pool verified (0 new)", agent_id))
+    if use_live_web and len(passing) < batch_size and not web_cands:
+        already_checked_doms = {r["domain"] for r in eval_results if "domain" in r}
+        needed_live = max(6, (batch_size - len(passing)) * 3)
+        web_cands = cat_trainer.search_live_web_for_category(
+            category_key, existing_domains | already_checked_doms, max_candidates=needed_live, db_path=DB_PATH
+        )
+        live_web_checked = len(web_cands)
+        if web_cands:
+            with ThreadPoolExecutor(max_workers=min(5, len(web_cands))) as ex:
+                web_evals = list(ex.map(evaluate_candidate, web_cands))
+            for r in web_evals:
+                if r.get("ok"):
+                    passing.append(r)
+                else:
+                    rejected_mismatch.append({"domain": r["domain"], "reason": r["reason"]})
 
-    conn.commit()
-    conn.close()
+    run_id = 0
+    with DB_WRITE_LOCK:
+        conn = get_db()
+        c = conn.cursor()
+
+        # Re-read live domains inside write lock to avoid race across concurrent category agents
+        live_existing = set(row[0].lower().replace("www.", "") for row in c.execute("SELECT domain FROM platforms WHERE domain IS NOT NULL").fetchall())
+
+        def _ensure_run_id() -> int:
+            nonlocal run_id
+            if run_id == 0:
+                agent_lbl = (training_prof or {}).get("agent_code", agent_id)
+                c.execute("""
+                    INSERT INTO activity_runs (query, target_count, discovered_count, status, stage, started_at, completed_at)
+                    VALUES (?, ?, 0, 'completed', ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                """, (f"[{agent_lbl}] Trained Category Hunt: {mapped_hl_cat}", batch_size, f"Gemini 4 Hydrogen Trained Hunt ({category_key})"))
+                run_id = c.lastrowid
+            return run_id
+
+        for item in passing:
+            if len(discovered) >= batch_size:
+                break
+            dom = item["dom"]
+            cand = item["cand"]
+            nm = (cand["name"] or dom).strip()
+            if dom in live_existing:
+                continue
+
+            cat_gate = item["cat_gate"]
+            score_eval = item["score_eval"]
+            is_sm = 1 if (category_key == "smartmatch" or cand.get("is_smartmatch")) else 0
+            sm_free = cand.get("smartmatch_free", 1 if is_sm else 0)
+            sm_paid = cand.get("smartmatch_paid", 1 if is_sm else 0)
+            sm_model = cand.get("smartmatch_model", "licence" if is_sm else "none")
+            lic_notes = cand.get("licensing_notes", "") if is_sm else ""
+            r_scope = cand.get("ranking_scope", "uk" if category_key == "uk_reviews" else "global")
+
+            cand_score = score_eval.get("score", cand.get("score", 85))
+            cand_tier = score_eval.get("tier", "tier_2")
+            score_reasons = f"{cat_gate.get('reason', '')} | {score_eval.get('score_reasons_summary') or 'Verified by Gemini 4 Hydrogen'}".strip(" |")
+            healed_url = score_eval.get("healed_url") or cand["url"]
+            healed_form_url = score_eval.get("healed_form_url") or cand.get("form_url", healed_url)
+            is_reg_hub = int(score_eval.get("is_registration_hub", 0))
+            criteria_json = json.dumps(score_eval.get("criteria_breakdown") or [])
+            rid = _ensure_run_id()
+
+            draft_pitch = f"Eupnea Accelerator in London operates an intensive enterprise acceleration program offering £50k–£250k initial checks. Tailored for {mapped_hl_cat} partner {nm}."
+            draft_full = f"Eupnea is a management consulting firm and venture accelerator in London partnering with visionary enterprises and ambitious founders. Active cohort intake across Enterprise AI, DeepTech, and B2B software."
+
+            c.execute("""
+            INSERT OR IGNORE INTO platforms (
+                name, category, url, domain, score, score_reasons, status,
+                discovered_at, bot_verified, submission_mode, category_type,
+                form_url, tier, intake_type, is_core_target, high_level_category,
+                is_smartmatch, smartmatch_free, smartmatch_paid, smartmatch_model,
+                licensing_notes, ranking_scope, draft_pitch, draft_full,
+                portal_link_ok, portal_http_status, form_link_ok, form_http_status, link_error, link_checked_at,
+                is_registration_hub, criteria_breakdown, last_search_run_id
+            ) VALUES (?, 'Accelerator Ecosystem', ?, ?, ?, ?, 'in_review', ?, 1, 'category_trained_agent', 'submittable_directory', ?, ?, 'intake', 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                nm,
+                healed_url,
+                dom,
+                cand_score,
+                score_reasons,
+                now,
+                healed_form_url,
+                cand_tier,
+                mapped_hl_cat,
+                is_sm,
+                sm_free,
+                sm_paid,
+                sm_model,
+                lic_notes,
+                r_scope,
+                draft_pitch,
+                draft_full,
+                int(score_eval.get("portal_link_ok", 1)),
+                int(score_eval.get("portal_http_status") or 200),
+                int(score_eval.get("form_link_ok", 1)),
+                int(score_eval.get("form_http_status") or 200),
+                score_eval.get("link_error") or "",
+                now,
+                is_reg_hub,
+                criteria_json,
+                rid
+            ))
+            if c.rowcount > 0:
+                live_existing.add(dom)
+                discovered.append(nm)
+                discovered_domains.append(dom)
+
+        if run_id > 0:
+            c.execute("UPDATE activity_runs SET discovered_count = ? WHERE id = ?", (len(discovered), run_id))
+
+        total_count = c.execute("SELECT COUNT(*) FROM platforms WHERE high_level_category = ? AND status NOT IN ('unqualified','not_suitable','perk_benefit','dismissed')", (mapped_hl_cat,)).fetchone()[0]
+        last_item = discovered[-1] if discovered else ""
+
+        c.execute("""
+        UPDATE category_agents
+        SET status = 'active',
+            items_discovered = ?,
+            last_run = ?,
+            last_discovered_item = ?
+        WHERE id = ?
+        """, (total_count, now, f"Discovered: {last_item}" if last_item else "Trained pool verified (0 new)", agent_id))
+
+        conn.commit()
+        conn.close()
 
     agent_meta = next((a for a in CATEGORY_AGENTS_CONFIG if a["id"] == agent_id), {"agent_code": agent_id, "name": "Category Agent"})
 

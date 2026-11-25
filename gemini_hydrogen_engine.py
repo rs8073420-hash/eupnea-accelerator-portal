@@ -547,7 +547,7 @@ class GeminiHydrogenEngine:
         }
 
         def fetch_target(target_u: str):
-            with httpx.Client(timeout=6.0, follow_redirects=True, verify=False, headers=headers) as client:
+            with httpx.Client(timeout=8.0, follow_redirects=True, verify=False, headers=headers) as client:
                 return client.get(target_u)
 
         resp = None
@@ -557,17 +557,20 @@ class GeminiHydrogenEngine:
         except Exception as e:
             probe["error"] = f"HTTP error: {str(e)[:60]}"
 
-        # Self-Heal 404 or broken subpath by testing root domain
+        # Self-Heal TLS/DNS/404/5xx by trying bare root, www., and http fallback URLs
         if resp is None or resp.status_code == 404 or resp.status_code >= 500:
-            root_u = f"https://{dom_clean}"
-            if root_u != url.rstrip("/"):
+            retry_candidates = [f"https://{dom_clean}", f"https://www.{dom_clean}", f"http://{dom_clean}"]
+            for root_u in retry_candidates:
+                if root_u.rstrip("/") == (url or "").rstrip("/") and resp is not None:
+                    continue
                 try:
                     resp_root = fetch_target(root_u)
-                    if resp_root.status_code < 400:
+                    if resp_root.status_code < 400 or resp_root.status_code in (401, 403, 406, 429):
                         resp = resp_root
                         probe["http_status"] = resp_root.status_code
                         probe["healed_url"] = str(resp_root.url)
                         probe["error"] = None
+                        break
                 except Exception:
                     pass
 
@@ -822,7 +825,13 @@ class GeminiHydrogenEngine:
         }
 
     @classmethod
-    def evaluate_prequalification_gates(cls, platform: Dict[str, Any], verify_network: bool = False, use_llm: bool = False) -> Dict[str, Any]:
+    def evaluate_prequalification_gates(
+        cls,
+        platform: Dict[str, Any],
+        verify_network: bool = False,
+        use_llm: bool = False,
+        probe: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         """
         Executes Four Pre-Qualification Gates mandated by Panagiotis / Sree Audit:
         Gate 1: Working Website & DNS Health
@@ -891,7 +900,6 @@ class GeminiHydrogenEngine:
                 "summary": "REJECTED: Unsuitable software/tools directory."
             }
 
-        probe = None
         llm_verdict = None
         if verify_network:
             valid_syntax, syntax_msg = cls.audit_url_syntax(url)
@@ -900,7 +908,8 @@ class GeminiHydrogenEngine:
                     "passed": False, "is_perk": False, "is_registration_hub": 0, "tier": "rejected", "score": 0, "status": "unqualified",
                     "reasons": [f"Gate 1 Failed: {syntax_msg}"], "summary": f"REJECTED: {syntax_msg}"
                 }
-            probe = cls.probe_live_website(url, form_url)
+            if probe is None:
+                probe = cls.probe_live_website(url, form_url)
             if not probe["dns_ok"]:
                 return {
                     "passed": False, "is_perk": False, "is_registration_hub": 0, "tier": "rejected", "score": 0, "status": "unqualified",
@@ -922,7 +931,13 @@ class GeminiHydrogenEngine:
                     "reasons": [f"Gate 1 Failed: Website failed to load ({probe['error'] or probe['http_status']})."], "summary": f"REJECTED: Dead URL ({probe['error'] or probe['http_status']}).", "probe": probe
                 }
             if probe["is_alive"] and not probe.get("waf_protected") and domain not in WAF_ALIVE_WHITELIST:
-                if not probe.get("has_venture_signal", True):
+                hl_cat_low = (platform.get("high_level_category") or "").lower()
+                is_chamber_cat = "chamber" in hl_cat_low or "business network" in hl_cat_low
+                has_chamber_sig = is_chamber_cat and any(
+                    w in (probe.get("title", "") + " " + probe.get("snippet", "")).lower()
+                    for w in ("chamber", "commerce", "growth hub", "enterprise", "business", "trade", "member")
+                )
+                if not probe.get("has_venture_signal", True) and not has_chamber_sig:
                     return {
                         "passed": False, "is_perk": False, "is_registration_hub": 0, "tier": "rejected", "score": 0, "status": "unqualified",
                         "reasons": [f"Gate 3 Failed: Webpage lacks startup, accelerator, incubator, or venture programme relevance ('{probe['title']}')."],
@@ -971,7 +986,13 @@ class GeminiHydrogenEngine:
         return weights
 
     @classmethod
-    def score_platform(cls, platform: Dict[str, Any], verify_network: bool = False, use_llm: bool = False) -> Dict[str, Any]:
+    def score_platform(
+        cls,
+        platform: Dict[str, Any],
+        verify_network: bool = False,
+        use_llm: bool = False,
+        probe: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         """
         Executes Gemini 4 Hydrogen scoring calibration, 21-criteria breakdown, link probing,
         and F6S/Gust registration hub classification.
@@ -982,7 +1003,7 @@ class GeminiHydrogenEngine:
         # 1. Grounded Benchmark Hubs (Tier 1 & High-Reach Discovery)
         if domain in GEMINI_TIER_1_GROUNDING or domain in GEMINI_TIER_2_GROUNDING:
             info = GEMINI_TIER_1_GROUNDING.get(domain) or GEMINI_TIER_2_GROUNDING[domain]
-            probe = cls.probe_live_website(info["verified_url"], info["verified_form_url"]) if verify_network else {}
+            probe = probe if probe is not None else (cls.probe_live_website(info["verified_url"], info["verified_form_url"]) if verify_network else {})
             weights = cls._load_active_weights()
             breakdown = [
                 {"key": "real_directory", "label": "Verified Multi-Programme Accelerator Directory", "points": weights.get("real_directory", 30), "type": "positive"},
@@ -1018,7 +1039,7 @@ class GeminiHydrogenEngine:
             }
 
         # 2. Four-Gate Verification
-        gate_res = cls.evaluate_prequalification_gates(platform, verify_network=verify_network, use_llm=use_llm)
+        gate_res = cls.evaluate_prequalification_gates(platform, verify_network=verify_network, use_llm=use_llm, probe=probe)
         if not gate_res["passed"]:
             return {
                 "score": 0,

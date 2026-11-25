@@ -71,11 +71,37 @@ app = FastAPI(title="Eupnea v2 Ecosystem", version="2.0")
 @app.on_event("startup")
 def on_app_startup():
     try:
+        ensure_platform_columns()
+        pse.init_scoring_criteria_db(DB_PATH)
+    except Exception as e:
+        print(f"Schema/Criteria init notice: {e}")
+    try:
         orch_eng.init_orchestration_db()
         orch_eng.start_continuous_orchestrator()
         print("⚡ [24x7 AUTONOMOUS FLEET ACTIVE]: 100 Agents permanently online & executing tasks non-stop.")
     except Exception as e:
         print(f"Startup orchestrator notice: {e}")
+
+def ensure_platform_columns():
+    """Idempotently ensures link health, search-run tracking, and criteria breakdown columns exist."""
+    conn = sqlite3.connect(DB_PATH, timeout=30.0)
+    c = conn.cursor()
+    existing = {r[1] for r in c.execute("PRAGMA table_info(platforms)").fetchall()}
+    additions = [
+        ("portal_link_ok", "INTEGER DEFAULT 1"),
+        ("portal_http_status", "INTEGER DEFAULT 200"),
+        ("form_link_ok", "INTEGER DEFAULT 1"),
+        ("form_http_status", "INTEGER DEFAULT 200"),
+        ("link_error", "TEXT DEFAULT ''"),
+        ("link_checked_at", "TIMESTAMP"),
+        ("last_search_run_id", "INTEGER DEFAULT 0"),
+        ("criteria_breakdown", "TEXT DEFAULT ''"),
+    ]
+    for col, ddl in additions:
+        if col not in existing:
+            c.execute(f"ALTER TABLE platforms ADD COLUMN {col} {ddl}")
+    conn.commit()
+    conn.close()
 
 app.add_middleware(
     CORSMiddleware,
@@ -144,6 +170,10 @@ class TrackVisitRequest(BaseModel):
 
 class ExecuteQueryRequest(BaseModel):
     query: str
+
+class CriteriaWeightsUpdateRequest(BaseModel):
+    weights: Dict[str, int]
+    recalculate: bool = True
 
 # ================================================================================
 # AUTH & USER ENDPOINTS
@@ -336,6 +366,205 @@ def remove_team_member(user_id: int):
 # ================================================================================
 # DASHBOARD STATS & KPI ENDPOINTS
 # ================================================================================
+def _format_date_added(ts_str: Optional[str]) -> Dict[str, str]:
+    """Formats discovered_at into exact timestamp + human-readable relative label (Today, Yesterday, N days ago)."""
+    if not ts_str:
+        return {"exact": "Unknown", "label": "Unknown"}
+    s = str(ts_str).strip()
+    exact = s[:16]
+    try:
+        dt = datetime.strptime(s[:19], "%Y-%m-%d %H:%M:%S")
+    except Exception:
+        try:
+            dt = datetime.strptime(s[:10], "%Y-%m-%d")
+        except Exception:
+            return {"exact": exact, "label": exact}
+
+    now = datetime.now()
+    days_diff = (now.date() - dt.date()).days
+    if days_diff <= 0:
+        label = "Today"
+    elif days_diff == 1:
+        label = "Yesterday"
+    elif days_diff < 7:
+        label = f"{days_diff} days ago"
+    elif days_diff < 14:
+        label = "1 week ago"
+    elif days_diff < 30:
+        weeks = days_diff // 7
+        label = f"{weeks} weeks ago"
+    else:
+        label = f"Earlier ({dt.strftime('%d %b %Y')})"
+    return {"exact": exact, "label": label}
+
+
+def _compute_tab_quality_metrics(c: sqlite3.Cursor, where_clause: str = "1=1", params: Optional[List[Any]] = None, latest_run_id: int = 0) -> Dict[str, Any]:
+    """Computes count, avg score, Form Accuracy %, Portal Accuracy %, and status summary for any filter scope."""
+    p = params or []
+    row = c.execute(f"""
+        SELECT
+            COUNT(*) AS total,
+            COALESCE(ROUND(AVG(score), 2), 0.0) AS avg_score,
+            SUM(CASE WHEN COALESCE(form_link_ok, 1) = 1 THEN 1 ELSE 0 END) AS form_ok,
+            SUM(CASE WHEN COALESCE(portal_link_ok, 1) = 1 THEN 1 ELSE 0 END) AS portal_ok,
+            SUM(CASE WHEN COALESCE(form_link_ok, 1) = 1 AND COALESCE(portal_link_ok, 1) = 1 THEN 1 ELSE 0 END) AS dual_ok,
+            SUM(CASE WHEN ? > 0 AND COALESCE(last_search_run_id, 0) = ? THEN 1 ELSE 0 END) AS latest_cnt,
+            SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) AS approved_cnt,
+            SUM(CASE WHEN status = 'submitted' THEN 1 ELSE 0 END) AS submitted_cnt,
+            SUM(CASE WHEN status IN ('draft_ready', 'in_review', 'found', 'ready_to_submit', 'pending') THEN 1 ELSE 0 END) AS in_review_cnt,
+            SUM(CASE WHEN status IN ('unqualified', 'not_suitable') THEN 1 ELSE 0 END) AS unqualified_cnt,
+            SUM(CASE WHEN status = 'perk_benefit' THEN 1 ELSE 0 END) AS perk_cnt,
+            SUM(CASE WHEN status = 'dismissed' THEN 1 ELSE 0 END) AS dismissed_cnt
+        FROM platforms
+        WHERE {where_clause}
+    """, [latest_run_id, latest_run_id] + p).fetchone()
+
+    total = row["total"] or 0
+    form_ok = row["form_ok"] or 0
+    portal_ok = row["portal_ok"] or 0
+    dual_ok = row["dual_ok"] or 0
+    return {
+        "total": total,
+        "avg_score": round(float(row["avg_score"] or 0.0), 2),
+        "form_working": form_ok,
+        "form_broken": max(0, total - form_ok),
+        "form_accuracy_pct": round((100.0 * form_ok / total), 1) if total > 0 else 0.0,
+        "portal_working": portal_ok,
+        "portal_broken": max(0, total - portal_ok),
+        "portal_accuracy_pct": round((100.0 * portal_ok / total), 1) if total > 0 else 0.0,
+        "dual_link_integrity_pct": round((100.0 * dual_ok / total), 1) if total > 0 else 0.0,
+        "latest_search_count": row["latest_cnt"] or 0,
+        "status_counts": {
+            "approved": row["approved_cnt"] or 0,
+            "submitted": row["submitted_cnt"] or 0,
+            "in_review": row["in_review_cnt"] or 0,
+            "unqualified": row["unqualified_cnt"] or 0,
+            "perk_benefit": row["perk_cnt"] or 0,
+            "dismissed": row["dismissed_cnt"] or 0,
+        },
+    }
+
+
+def _compute_quality_summary(c: sqlite3.Cursor, runs: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """Top-level Dashboard summary measures for platform quality, status correlation, link accuracy, and latest search."""
+    latest_run_id = c.execute("SELECT COALESCE(MAX(last_search_run_id), 0) FROM platforms").fetchone()[0] or 0
+
+    status_specs = [
+        ("approved", "Approved", "status = 'approved'"),
+        ("submitted", "Submitted Live", "status = 'submitted'"),
+        ("in_review", "In Review", "status IN ('draft_ready', 'in_review', 'found', 'ready_to_submit', 'pending')"),
+        ("unqualified", "Rejected / Unqualified", "status IN ('unqualified', 'not_suitable')"),
+        ("perk_benefit", "Cohort Perks", "status = 'perk_benefit'"),
+        ("dismissed", "Dismissed", "status = 'dismissed'"),
+    ]
+    by_status: Dict[str, Any] = {}
+    for key, label, where_sql in status_specs:
+        m = _compute_tab_quality_metrics(c, where_sql, [], latest_run_id)
+        m["label"] = label
+        by_status[key] = m
+
+    active_where = "status NOT IN ('unqualified', 'not_suitable', 'perk_benefit', 'dismissed')"
+    active_metrics = _compute_tab_quality_metrics(c, active_where, [], latest_run_id)
+    all_raw_metrics = _compute_tab_quality_metrics(c, "1=1", [], latest_run_id)
+
+    # Hard-rejected (tier='rejected') vs Deprioritized Chambers avg score inside unqualified
+    hard_rej_row = c.execute("SELECT COUNT(*), COALESCE(ROUND(AVG(score), 2), 0.0) FROM platforms WHERE status IN ('unqualified', 'not_suitable') AND COALESCE(tier,'') = 'rejected'").fetchone()
+    dep_row = c.execute("SELECT COUNT(*), COALESCE(ROUND(AVG(score), 2), 0.0) FROM platforms WHERE status IN ('unqualified', 'not_suitable') AND COALESCE(tier,'') = 'deprioritized'").fetchone()
+
+    app_sub_row = c.execute("SELECT COUNT(*), COALESCE(ROUND(AVG(score), 2), 0.0) FROM platforms WHERE status IN ('approved', 'submitted')").fetchone()
+    app_sub_cnt = app_sub_row[0] or 0
+    app_sub_avg = float(app_sub_row[1] or 0.0)
+    in_rev_avg = by_status["in_review"]["avg_score"]
+    rej_avg = by_status["unqualified"]["avg_score"]
+
+    if app_sub_cnt == 0:
+        cal_status = "pending"
+        cal_msg = "No Approved/Submitted platforms yet — approve top targets to validate score-to-approval correlation."
+    elif app_sub_avg >= in_rev_avg and app_sub_avg > rej_avg:
+        cal_status = "healthy"
+        cal_msg = f"Aligned — Approved/Submitted avg ({app_sub_avg}) leads In Review ({in_rev_avg}) and Rejected ({rej_avg})."
+    else:
+        cal_status = "review_needed"
+        cal_msg = f"Review Weightings — Approved/Submitted avg ({app_sub_avg}) is below In Review ({in_rev_avg}); inspect Point System criteria."
+
+    # Additional Quality Scores (Non-Exhaustive Rubric)
+    intake_ready_cnt = c.execute("""
+        SELECT COUNT(*) FROM platforms
+        WHERE status NOT IN ('unqualified', 'not_suitable', 'perk_benefit', 'dismissed')
+          AND (tier = 'tier_1' OR is_smartmatch = 1 OR high_level_category IN (
+              'Direct Startup Engagement & Intake',
+              'SmartMatch & Dealflow Licensing Engines',
+              'UK Accelerator Review & Ranking Platforms'
+          ))
+    """).fetchone()[0] or 0
+    intake_readiness_pct = round(100.0 * intake_ready_cnt / active_metrics["total"], 1) if active_metrics["total"] > 0 else 0.0
+    gate_pass_yield_pct = round(100.0 * active_metrics["total"] / all_raw_metrics["total"], 1) if all_raw_metrics["total"] > 0 else 0.0
+
+    # Latest search details
+    latest_run = runs[0] if runs else None
+    latest_added_total = c.execute("SELECT COUNT(*) FROM platforms WHERE COALESCE(last_search_run_id, 0) = ? AND ? > 0", (latest_run_id, latest_run_id)).fetchone()[0] or 0
+    latest_added_qualified = c.execute(f"SELECT COUNT(*) FROM platforms WHERE COALESCE(last_search_run_id, 0) = ? AND ? > 0 AND {active_where}", (latest_run_id, latest_run_id)).fetchone()[0] or 0
+
+    return {
+        "by_status": by_status,
+        "by_tab": {
+            "all": active_metrics,
+            "all_raw": all_raw_metrics,
+            "in_review": by_status["in_review"],
+            "approved": by_status["approved"],
+            "submitted": by_status["submitted"],
+            "unqualified": by_status["unqualified"],
+            "perk_benefit": by_status["perk_benefit"],
+            "dismissed": by_status["dismissed"],
+        },
+        "rejected_split": {
+            "hard_rejected_count": hard_rej_row[0] or 0,
+            "hard_rejected_avg_score": float(hard_rej_row[1] or 0.0),
+            "deprioritized_count": dep_row[0] or 0,
+            "deprioritized_avg_score": float(dep_row[1] or 0.0),
+        },
+        "approved_submitted_avg_score": round(app_sub_avg, 2),
+        "scoring_calibration": {
+            "status": cal_status,
+            "message": cal_msg,
+        },
+        "active_form_accuracy_pct": active_metrics["form_accuracy_pct"],
+        "active_form_working": active_metrics["form_working"],
+        "active_form_broken": active_metrics["form_broken"],
+        "active_portal_accuracy_pct": active_metrics["portal_accuracy_pct"],
+        "active_portal_working": active_metrics["portal_working"],
+        "active_portal_broken": active_metrics["portal_broken"],
+        "dual_link_integrity_pct": active_metrics["dual_link_integrity_pct"],
+        "intake_readiness_pct": intake_readiness_pct,
+        "gate_pass_yield_pct": gate_pass_yield_pct,
+        "latest_search": {
+            "run_id": latest_run["id"] if latest_run else latest_run_id,
+            "tagged_run_id": latest_run_id,
+            "query": latest_run.get("query") if latest_run else "Initial Verified Onboarding Batch",
+            "started_at": latest_run.get("started_at") if latest_run else "",
+            "completed_at": latest_run.get("completed_at") if latest_run else "",
+            "reported_discovered": latest_run.get("discovered_count", 0) if latest_run else latest_added_total,
+            "marked_platforms_count": latest_added_total,
+            "marked_qualified_count": latest_added_qualified,
+        },
+    }
+
+
+@app.get("/api/scoring/criteria")
+def api_get_scoring_criteria():
+    return pse.get_scoring_criteria(DB_PATH)
+
+
+@app.post("/api/scoring/criteria")
+def api_update_scoring_criteria(req: CriteriaWeightsUpdateRequest):
+    return pse.update_criteria_weights(req.weights, DB_PATH, recalculate=req.recalculate)
+
+
+@app.post("/api/scoring/criteria/reset")
+def api_reset_scoring_criteria(recalculate: bool = Query(True)):
+    return pse.reset_criteria_weights(DB_PATH, recalculate=recalculate)
+
+
 @app.get("/api/dashboard/stats")
 @app.get("/api/stats")
 def get_dashboard_stats():
@@ -386,6 +615,9 @@ def get_dashboard_stats():
     # Recent runs
     runs_rows = c.execute("SELECT * FROM activity_runs WHERE is_cleared = 0 ORDER BY id DESC LIMIT 5").fetchall()
     runs = [dict(r) for r in runs_rows]
+
+    quality_summary = _compute_quality_summary(c, runs)
+    criteria_state = pse.get_scoring_criteria(DB_PATH)
 
     # Listing sources with visits
     sources_rows = c.execute("""
@@ -457,6 +689,9 @@ def get_dashboard_stats():
         "perk_benefit": perk_benefit_count,
         "dismissed": dismissed_count,
         "deepseek_engine": dfe.DeepSeekFlashEngine.get_engine_status(),
+        "quality_summary": quality_summary,
+        "quality_definitions": criteria_state["quality_definitions"],
+        "modified_weights_count": criteria_state["modified_count"],
         "categories": categories,
         "runs": runs,
         "alerts": alerts,
@@ -476,6 +711,8 @@ def get_platforms(
     tier: Optional[str] = Query(None),
     high_level_category: Optional[str] = Query(None),
     smartmatch_filter: Optional[str] = Query(None),
+    sort_by: Optional[str] = Query("score_desc"),
+    latest_only: bool = Query(False),
     page: int = Query(1, ge=1),
     limit: int = Query(25, ge=1, le=100)
 ):
@@ -488,6 +725,8 @@ def get_platforms(
     if hasattr(tier, "default"): tier = tier.default
     if hasattr(high_level_category, "default"): high_level_category = high_level_category.default
     if hasattr(smartmatch_filter, "default"): smartmatch_filter = smartmatch_filter.default
+    if hasattr(sort_by, "default"): sort_by = sort_by.default or "score_desc"
+    if hasattr(latest_only, "default"): latest_only = bool(latest_only.default)
     if hasattr(page, "default"): page = page.default or 1
     if hasattr(limit, "default"): limit = limit.default or 25
 
@@ -506,6 +745,8 @@ def get_platforms(
 
     conn = get_db()
     c = conn.cursor()
+
+    latest_run_id = c.execute("SELECT COALESCE(MAX(last_search_run_id), 0) FROM platforms").fetchone()[0] or 0
 
     query_parts = ["1=1"]
     params = []
@@ -570,6 +811,10 @@ def get_platforms(
         query_parts.append("category = ?")
         params.append(category)
 
+    if latest_only and latest_run_id > 0:
+        query_parts.append("COALESCE(last_search_run_id, 0) = ?")
+        params.append(latest_run_id)
+
     if search:
         query_parts.append("(name LIKE ? OR domain LIKE ? OR draft_pitch LIKE ?)")
         search_param = f"%{search}%"
@@ -577,7 +822,29 @@ def get_platforms(
 
     where_clause = " AND ".join(query_parts)
 
-    total_count = c.execute(f"SELECT COUNT(*) FROM platforms WHERE {where_clause}", params).fetchone()[0]
+    tab_metrics = _compute_tab_quality_metrics(c, where_clause, params, latest_run_id)
+    total_count = tab_metrics["total"]
+
+    order_params: List[Any] = []
+    if sort_by == "date_desc":
+        order_sql = "ORDER BY COALESCE(discovered_at, '') DESC, score DESC, id DESC"
+    elif sort_by == "date_asc":
+        order_sql = "ORDER BY COALESCE(discovered_at, '') ASC, id ASC"
+    elif sort_by == "score_asc":
+        order_sql = "ORDER BY score ASC, COALESCE(discovered_at, '') DESC, id DESC"
+    elif sort_by == "latest_search_first":
+        order_sql = "ORDER BY CASE WHEN ? > 0 AND COALESCE(last_search_run_id, 0) = ? THEN 0 ELSE 1 END, COALESCE(discovered_at, '') DESC, score DESC, id DESC"
+        order_params = [latest_run_id, latest_run_id]
+    else:
+        order_sql = """ORDER BY CASE 
+            WHEN tier = 'tier_1' THEN 1
+            WHEN tier = 'tier_2' THEN 2
+            WHEN is_core_target = 1 THEN 3
+            WHEN tier = 'tier_3' THEN 4
+            WHEN status = 'ready' THEN 5
+            WHEN status = 'in_review' THEN 6
+            ELSE 7 
+        END, score DESC, id DESC"""
 
     offset = (page - 1) * limit
     sql = f"""
@@ -586,22 +853,33 @@ def get_platforms(
                visit_count, discovered_at, submitted_at, bot_verified, category_type,
                tier, intake_type, is_core_target, intake_features, high_level_category,
                is_smartmatch, smartmatch_free, smartmatch_paid, smartmatch_model, 
-               licensing_notes, ranking_scope
+               licensing_notes, ranking_scope,
+               COALESCE(portal_link_ok, 1) AS portal_link_ok,
+               COALESCE(portal_http_status, 200) AS portal_http_status,
+               COALESCE(form_link_ok, 1) AS form_link_ok,
+               COALESCE(form_http_status, 200) AS form_http_status,
+               COALESCE(link_error, '') AS link_error,
+               link_checked_at,
+               COALESCE(last_search_run_id, 0) AS last_search_run_id,
+               COALESCE(criteria_breakdown, '[]') AS criteria_breakdown
         FROM platforms
         WHERE {where_clause}
-        ORDER BY CASE 
-            WHEN tier = 'tier_1' THEN 1
-            WHEN tier = 'tier_2' THEN 2
-            WHEN is_core_target = 1 THEN 3
-            WHEN tier = 'tier_3' THEN 4
-            WHEN status = 'ready' THEN 5
-            WHEN status = 'in_review' THEN 6
-            ELSE 7 
-        END, score DESC, id DESC
+        {order_sql}
         LIMIT ? OFFSET ?
     """
-    rows = c.execute(sql, params + [limit, offset]).fetchall()
-    platforms = [dict(r) for r in rows]
+    rows = c.execute(sql, params + order_params + [limit, offset]).fetchall()
+    platforms = []
+    for r in rows:
+        item = dict(r)
+        dt_fmt = _format_date_added(item.get("discovered_at"))
+        item["exact_date_added"] = dt_fmt["exact"]
+        item["date_added_label"] = dt_fmt["label"]
+        item["is_latest_search"] = bool(latest_run_id > 0 and item.get("last_search_run_id") == latest_run_id)
+        try:
+            item["criteria_breakdown_list"] = json.loads(item.get("criteria_breakdown") or "[]")
+        except Exception:
+            item["criteria_breakdown_list"] = []
+        platforms.append(item)
     conn.close()
 
     return {
@@ -609,6 +887,9 @@ def get_platforms(
         "page": page,
         "limit": limit,
         "pages": (total_count + limit - 1) // limit,
+        "sort_by": sort_by,
+        "latest_search_run_id": latest_run_id,
+        "tab_metrics": tab_metrics,
         "platforms": platforms
     }
 
@@ -681,15 +962,78 @@ def run_all_category_agents():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/api/platforms/verify-links")
+def verify_batch_links_endpoint(limit: int = Query(25, ge=1, le=100)):
+    """Runs live HTTP & Form verification on active qualified platforms and updates link health accuracy."""
+    conn = get_db()
+    c = conn.cursor()
+    rows = c.execute("""
+        SELECT id, domain, url, form_url FROM platforms
+        WHERE status NOT IN ('unqualified', 'not_suitable', 'perk_benefit', 'dismissed')
+        ORDER BY COALESCE(link_checked_at, '') ASC, score DESC
+        LIMIT ?
+    """, (limit,)).fetchall()
+
+    now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    checked = 0
+    form_ok_cnt = 0
+    portal_ok_cnt = 0
+
+    def _probe_row(r_dict):
+        u = r_dict["url"] or f"https://{r_dict['domain']}"
+        fu = r_dict["form_url"] or u
+        pr = dfe.DeepSeekFlashEngine.probe_live_website(u, fu)
+        return r_dict["id"], pr
+
+    with ThreadPoolExecutor(max_workers=10) as ex:
+        for pid, pr in ex.map(_probe_row, [dict(r) for r in rows]):
+            p_ok = 1 if pr.get("portal_link_ok") else 0
+            f_ok = 1 if pr.get("form_link_ok") else 0
+            if p_ok:
+                portal_ok_cnt += 1
+            if f_ok:
+                form_ok_cnt += 1
+            c.execute("""
+                UPDATE platforms
+                SET portal_link_ok = ?, portal_http_status = ?,
+                    form_link_ok = ?, form_http_status = ?,
+                    link_error = ?, link_checked_at = ?
+                WHERE id = ?
+            """, (
+                p_ok, pr.get("portal_http_status") or 0,
+                f_ok, pr.get("form_http_status") or 0,
+                pr.get("link_error") or "", now_str, pid
+            ))
+            checked += 1
+
+    conn.commit()
+    conn.close()
+    return {
+        "status": "success",
+        "checked": checked,
+        "portal_ok": portal_ok_cnt,
+        "form_ok": form_ok_cnt,
+    }
+
 @app.get("/api/platforms/{platform_id}")
 def get_platform_detail(platform_id: int):
     conn = get_db()
     c = conn.cursor()
+    latest_run_id = c.execute("SELECT COALESCE(MAX(last_search_run_id), 0) FROM platforms").fetchone()[0] or 0
     row = c.execute("SELECT * FROM platforms WHERE id = ?", (platform_id,)).fetchone()
     conn.close()
     if not row:
         raise HTTPException(status_code=404, detail="Platform not found")
-    return dict(row)
+    item = dict(row)
+    dt_fmt = _format_date_added(item.get("discovered_at"))
+    item["exact_date_added"] = dt_fmt["exact"]
+    item["date_added_label"] = dt_fmt["label"]
+    item["is_latest_search"] = bool(latest_run_id > 0 and item.get("last_search_run_id") == latest_run_id)
+    try:
+        item["criteria_breakdown_list"] = json.loads(item.get("criteria_breakdown") or "[]")
+    except Exception:
+        item["criteria_breakdown_list"] = []
+    return item
 
 @app.post("/api/platforms/add-manual")
 def add_platform_manual(req: AddManualPlatformRequest):
@@ -725,22 +1069,29 @@ def add_platform_manual(req: AddManualPlatformRequest):
     reasons = score_eval.get("score_reasons_summary") or "Verified by DeepSeek Flash v4.1 Four-Gate Engine."
 
     try:
+        p_ok = int(score_eval.get("portal_link_ok", 1))
+        f_ok = int(score_eval.get("form_link_ok", 1))
+        p_code = int(score_eval.get("portal_http_status") or 200)
+        f_code = int(score_eval.get("form_http_status") or 200)
+        l_err = score_eval.get("link_error") or ""
         c.execute("""
             INSERT INTO platforms (
                 name, category, url, domain, form_url, score, score_reasons, draft_pitch,
-                tracking_url, submitted_url, status, bot_verified, submission_mode, submitted_at,
-                category_type, tier, intake_type, is_core_target, high_level_category
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'manual', CURRENT_TIMESTAMP, 'submittable_directory', ?, 'direct_intake', 1, ?)
+                tracking_url, submitted_url, status, discovered_at, bot_verified, submission_mode, submitted_at,
+                category_type, tier, intake_type, is_core_target, high_level_category,
+                portal_link_ok, portal_http_status, form_link_ok, form_http_status, link_error, link_checked_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, 1, 'manual', CURRENT_TIMESTAMP, 'submittable_directory', ?, 'direct_intake', 1, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
         """, (
             req.name.strip(), req.category, healed_url, clean_domain, healed_form,
             final_score, reasons,
             pitch, tracking_url, req.submitted_url or "",
-            status_target, final_tier, hl_cat
+            status_target, final_tier, hl_cat,
+            p_ok, p_code, f_ok, f_code, l_err
         ))
         conn.commit()
         new_id = c.lastrowid
         conn.close()
-        return {"status": "success", "id": new_id, "score": final_score, "tier": final_tier, "message": f"Platform '{req.name}' verified by DeepSeek Flash v4.1 ({final_score}/100) and saved."}
+        return {"status": "success", "id": new_id, "score": final_score, "tier": final_tier, "form_link_ok": f_ok, "portal_link_ok": p_ok, "message": f"Platform '{req.name}' verified by DeepSeek Flash v4.1 ({final_score}/100) and saved."}
     except sqlite3.IntegrityError:
         conn.close()
         raise HTTPException(
@@ -791,20 +1142,34 @@ def update_platform_status(platform_id: int, req: StatusUpdateRequest):
 
 @app.post("/api/platforms/{platform_id}/verify-live")
 async def verify_platform_live_endpoint(platform_id: int):
-    """Executes live verification via browser-use engine."""
+    """Executes real live DNS/HTTP probe for both Portal & Form URLs and updates DB health status."""
     conn = get_db()
     c = conn.cursor()
-    row = c.execute("SELECT url, domain, name FROM platforms WHERE id = ?", (platform_id,)).fetchone()
+    row = c.execute("SELECT url, form_url, domain, name FROM platforms WHERE id = ?", (platform_id,)).fetchone()
     if not row:
         conn.close()
         raise HTTPException(status_code=404, detail="Platform not found.")
-    
+
     target_url = row["url"] or f"https://{row['domain']}"
-    if presence_upgrade_controller:
-        res = await presence_upgrade_controller.verify_platform_live(target_url)
-        conn.close()
-        return {"status": "success", "platform_id": platform_id, "verification": res.dict()}
-    probe = dfe.DeepSeekFlashEngine.probe_live_website(target_url)
+    target_form = row["form_url"] or target_url
+    probe = dfe.DeepSeekFlashEngine.probe_live_website(target_url, target_form)
+    now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    c.execute("""
+        UPDATE platforms
+        SET portal_link_ok = ?, portal_http_status = ?,
+            form_link_ok = ?, form_http_status = ?,
+            link_error = ?, link_checked_at = ?
+        WHERE id = ?
+    """, (
+        1 if probe.get("portal_link_ok") else 0,
+        probe.get("portal_http_status") or 0,
+        1 if probe.get("form_link_ok") else 0,
+        probe.get("form_http_status") or 0,
+        probe.get("link_error") or "",
+        now_str,
+        platform_id,
+    ))
+    conn.commit()
     conn.close()
     return {"status": "success", "platform_id": platform_id, "verification": probe}
 
@@ -1210,9 +1575,15 @@ def run_single_category_browser_worker(run_id: int, spec: Dict[str, Any], pool_c
         with DB_WRITE_LOCK:
             c.execute("""
                 INSERT OR IGNORE INTO platforms
-                (name, category, url, domain, score, score_reasons, draft_pitch, draft_full, tracking_url, status, discovered_at, submitted_url, visit_count, form_url, category_type, tier, intake_type, is_core_target, intake_features, high_level_category, is_smartmatch, smartmatch_free, smartmatch_paid, smartmatch_model, licensing_notes, ranking_scope)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'in_review', ?, '', 0, ?, 'submittable_directory', ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (name, category, healed_url, domain, final_score, final_reasons, draft_pitch, draft_full, tracking_url, now_str, healed_form_url, final_tier, spec["intake_type"], spec["intake_features"], cat_name, is_sm, sm_free, sm_paid, sm_model, lic_notes, r_scope))
+                (name, category, url, domain, score, score_reasons, draft_pitch, draft_full, tracking_url, status, discovered_at, submitted_url, visit_count, form_url, category_type, tier, intake_type, is_core_target, intake_features, high_level_category, is_smartmatch, smartmatch_free, smartmatch_paid, smartmatch_model, licensing_notes, ranking_scope, portal_link_ok, portal_http_status, form_link_ok, form_http_status, link_error, link_checked_at, last_search_run_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'in_review', ?, '', 0, ?, 'submittable_directory', ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                name, category, healed_url, domain, final_score, final_reasons, draft_pitch, draft_full, tracking_url, now_str, healed_form_url,
+                final_tier, spec["intake_type"], spec["intake_features"], cat_name, is_sm, sm_free, sm_paid, sm_model, lic_notes, r_scope,
+                int(score_eval.get("portal_link_ok", 1)), int(score_eval.get("portal_http_status") or 200),
+                int(score_eval.get("form_link_ok", 1)), int(score_eval.get("form_http_status") or 200),
+                score_eval.get("link_error") or "", now_str, run_id
+            ))
 
             if c.rowcount > 0:
                 existing_domains.add(domain)

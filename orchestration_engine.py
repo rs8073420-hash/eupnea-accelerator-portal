@@ -467,14 +467,17 @@ def run_coordinated_orchestration_cycle():
                 intake_type = "ecosystem_database"
                 intake_features = "Ecosystem Database Profile, Accelerator Tagging & SEO Discoverability"
             c.execute("""
-                INSERT INTO platforms (name, domain, url, form_url, category, score, score_reasons, draft_pitch, draft_full, tracking_url, status, discovered_at, bot_verified, category_type, submission_mode, tier, intake_type, is_core_target, intake_features, high_level_category)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'in_review', ?, 1, 'submittable_directory', 'Direct Portal', ?, ?, 1, ?, ?)
+                INSERT INTO platforms (name, domain, url, form_url, category, score, score_reasons, draft_pitch, draft_full, tracking_url, status, discovered_at, bot_verified, category_type, submission_mode, tier, intake_type, is_core_target, intake_features, high_level_category, portal_link_ok, portal_http_status, form_link_ok, form_http_status, link_error, link_checked_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'in_review', ?, 1, 'submittable_directory', 'Direct Portal', ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 name, domain, score_eval.get("healed_url") or f"https://{domain}",
                 score_eval.get("healed_form_url") or form_url, category, score_eval["score"],
                 score_eval.get("score_reasons_summary") or "DeepSeek Flash v4.1 Verified Portal",
                 draft["draft_pitch"], draft["draft_full"], draft["tracking_url"], now_str,
-                tier, intake_type, intake_features, high_level_category
+                tier, intake_type, intake_features, high_level_category,
+                int(score_eval.get("portal_link_ok", 1)), int(score_eval.get("portal_http_status") or 200),
+                int(score_eval.get("form_link_ok", 1)), int(score_eval.get("form_http_status") or 200),
+                score_eval.get("link_error") or "", now_str
             ))
             existing_domains.add(domain)
             new_injections += 1

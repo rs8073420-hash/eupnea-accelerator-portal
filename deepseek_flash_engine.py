@@ -327,8 +327,14 @@ class DeepSeekFlashEngine:
             "snippet": "",
             "healed_url": url,
             "healed_form_url": form_url or url,
+            "portal_link_ok": False,
+            "portal_http_status": 0,
+            "form_link_ok": False,
+            "form_http_status": 0,
+            "link_error": "",
             "has_apply_signal": False,
             "has_org_signal": False,
+            "has_venture_signal": False,
             "error": None
         }
 
@@ -382,13 +388,23 @@ class DeepSeekFlashEngine:
             if dom_clean in WAF_ALIVE_WHITELIST:
                 probe["is_alive"] = True
                 probe["waf_protected"] = True
+                probe["portal_link_ok"] = True
+                probe["portal_http_status"] = 403
+                probe["form_link_ok"] = True
+                probe["form_http_status"] = 403
+            else:
+                probe["link_error"] = probe["error"] or "Portal connection failed"
             return probe
 
         sc = resp.status_code
+        probe["portal_http_status"] = sc
         if sc in (401, 403, 406, 429):
             probe["is_alive"] = True
             probe["waf_protected"] = True
             probe["healed_url"] = str(resp.url)
+            probe["portal_link_ok"] = True
+            probe["form_link_ok"] = True
+            probe["form_http_status"] = sc
         elif sc < 400:
             probe["is_alive"] = True
             probe["healed_url"] = str(resp.url)
@@ -405,11 +421,22 @@ class DeepSeekFlashEngine:
             probe["snippet"] = text_clean[:350]
             low_text = text_clean.lower()
 
+            soft_404_hits = [
+                "page not found", "404 not found", "404 error", "error 404",
+                "page cannot be found", "this page doesn't exist", "this page does not exist",
+                "requested url was not found"
+            ]
+            portal_soft_404 = any(p in probe["title"] or p in low_text[:900] for p in soft_404_hits) or probe["title"].startswith("404")
+
             if any(p in probe["title"] or p in low_text[:600] for p in UNSUITABLE_TITLE_CONTENT_PATTERNS):
                 if any(p in probe["title"] or p in low_text[:600] for p in ["domain is for sale", "buy this domain", "sedoparking", "hugedomains", "dan.com", "afternic", "domain parked", "coming soon"]):
                     probe["is_parked"] = True
                 else:
                     probe["is_unsuitable_content"] = True
+
+            probe["portal_link_ok"] = not (probe["is_parked"] or portal_soft_404)
+            if not probe["portal_link_ok"]:
+                probe["link_error"] = "Portal soft-404 / parked"
 
             probe["has_apply_signal"] = any(w in low for w in ["<form", "apply", "register", "submit", "add-new", "accelerators", "programs", "programmes"])
             probe["has_org_signal"] = any(w in low_text for w in ["about", "contact", "privacy", "terms", "©", "ltd", "inc.", "london"])
@@ -423,22 +450,42 @@ class DeepSeekFlashEngine:
                 ]
             )
 
-            # Verify or auto-heal form_url if dead 404
-            if form_url and form_url != probe["healed_url"]:
+            # Verify Form URL health and reject/heal 404 or "page not found" form pages
+            target_form = form_url or probe["healed_url"]
+            if target_form == probe["healed_url"]:
+                probe["form_link_ok"] = probe["portal_link_ok"]
+                probe["form_http_status"] = sc
+            else:
                 try:
-                    rf = fetch_target(form_url)
-                    if rf.status_code >= 400 and rf.status_code not in (401, 403, 429):
-                        # Discover working submit/apply/accelerator link on root HTML
+                    rf = fetch_target(target_form)
+                    probe["form_http_status"] = rf.status_code
+                    f_low = (rf.text or "")[:25000].lower()
+                    fm = re.search(r'<title[^>]*>(.*?)</title>', f_low, re.S)
+                    f_title = re.sub(r'\s+', ' ', fm.group(1)).strip() if fm else ""
+                    f_bad_body = any(p in f_title or p in f_low[:1200] for p in soft_404_hits) or "404" in f_title
+                    if (rf.status_code < 400 or rf.status_code in (401, 403, 429)) and not f_bad_body:
+                        probe["form_link_ok"] = True
+                    else:
+                        probe["form_link_ok"] = False
                         discovered_links = re.findall(r'href=["\']([^"\']*(?:submit|register|apply|accelerator|program)[^"\']*)["\']', low)
                         if discovered_links:
                             best = urllib.parse.urljoin(probe["healed_url"], discovered_links[0])
-                            probe["healed_form_url"] = best
-                        else:
-                            probe["healed_form_url"] = probe["healed_url"]
-                except Exception:
-                    probe["healed_form_url"] = probe["healed_url"]
+                            try:
+                                rf2 = fetch_target(best)
+                                if rf2.status_code < 400 and not any(p in (rf2.text or "")[:1500].lower() for p in soft_404_hits):
+                                    probe["healed_form_url"] = best
+                                    probe["form_link_ok"] = True
+                                    probe["form_http_status"] = rf2.status_code
+                            except Exception:
+                                pass
+                        if not probe["form_link_ok"]:
+                            probe["link_error"] = (probe["link_error"] + f" | Form HTTP {rf.status_code}").strip(" |")
+                except Exception as fe:
+                    probe["form_link_ok"] = False
+                    probe["link_error"] = (probe["link_error"] + f" | Form unreachable: {str(fe)[:40]}").strip(" |")
         else:
             probe["error"] = f"HTTP {sc}"
+            probe["link_error"] = f"Portal HTTP {sc}"
 
         return probe
 
@@ -655,28 +702,52 @@ class DeepSeekFlashEngine:
                 "score_reasons_summary": gate_res["summary"]
             }
 
-        # 4. Calibrated Tier & Arithmetic Score
+        # 4. Calibrated Tier & Arithmetic Score (Honouring Custom Editable Point System Weights)
         probe = gate_res.get("probe") or {}
-        has_form = bool(platform.get("form_url")) or probe.get("has_apply_signal", False)
+        has_form = (bool(platform.get("form_url")) or probe.get("has_apply_signal", False)) and probe.get("form_link_ok", True)
         hl_cat = (platform.get("high_level_category") or "").lower()
 
-        score = 72
+        weights = {}
+        try:
+            import sqlite3
+            dbp = os.path.join(os.path.dirname(os.path.abspath(__file__)), "presence_agent.db")
+            if os.path.exists(dbp):
+                with sqlite3.connect(dbp, timeout=5.0) as _conn:
+                    if _conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='scoring_criteria'").fetchone():
+                        weights = {k: int(v) for k, v in _conn.execute("SELECT key, current_points FROM scoring_criteria").fetchall()}
+        except Exception:
+            weights = {}
+
+        score = (
+            weights.get("real_directory", 30)
+            + weights.get("target_audience", 15)
+            + weights.get("target_geography", 10)
+            + weights.get("established_directory", 10)
+            + weights.get("structured_fields", 10)
+        )
         reasons = [f"[{ENGINE_VERSION}] Passed Pre-Qualification (Live domain, verifiable entity)."]
 
         if "direct startup" in hl_cat or "smartmatch" in hl_cat:
-            score += 12
-            reasons.append("Direct Startup Intake / Dealflow Pipeline (+12)")
+            pts = weights.get("tier_1_intake", 15)
+            score += pts
+            reasons.append(f"Direct Startup Intake / Tier 1 Pipeline (+{pts})")
         elif "investor" in hl_cat or "uk accelerator" in hl_cat or "ecosystem" in hl_cat:
-            score += 8
-            reasons.append("Verified Venture Ecosystem / Accelerator Discovery (+8)")
+            pts = weights.get("tier_2_discovery", 10)
+            score += pts
+            reasons.append(f"Verified Venture Ecosystem / Tier 2 Discovery (+{pts})")
         elif "chamber" in hl_cat:
-            # Penalize generic chambers per Sree Section 6 unless explicitly verified innovation cluster
-            score -= 22
-            reasons.append("Chamber/Regional Network (Low founder intake priority per Sree Audit, -22)")
+            pen = weights.get("regional_chamber_penalty", -30)
+            score += pen
+            reasons.append(f"Chamber/Regional Network (Low founder intake priority per Sree Audit, {pen})")
 
         if has_form:
-            score += 8
-            reasons.append("Verified registration/application path (+8)")
+            fpts = weights.get("clear_submit_path", 15)
+            score += fpts
+            reasons.append(f"Verified registration/application path (+{fpts})")
+        elif verify_network and not probe.get("form_link_ok", True):
+            bfp = weights.get("broken_form_penalty", -10)
+            score += bfp
+            reasons.append(f"Form URL unavailable or returned error ({bfp})")
 
         score = max(0, min(94, score))
         is_qualified = score >= 70
@@ -689,6 +760,11 @@ class DeepSeekFlashEngine:
             "status": "in_review" if is_qualified else "unqualified",
             "healed_url": probe.get("healed_url", platform.get("url")),
             "healed_form_url": probe.get("healed_form_url", platform.get("form_url")),
+            "portal_link_ok": 1 if probe.get("portal_link_ok", True) else 0,
+            "portal_http_status": probe.get("portal_http_status", 200),
+            "form_link_ok": 1 if probe.get("form_link_ok", True) else 0,
+            "form_http_status": probe.get("form_http_status", 200),
+            "link_error": probe.get("link_error", ""),
             "engine": ENGINE_VERSION,
             "reasons": reasons,
             "score_reasons_summary": " | ".join(reasons)

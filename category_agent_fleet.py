@@ -1855,8 +1855,9 @@ def run_category_platform_hunter(agent_id: str, category_key: str, batch_size: i
             discovered_at, bot_verified, submission_mode, category_type,
             form_url, tier, intake_type, is_core_target, high_level_category,
             is_smartmatch, smartmatch_free, smartmatch_paid, smartmatch_model,
-            licensing_notes, ranking_scope, draft_pitch, draft_full
-        ) VALUES (?, 'Accelerator Ecosystem', ?, ?, ?, ?, 'in_review', ?, 1, 'bot_assisted', 'submittable_directory', ?, ?, 'intake', 1, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            licensing_notes, ranking_scope, draft_pitch, draft_full,
+            portal_link_ok, portal_http_status, form_link_ok, form_http_status, link_error, link_checked_at
+        ) VALUES (?, 'Accelerator Ecosystem', ?, ?, ?, ?, 'in_review', ?, 1, 'bot_assisted', 'submittable_directory', ?, ?, 'intake', 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             nm,
             healed_url,
@@ -1874,7 +1875,13 @@ def run_category_platform_hunter(agent_id: str, category_key: str, batch_size: i
             lic_notes,
             r_scope,
             draft_pitch,
-            draft_full
+            draft_full,
+            int(score_eval.get("portal_link_ok", 1)),
+            int(score_eval.get("portal_http_status") or 200),
+            int(score_eval.get("form_link_ok", 1)),
+            int(score_eval.get("form_http_status") or 200),
+            score_eval.get("link_error") or "",
+            now
         ))
         existing_domains.add(dom)
         existing_names.add(nm.lower())

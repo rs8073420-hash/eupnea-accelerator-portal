@@ -1832,7 +1832,11 @@
           <h2 id="room-header-title" class="font-syne font-bold text-base text-white light:text-slate-900">Dashboard</h2>
           <span class="text-xs text-slate-500 font-mono">· Eupnea Autonomous Ecosystem</span>
         </div>
-        <div class="flex items-center gap-3 text-xs">
+        <div class="flex items-center gap-2.5 text-xs">
+          <button onclick="openPointSystemModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-sans font-bold text-xs shadow-xs transition cursor-pointer" title="View & Edit Selection Criteria Point Weightings & Quality Definitions">
+            <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
+            <span>⚖️ Point System & Weights</span>
+          </button>
           <button onclick="openStrategicReviewModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-blue-700 to-indigo-700 hover:from-blue-800 hover:to-indigo-800 text-white font-sans font-bold text-xs shadow-xs transition cursor-pointer">
             <i data-lucide="target" class="w-3.5 h-3.5"></i>
             <span>🎯 Strategic Review for Panagiotis</span>
@@ -1995,6 +1999,155 @@
           </div>
         </div>
 
+        <!-- 📊 SEARCH QUALITY SUMMARY, LINK ACCURACY & STATUS CALIBRATION (Panagiotis Directive) -->
+        <div class="glass-card rounded-2xl p-5 border-l-4 border-l-emerald-500 space-y-5">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-syne font-bold text-base text-white light:text-slate-900">📊 Platform Search Quality & Scoring Calibration</span>
+                <span id="dash-calibration-pill" class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 light:text-emerald-800 border border-emerald-500/40">Checking calibration...</span>
+              </div>
+              <p id="dash-calibration-msg" class="text-xs text-slate-400 light:text-slate-600 mt-1">Evaluating status-score correlation, Form & Portal link health, and latest discovery additions.</p>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <button onclick="verifyBatchLinks(this)" class="px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-mono font-bold flex items-center gap-1.5 cursor-pointer shadow-sm">
+                <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                <span>Re-Verify Form & Portal Links</span>
+              </button>
+              <button onclick="toggleQualityDefinitions()" class="px-3 py-1.5 rounded-xl bg-slate-800 light:bg-slate-100 hover:bg-slate-700 text-slate-200 light:text-slate-800 border border-slate-700 light:border-slate-300 text-xs font-mono font-bold cursor-pointer">
+                📖 Quality Score Definitions
+              </button>
+            </div>
+          </div>
+
+          <!-- Top 4 Quality Summary Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Form Link Accuracy % -->
+            <div class="p-4 rounded-xl bg-slate-900/60 light:bg-slate-50 border border-slate-800 light:border-slate-200 flex flex-col justify-between">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono font-bold text-emerald-400 light:text-emerald-700">📝 Form Link Accuracy %</span>
+                <span class="text-[10px] font-mono text-slate-400">Active Workspace</span>
+              </div>
+              <div class="flex items-baseline gap-2 mt-2">
+                <span id="q-form-accuracy-pct" class="font-syne font-black text-3xl text-white light:text-slate-900">—%</span>
+                <span id="q-form-counts" class="text-[11px] font-mono text-slate-400">0/0 working</span>
+              </div>
+              <div class="w-full h-1.5 rounded-full bg-slate-800 light:bg-slate-200 mt-2 overflow-hidden">
+                <div id="q-form-bar" class="h-full bg-emerald-500 transition-all" style="width: 0%"></div>
+              </div>
+              <span class="text-[10px] text-slate-400 light:text-slate-600 mt-2">Broken Form links have clickability removed automatically.</span>
+            </div>
+
+            <!-- Portal Link Accuracy % -->
+            <div class="p-4 rounded-xl bg-slate-900/60 light:bg-slate-50 border border-slate-800 light:border-slate-200 flex flex-col justify-between">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono font-bold text-sky-400 light:text-sky-700">🌐 Portal Link Accuracy %</span>
+                <span id="q-dual-link-pill" class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-sky-500/15 text-sky-300 light:text-sky-800">Dual: —%</span>
+              </div>
+              <div class="flex items-baseline gap-2 mt-2">
+                <span id="q-portal-accuracy-pct" class="font-syne font-black text-3xl text-white light:text-slate-900">—%</span>
+                <span id="q-portal-counts" class="text-[11px] font-mono text-slate-400">0/0 working</span>
+              </div>
+              <div class="w-full h-1.5 rounded-full bg-slate-800 light:bg-slate-200 mt-2 overflow-hidden">
+                <div id="q-portal-bar" class="h-full bg-sky-500 transition-all" style="width: 0%"></div>
+              </div>
+              <span class="text-[10px] text-slate-400 light:text-slate-600 mt-2">Verified HTTP &lt; 400 / WAF live domain resolution.</span>
+            </div>
+
+            <!-- Latest Search Yield -->
+            <div class="p-4 rounded-xl bg-slate-900/60 light:bg-slate-50 border border-slate-800 light:border-slate-200 flex flex-col justify-between">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono font-bold text-amber-400 light:text-amber-700">✨ Latest Search Added</span>
+                <button onclick="jumpToLatestSearch()" class="text-[10px] font-mono underline text-amber-300 light:text-amber-700 hover:text-amber-200 cursor-pointer">View Latest →</button>
+              </div>
+              <div class="flex items-baseline gap-2 mt-2">
+                <span id="q-latest-added-count" class="font-syne font-black text-3xl text-white light:text-slate-900">0</span>
+                <span id="q-latest-qualified-sub" class="text-[11px] font-mono text-slate-400">new platforms</span>
+              </div>
+              <span id="q-latest-query" class="text-[11px] font-mono text-slate-300 light:text-slate-700 truncate mt-2">—</span>
+              <span id="q-latest-time" class="text-[10px] text-slate-400 mt-0.5">Run date: —</span>
+            </div>
+
+            <!-- Additional Quality Scores -->
+            <div class="p-4 rounded-xl bg-slate-900/60 light:bg-slate-50 border border-slate-800 light:border-slate-200 flex flex-col justify-between">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono font-bold text-purple-400 light:text-purple-700">🎯 Quality & Calibration</span>
+                <span class="text-[10px] font-mono text-slate-400">Extended Rubric</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2 mt-2 text-xs font-mono">
+                <div class="p-2 rounded-lg bg-slate-950/60 light:bg-white border border-slate-800 light:border-slate-200">
+                  <span class="text-[9px] text-slate-400 block">INTAKE READY</span>
+                  <span id="q-intake-readiness" class="font-bold text-sm text-purple-300 light:text-purple-700">—%</span>
+                </div>
+                <div class="p-2 rounded-lg bg-slate-950/60 light:bg-white border border-slate-800 light:border-slate-200">
+                  <span class="text-[9px] text-slate-400 block">GATE PASS YIELD</span>
+                  <span id="q-gate-yield" class="font-bold text-sm text-teal-300 light:text-teal-700">—%</span>
+                </div>
+              </div>
+              <span class="text-[10px] text-slate-400 light:text-slate-600 mt-2">App+Sub Avg: <strong id="q-app-sub-avg" class="text-white light:text-slate-900">—</strong> pts</span>
+            </div>
+          </div>
+
+          <!-- Status Breakdown & Average Score Calibration Table -->
+          <div class="overflow-x-auto rounded-xl border border-slate-800 light:border-slate-200">
+            <table class="w-full text-left text-xs">
+              <thead class="font-mono uppercase text-[10px] text-slate-400 bg-slate-900/80 light:bg-slate-100 border-b border-slate-800 light:border-slate-200">
+                <tr>
+                  <th class="py-2.5 px-3">Platform Status</th>
+                  <th class="py-2.5 px-3">Count</th>
+                  <th class="py-2.5 px-3">Average Score</th>
+                  <th class="py-2.5 px-3">Form Accuracy %</th>
+                  <th class="py-2.5 px-3">Portal Accuracy %</th>
+                  <th class="py-2.5 px-3">Calibration Insight</th>
+                </tr>
+              </thead>
+              <tbody id="dashboard-status-calibration-tbody" class="divide-y divide-slate-800/60 light:divide-slate-200 font-mono">
+                <tr><td colspan="6" class="p-4 text-center text-slate-500">Loading status calibration metrics...</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Collapsible Quality Score Definitions Panel -->
+          <div id="dashboard-quality-definitions" class="hidden rounded-xl bg-slate-900/70 light:bg-slate-50 border border-slate-700 light:border-slate-200 p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="font-syne font-bold text-sm text-white light:text-slate-900">📖 Complete Quality Score & Metric Definitions (Non-Exhaustive Rubric)</span>
+              <button onclick="toggleQualityDefinitions()" class="text-xs font-mono text-slate-400 hover:text-white light:hover:text-slate-900 cursor-pointer">Close ✕</button>
+            </div>
+            <div id="quality-definitions-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs"></div>
+          </div>
+        </div>
+
+        <!-- ⚖️ VISIBLE & MANUALLY EDITABLE POINT SYSTEM PANEL -->
+        <div id="dashboard-point-system" class="glass-card rounded-2xl p-5 border-l-4 border-l-blue-500 space-y-4">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-syne font-bold text-base text-white light:text-slate-900">⚖️ AI Scoring Point System & Selection Criteria Weightings</span>
+                <span id="ps-modified-badge" class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-500/20 text-blue-300 light:text-blue-800 border border-blue-500/40">Default Weights Active</span>
+              </div>
+              <p class="text-xs text-slate-400 light:text-slate-600 mt-1">All selection criteria and point allocations used by the AI scoring engine. Edit weights below and recalculate to test different ranking priorities.</p>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <button onclick="resetCriteriaWeights('dash')" class="px-3 py-1.5 rounded-xl bg-slate-800 light:bg-slate-100 hover:bg-slate-700 text-slate-200 light:text-slate-800 border border-slate-700 light:border-slate-300 text-xs font-mono font-semibold cursor-pointer">
+                ↺ Reset to Defaults
+              </button>
+              <button onclick="saveCriteriaWeights('dash')" id="dash-save-weights-btn" class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-500 hover:to-teal-500 text-white text-xs font-mono font-bold shadow cursor-pointer">
+                💾 Save Weights & Recalculate Scores
+              </button>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+            <div class="rounded-xl border border-emerald-500/30 bg-emerald-950/15 light:bg-emerald-50/40 p-3.5">
+              <div class="font-mono text-xs font-bold text-emerald-400 light:text-emerald-800 mb-2">✅ Positive Selection Criteria (+Points)</div>
+              <div id="dash-ps-positive-list" class="space-y-2 text-xs"></div>
+            </div>
+            <div class="rounded-xl border border-rose-500/30 bg-rose-950/15 light:bg-rose-50/40 p-3.5">
+              <div class="font-mono text-xs font-bold text-rose-400 light:text-rose-800 mb-2">🚫 Negative Filters, Penalties & Hard-Reject Gates (-Points)</div>
+              <div id="dash-ps-negative-list" class="space-y-2 text-xs"></div>
+            </div>
+          </div>
+        </div>
+
         <!-- Middle Row: Alerts Panel + Activity Feed -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
@@ -2153,7 +2306,17 @@
             </div>
           </div>
 
-          <div class="flex items-center gap-3 text-xs font-mono">
+          <div class="flex items-center gap-3 text-xs font-mono flex-wrap">
+            <button onclick="togglePresenceLatestOnly()" id="presence-latest-only-btn" class="px-2.5 py-1.5 rounded-xl bg-amber-500/15 text-amber-300 light:text-amber-800 border border-amber-500/40 text-xs font-bold cursor-pointer hover:bg-amber-500/25">
+              ✨ Latest Search Only
+            </button>
+            <select id="presence-sort-by" onchange="handlePresenceSort(this.value)" class="bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none">
+              <option value="score_desc">Sort: Score (High → Low)</option>
+              <option value="date_desc">Sort: Date Added (Newest First)</option>
+              <option value="latest_search_first">Sort: Latest Search First</option>
+              <option value="date_asc">Sort: Date Added (Oldest First)</option>
+              <option value="score_asc">Sort: Score (Low → High)</option>
+            </select>
             <span class="text-slate-400">Category:</span>
             <select id="presence-filter-cat" onchange="handlePresenceCategory(this.value)" class="bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none">
               <option value="all">All Master Categories (536+)</option>
@@ -2212,6 +2375,11 @@
           </span>
         </div>
 
+        <!-- Per-Tab Search Quality & Accuracy Bar (Presence Room) -->
+        <div id="presence-tab-quality-bar" class="glass-card rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs font-mono border border-slate-800 light:border-slate-200">
+          <span class="text-slate-400">Loading tab quality telemetry...</span>
+        </div>
+
         <!-- Platforms Table -->
         <div class="glass-card rounded-2xl p-5">
           <div class="flex items-center justify-between mb-4">
@@ -2227,6 +2395,7 @@
                   <th class="py-2.5 px-3">Category</th>
                   <th class="py-2.5 px-3">Score</th>
                   <th class="py-2.5 px-3">Status</th>
+                  <th class="py-2.5 px-3">Date Added</th>
                   <th class="py-2.5 px-3">UTM Tracking Link</th>
                   <th class="py-2.5 px-3 text-right">Actions</th>
                 </tr>
@@ -2266,7 +2435,17 @@
             <button onclick="setReviewTab('dismissed')" id="rtab-dismissed" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white">Dismissed</button>
           </div>
 
-          <div class="flex items-center gap-3 text-xs font-mono">
+          <div class="flex items-center gap-3 text-xs font-mono flex-wrap">
+            <button onclick="toggleReviewLatestOnly()" id="review-latest-only-btn" class="px-2.5 py-1.5 rounded-xl bg-amber-500/15 text-amber-300 light:text-amber-800 border border-amber-500/40 text-xs font-bold cursor-pointer hover:bg-amber-500/25">
+              ✨ Latest Search Only
+            </button>
+            <select id="review-sort-by" onchange="handleReviewSort(this.value)" class="bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none">
+              <option value="score_desc">Sort: Score (High → Low)</option>
+              <option value="date_desc">Sort: Date Added (Newest First)</option>
+              <option value="latest_search_first">Sort: Latest Search First</option>
+              <option value="date_asc">Sort: Date Added (Oldest First)</option>
+              <option value="score_asc">Sort: Score (Low → High)</option>
+            </select>
             <span class="text-slate-400">Category:</span>
             <select id="review-filter-cat" onchange="handleReviewCategory(this.value)" class="bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none">
               <option value="all">All Master Categories (536+)</option>
@@ -2326,6 +2505,11 @@
           </div>
         </div>
 
+        <!-- Per-Tab Search Quality & Accuracy Bar (Review Queue Tab-Scoped!) -->
+        <div id="review-tab-quality-bar" class="glass-card rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs font-mono border border-slate-800 light:border-slate-200">
+          <span class="text-slate-400">Loading tab quality telemetry...</span>
+        </div>
+
         <!-- Review Queue Table -->
         <div class="glass-card rounded-2xl p-5">
           <div class="overflow-x-auto">
@@ -2336,6 +2520,7 @@
                   <th class="py-2.5 px-3">Score</th>
                   <th class="py-2.5 px-3">Draft Pitch Preview</th>
                   <th class="py-2.5 px-3">Status</th>
+                  <th class="py-2.5 px-3">Date Added</th>
                   <th class="py-2.5 px-3 text-right">Quick Triage</th>
                 </tr>
               </thead>
@@ -2835,7 +3020,11 @@
           95
         </div>
         <div>
-          <h3 class="font-syne font-bold text-lg text-white" id="detail-platform-name">F6S Directory</h3>
+          <div class="flex items-center gap-2 flex-wrap">
+            <h3 class="font-syne font-bold text-lg text-white light:text-slate-900" id="detail-platform-name">F6S Directory</h3>
+            <span id="detail-latest-search-badge" class="hidden text-[10px] font-mono px-2 py-0.5 rounded-full font-bold bg-amber-500/20 text-amber-300 light:text-amber-800 border border-amber-500/40">✨ Added in Latest Search</span>
+            <span id="detail-date-added-badge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 light:bg-slate-100 text-slate-300 light:text-slate-700 border border-slate-700 light:border-slate-300">Added: —</span>
+          </div>
           <div class="flex items-center gap-2 mt-0.5 flex-wrap">
             <span class="text-xs font-mono text-eupnea-teal font-semibold" id="detail-platform-cat">Accelerator Directory</span>
             <span id="detail-classification-pill" class="text-[10px] font-mono px-2 py-0.5 rounded font-bold uppercase bg-emerald-100 text-emerald-800 border border-emerald-300">⭐ Direct Listing Directory</span>
@@ -2846,7 +3035,7 @@
 
       <div class="space-y-4 text-xs">
         <!-- ⚡ 1. DIRECT APPLICATION / SUBMISSION FORM (PRIMARY DIRECT LINK) -->
-        <div class="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-sky-50 border-2 border-emerald-500/50 shadow-md">
+        <div id="detail-form-card" class="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-sky-50 border-2 border-emerald-500/50 shadow-md">
           <div class="flex items-center justify-between mb-1.5">
             <span class="font-mono text-emerald-800 font-black flex items-center gap-2 text-xs">
               <span class="flex h-2.5 w-2.5 relative">
@@ -2855,13 +3044,14 @@
               </span>
               <span>📝 DIRECT APPLICATION / SUBMISSION FORM (DIRECT LINK)</span>
             </span>
-            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full font-extrabold uppercase bg-emerald-600 text-white shadow-sm">
-              ⚡ Direct Form Deep-Link
+            <span id="detail-form-health-pill" class="text-[10px] font-mono px-2 py-0.5 rounded-full font-extrabold uppercase bg-emerald-600 text-white shadow-sm">
+              ⚡ Form Verified Working
             </span>
           </div>
           <div class="flex items-center gap-2 p-2 rounded-xl bg-white border border-emerald-300 shadow-inner flex-wrap">
             <i data-lucide="file-text" class="w-4 h-4 text-emerald-600 shrink-0"></i>
             <a id="detail-form-url-link" href="#" target="_blank" class="flex-1 text-xs font-mono text-emerald-800 font-bold hover:underline truncate" title="Direct Application Form Link">-</a>
+            <span id="detail-form-url-broken-text" class="hidden flex-1 text-xs font-mono text-rose-700 font-bold truncate" title="Form link is broken or returned HTTP 404/error">-</span>
             <button onclick="copyFormUrl()" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono text-[11px] flex items-center gap-1 font-semibold border border-slate-300 transition-colors">
               <i data-lucide="copy" class="w-3 h-3"></i>
               <span>Copy Form Link</span>
@@ -2870,45 +3060,52 @@
               <span>🚀 Open Direct Form</span>
               <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
             </a>
+            <span id="detail-form-url-disabled" class="hidden px-3 py-1.5 rounded-lg bg-rose-100 text-rose-700 border border-rose-300 font-mono text-xs font-bold cursor-not-allowed select-none" title="Form link failed live verification (404 / Page Not Found / Error) — button disabled">
+              🚫 Form Link Broken (Disabled)
+            </span>
             <a id="detail-portal-fallback-btn" href="#" target="_blank" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-mono text-xs flex items-center gap-1.5 font-bold shadow transition-transform active:scale-95" title="Open Main Directory Website Portal">
               <span>🌐 Open Main Website</span>
               <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
             </a>
+            <span id="detail-portal-fallback-disabled" class="hidden px-3 py-1.5 rounded-lg bg-slate-200 text-slate-600 border border-slate-300 font-mono text-xs font-bold cursor-not-allowed select-none">
+              🚫 Portal Unreachable
+            </span>
             <button onclick="testUtmTrackingFromDetail()" class="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-mono text-xs flex items-center gap-1.5 font-bold shadow transition-transform active:scale-95" title="Simulate a visitor click from this platform to test tracking">
               <span>⚡ Test Attribution</span>
             </button>
           </div>
-          <p class="text-[11px] text-emerald-900/80 mt-1.5 font-medium flex items-center gap-1">
+          <p id="detail-form-helper-msg" class="text-[11px] text-emerald-900/80 mt-1.5 font-medium flex items-center gap-1">
             <span>✅</span>
-            <span>Is link par direct <b>Application / Submission Form</b> khulega. Website par form dhoondhna nahi padega. Main portal fallback aur live attribution test bhi sath me active hain.</span>
+            <span>Verified direct registration/application URL. Click <b>Open Direct Form</b> to jump straight to the intake page.</span>
           </p>
         </div>
 
-        <!-- 🤖 24/7 AUTONOMOUS AGENT MONITORING CARD -->
+        <!-- 🤖 LIVE LINK VERIFICATION STATUS CARD -->
         <div class="p-3.5 rounded-2xl bg-gradient-to-r from-slate-900 to-indigo-950 border border-slate-700 text-xs font-mono shadow-md text-white">
           <div class="flex items-center justify-between mb-1.5 flex-wrap gap-2">
             <span class="text-sky-300 font-bold flex items-center gap-1.5">
               <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>🤖 ACTIVE SENTRY: SQUAD IOTA (AGENTS 81–90) & SQUAD DELTA</span>
+              <span>🔬 DEEPSEEK V4.1 LIVE LINK & SENTRY VERIFICATION</span>
             </span>
-            <span class="px-2 py-0.5 rounded text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold">100% HEALTH NOMINAL</span>
+            <span id="detail-sentry-health-pill" class="px-2 py-0.5 rounded text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold">CHECKING HEALTH...</span>
           </div>
-          <p class="text-[11px] text-slate-300 mb-2">
-            This directory is continuously monitored by <strong>Agents 81–90 (Uptime Sentry)</strong> and <strong>Agents 31–40 (Technical Integrity)</strong>. Continuous ping verification confirms 0% link decay and verified active submission form endpoints.
+          <p id="detail-sentry-note" class="text-[11px] text-slate-300 mb-2">
+            Continuous DNS/HTTP and soft-404 verification checks ensure clickable buttons only open valid pages without 'error' or 'page not found'.
           </p>
           <div class="grid grid-cols-3 gap-2 text-[10px] text-slate-200 pt-2 border-t border-slate-800">
-            <div class="bg-slate-800/60 p-1.5 rounded-lg text-center"><span class="text-slate-400 block">HTTP STATUS</span><span class="text-emerald-400 font-bold">200 OK (Live)</span></div>
-            <div class="bg-slate-800/60 p-1.5 rounded-lg text-center"><span class="text-slate-400 block">SSL ENCRYPTION</span><span class="text-emerald-400 font-bold">Valid SHA-256</span></div>
-            <div class="bg-slate-800/60 p-1.5 rounded-lg text-center"><span class="text-slate-400 block">MONITOR CYCLE</span><span class="text-sky-400 font-bold">Active Every 1.5s</span></div>
+            <div class="bg-slate-800/60 p-1.5 rounded-lg text-center"><span class="text-slate-400 block">PORTAL HTTP</span><span id="detail-portal-http-status" class="text-emerald-400 font-bold">—</span></div>
+            <div class="bg-slate-800/60 p-1.5 rounded-lg text-center"><span class="text-slate-400 block">FORM HTTP</span><span id="detail-form-http-status" class="text-emerald-400 font-bold">—</span></div>
+            <div class="bg-slate-800/60 p-1.5 rounded-lg text-center"><span class="text-slate-400 block">LAST CHECKED</span><span id="detail-link-checked-at" class="text-sky-400 font-bold">—</span></div>
           </div>
         </div>
 
         <!-- 🌐 2. TARGET DIRECTORY PORTAL WEBSITE (REFERENCE ONLY) -->
         <div>
           <span class="font-mono text-slate-500 block mb-1 font-bold">DIRECTORY MAIN WEBSITE (REFERENCE ONLY)</span>
-          <div class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-100 border border-slate-200">
+          <div class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-100 border border-slate-200 flex-wrap">
             <i data-lucide="globe" class="w-4 h-4 text-blue-600 shrink-0"></i>
             <a id="detail-portal-url-link" href="#" target="_blank" class="flex-1 text-xs font-mono text-blue-700 font-semibold hover:underline truncate" title="">-</a>
+            <span id="detail-portal-url-broken-text" class="hidden flex-1 text-xs font-mono text-rose-700 font-semibold truncate">-</span>
             <button onclick="copyPortalUrl()" class="px-2.5 py-1 rounded bg-slate-200 hover:bg-slate-300 text-slate-800 font-mono text-[11px] flex items-center gap-1 font-semibold">
               <i data-lucide="copy" class="w-3 h-3"></i>
               <span>Copy</span>
@@ -2917,7 +3114,15 @@
               <span>Visit Homepage</span>
               <i data-lucide="external-link" class="w-3 h-3"></i>
             </a>
+            <span id="detail-portal-url-disabled" class="hidden px-2.5 py-1 rounded bg-rose-100 text-rose-700 border border-rose-300 font-mono text-[11px] font-bold cursor-not-allowed select-none">
+              🚫 Portal Broken
+            </span>
           </div>
+        </div>
+
+        <div>
+          <span class="font-mono text-slate-500 block mb-1 font-bold">POINT SYSTEM CRITERIA BREAKDOWN</span>
+          <div id="detail-criteria-pills" class="flex flex-wrap gap-1.5 p-2.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-800"></div>
         </div>
 
         <div>
@@ -3502,6 +3707,41 @@
   </div>
 
   <!-- ======================================================================== -->
+  <!-- MODAL: POINT SYSTEM & EDITABLE SCORING WEIGHTINGS (Panagiotis Directive) -->
+  <!-- ======================================================================== -->
+  <div id="modal-point-system" onclick="if(event.target===this)closePointSystemModal()" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="glass-card rounded-3xl max-w-5xl w-full p-6 relative border border-slate-700 light:border-slate-300 max-h-[90vh] overflow-y-auto shadow-2xl space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 light:border-slate-200 pb-4">
+        <div>
+          <h3 class="font-syne font-extrabold text-xl text-white light:text-slate-900">⚖️ AI Scoring Point System & Quality Score Rubric</h3>
+          <p class="text-xs text-slate-400 light:text-slate-600 mt-0.5">Inspect every positive/negative selection criterion, compare defaults vs current weights, edit points manually, and recalculate scores across the portal.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="resetCriteriaWeights('modal')" class="px-3 py-1.5 rounded-xl bg-slate-800 light:bg-slate-100 text-slate-200 light:text-slate-800 border border-slate-700 light:border-slate-300 text-xs font-mono font-semibold cursor-pointer">↺ Reset Defaults</button>
+          <button onclick="saveCriteriaWeights('modal')" class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-teal-600 text-white text-xs font-mono font-bold shadow cursor-pointer">💾 Save & Recalculate</button>
+          <button onclick="closePointSystemModal()" class="px-2.5 py-1.5 rounded-xl text-slate-400 hover:text-white light:hover:text-slate-900 font-bold cursor-pointer">✕</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="rounded-xl border border-emerald-500/30 bg-emerald-950/15 light:bg-emerald-50/40 p-3.5">
+          <div class="font-mono text-xs font-bold text-emerald-400 light:text-emerald-800 mb-2">✅ Positive Selection Criteria (+Points)</div>
+          <div id="modal-ps-positive-list" class="space-y-2 text-xs"></div>
+        </div>
+        <div class="rounded-xl border border-rose-500/30 bg-rose-950/15 light:bg-rose-50/40 p-3.5">
+          <div class="font-mono text-xs font-bold text-rose-400 light:text-rose-800 mb-2">🚫 Negative Filters & Hard-Reject Gates (-Points)</div>
+          <div id="modal-ps-negative-list" class="space-y-2 text-xs"></div>
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-slate-800 light:border-slate-200 p-4 bg-slate-900/40 light:bg-slate-50">
+        <div class="font-syne font-bold text-sm text-white light:text-slate-900 mb-2.5">📖 Quality Score Definitions (Full Non-Exhaustive Rubric)</div>
+        <div id="modal-quality-definitions-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================== -->
   <!-- MODAL: STRATEGIC PROJECT GOALS & ACCELERATOR PLATFORM REFINEMENT REVIEW -->
   <!-- ======================================================================== -->
   <div id="modal-strategic-review" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-4">
@@ -3674,8 +3914,10 @@
       category: 'all',
       tier: 'all_active',
       high_level_category: 'all',
-      total: 569,
-      pages: 23,
+      sortBy: 'score_desc',
+      latestOnly: false,
+      total: 399,
+      pages: 16,
       items: []
     };
 
@@ -3686,10 +3928,243 @@
       category: 'all',
       tier: 'all_active',
       high_level_category: 'engagement_intake',
+      sortBy: 'score_desc',
+      latestOnly: false,
       page: 1,
       limit: 25,
       items: []
     };
+
+    let cachedCriteriaState = null;
+
+    function openPointSystemModal() {
+      const m = document.getElementById('modal-point-system');
+      if (m) {
+        m.classList.remove('hidden');
+        m.classList.add('flex');
+      }
+      loadScoringCriteria();
+    }
+
+    function closePointSystemModal() {
+      const m = document.getElementById('modal-point-system');
+      if (m) {
+        m.classList.add('hidden');
+        m.classList.remove('flex');
+      }
+    }
+
+    function toggleQualityDefinitions() {
+      const el = document.getElementById('dashboard-quality-definitions');
+      if (el) el.classList.toggle('hidden');
+    }
+
+    function jumpToLatestSearch() {
+      switchRoom('presence');
+      presenceState.sortBy = 'latest_search_first';
+      presenceState.latestOnly = true;
+      presenceState.minScore = 0;
+      presenceState.page = 1;
+      const sortEl = document.getElementById('presence-sort-by');
+      if (sortEl) sortEl.value = 'latest_search_first';
+      const slider = document.getElementById('presence-score-slider');
+      if (slider) slider.value = 0;
+      const sVal = document.getElementById('presence-score-val');
+      if (sVal) sVal.innerText = '0+';
+      updateLatestOnlyBtnUi('presence-latest-only-btn', true);
+      loadPresencePlatforms();
+    }
+
+    function updateLatestOnlyBtnUi(btnId, active) {
+      const btn = document.getElementById(btnId);
+      if (!btn) return;
+      if (active) {
+        btn.className = 'px-2.5 py-1.5 rounded-xl bg-amber-500 text-slate-950 border border-amber-400 text-xs font-extrabold cursor-pointer shadow-sm';
+        btn.innerText = '✨ Latest Search Only (ON)';
+      } else {
+        btn.className = 'px-2.5 py-1.5 rounded-xl bg-amber-500/15 text-amber-300 light:text-amber-800 border border-amber-500/40 text-xs font-bold cursor-pointer hover:bg-amber-500/25';
+        btn.innerText = '✨ Latest Search Only';
+      }
+    }
+
+    function renderCriteriaRowHtml(item, prefix) {
+      const isMod = item.current_points !== item.default_points;
+      const isPos = item.criterion_type === 'positive';
+      const defSign = item.default_points > 0 ? `+${item.default_points}` : `${item.default_points}`;
+      return `
+        <div class="p-2.5 rounded-lg bg-slate-900/70 light:bg-white border ${isMod ? 'border-amber-500/70' : 'border-slate-800 light:border-slate-200'} flex items-center justify-between gap-3">
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="font-bold text-white light:text-slate-900">${escapeHtml(item.label)}</span>
+              <span class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-slate-800 light:bg-slate-100 text-slate-300 light:text-slate-700">${escapeHtml(item.category_group)}</span>
+              ${item.is_hard_reject ? `<span class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 light:text-rose-800 border border-rose-500/40 font-bold">HARD REJECT</span>` : ''}
+              ${isMod ? `<span class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 light:text-amber-800 font-bold">CUSTOMIZED</span>` : ''}
+            </div>
+            <p class="text-[11px] text-slate-400 light:text-slate-600 mt-0.5 leading-snug">${escapeHtml(item.description)}</p>
+          </div>
+          <div class="flex items-center gap-2 shrink-0 font-mono">
+            <div class="text-right">
+              <span class="block text-[9px] text-slate-400">DEFAULT</span>
+              <span class="text-[11px] font-bold ${isPos ? 'text-emerald-400 light:text-emerald-700' : 'text-rose-400 light:text-rose-700'}">${defSign}</span>
+            </div>
+            <div>
+              <span class="block text-[9px] text-slate-400">WEIGHT</span>
+              <input type="number" min="-100" max="100" value="${item.current_points}"
+                data-criteria-prefix="${prefix}" data-criteria-key="${escapeHtml(item.key)}"
+                class="w-16 px-2 py-1 rounded-lg bg-slate-950 light:bg-slate-50 border border-slate-700 light:border-slate-300 text-xs font-bold text-center text-white light:text-slate-900 focus:border-blue-500">
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderQualityDefinitionsInto(elId, defs) {
+      const container = document.getElementById(elId);
+      if (!container || !Array.isArray(defs)) return;
+      container.innerHTML = defs.map(d => `
+        <div class="p-3 rounded-xl bg-slate-950/60 light:bg-white border border-slate-800 light:border-slate-200 space-y-1">
+          <div class="font-mono font-bold text-sky-300 light:text-blue-800">${escapeHtml(d.metric)}</div>
+          <div class="font-mono text-[10px] text-emerald-300 light:text-emerald-700">${escapeHtml(d.formula)}</div>
+          <p class="text-[11px] text-slate-300 light:text-slate-600 leading-snug">${escapeHtml(d.purpose)}</p>
+        </div>
+      `).join('');
+    }
+
+    function renderPointSystemPanels(criteriaData) {
+      if (!criteriaData) return;
+      cachedCriteriaState = criteriaData;
+      const pos = criteriaData.positive_criteria || [];
+      const neg = criteriaData.negative_criteria || [];
+      const modCount = criteriaData.modified_count || 0;
+
+      const badge = document.getElementById('ps-modified-badge');
+      if (badge) {
+        if (modCount > 0) {
+          badge.className = 'px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 light:text-amber-800 border border-amber-500/40';
+          badge.innerText = `${modCount} Custom Weight${modCount > 1 ? 's' : ''} Active`;
+        } else {
+          badge.className = 'px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-500/20 text-blue-300 light:text-blue-800 border border-blue-500/40';
+          badge.innerText = 'Default Weights Active';
+        }
+      }
+
+      ['dash', 'modal'].forEach(prefix => {
+        const pEl = document.getElementById(`${prefix}-ps-positive-list`);
+        const nEl = document.getElementById(`${prefix}-ps-negative-list`);
+        if (pEl) pEl.innerHTML = pos.map(c => renderCriteriaRowHtml(c, prefix)).join('');
+        if (nEl) nEl.innerHTML = neg.map(c => renderCriteriaRowHtml(c, prefix)).join('');
+      });
+
+      if (criteriaData.quality_definitions) {
+        renderQualityDefinitionsInto('quality-definitions-grid', criteriaData.quality_definitions);
+        renderQualityDefinitionsInto('modal-quality-definitions-grid', criteriaData.quality_definitions);
+      }
+    }
+
+    async function loadScoringCriteria() {
+      try {
+        const res = await fetch('/api/scoring/criteria');
+        if (!res.ok) return;
+        const data = await res.json();
+        renderPointSystemPanels(data);
+      } catch (e) {
+        console.error('Failed to load scoring criteria:', e);
+      }
+    }
+
+    async function saveCriteriaWeights(prefix) {
+      const inputs = document.querySelectorAll(`input[data-criteria-prefix="${prefix}"]`);
+      const weights = {};
+      inputs.forEach(inp => {
+        const k = inp.getAttribute('data-criteria-key');
+        const v = parseInt(inp.value, 10);
+        if (k && !isNaN(v)) weights[k] = v;
+      });
+      try {
+        const res = await fetch('/api/scoring/criteria', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ weights, recalculate: true })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          renderPointSystemPanels(data.criteria_state);
+          showToast(`Saved custom weights & recalculated ${data.recalculated} platforms!`, 'success');
+          await Promise.all([loadDashboardStats(), loadPresencePlatforms(), loadReviewQueue()]);
+        } else {
+          showToast(data.detail || 'Could not update criteria weights.', 'error');
+        }
+      } catch (e) {
+        showToast('Network error saving weights.', 'error');
+      }
+    }
+
+    async function resetCriteriaWeights(prefix) {
+      try {
+        const res = await fetch('/api/scoring/criteria/reset?recalculate=true', { method: 'POST' });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          renderPointSystemPanels(data.criteria_state);
+          showToast(`Reset criteria to defaults & recalculated ${data.recalculated} platforms.`, 'info');
+          await Promise.all([loadDashboardStats(), loadPresencePlatforms(), loadReviewQueue()]);
+        }
+      } catch (e) {
+        showToast('Failed to reset criteria weights.', 'error');
+      }
+    }
+
+    async function verifyBatchLinks(btn) {
+      if (btn) {
+        btn.disabled = true;
+        btn.innerText = 'Checking live Form & Portal links...';
+      }
+      try {
+        const res = await fetch('/api/platforms/verify-links?limit=30', { method: 'POST' });
+        const data = await res.json();
+        if (res.ok) {
+          showToast(`Verified ${data.checked} platforms: ${data.portal_ok} Portals OK, ${data.form_ok} Forms OK.`, 'success');
+          await Promise.all([loadDashboardStats(), loadPresencePlatforms(), loadReviewQueue()]);
+        }
+      } catch (e) {
+        showToast('Error verifying live links.', 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerText = '🛡️ Re-Verify Form & Portal Links';
+        }
+      }
+    }
+
+    function renderTabQualityBar(containerId, m, data) {
+      const el = document.getElementById(containerId);
+      if (!el || !m) return;
+      const sc = m.status_counts || {};
+      el.innerHTML = `
+        <div class="flex items-center gap-3 flex-wrap">
+          <span class="px-2.5 py-1 rounded-lg bg-slate-900 light:bg-slate-100 border border-slate-700 light:border-slate-300 text-white light:text-slate-900 font-bold">
+            Total in View: <span class="text-sky-400 light:text-blue-700">${m.total}</span>
+          </span>
+          <span class="px-2.5 py-1 rounded-lg bg-blue-500/15 border border-blue-500/30 text-blue-300 light:text-blue-800 font-bold">
+            Avg Score: ${m.avg_score}
+          </span>
+          <span class="px-2.5 py-1 rounded-lg ${m.form_accuracy_pct >= 80 ? 'bg-emerald-500/15 text-emerald-300 light:text-emerald-800 border-emerald-500/40' : 'bg-amber-500/15 text-amber-300 light:text-amber-800 border-amber-500/40'} border font-bold" title="Percentage of platforms in this tab with working Form links">
+            📝 Form Accuracy: ${m.form_accuracy_pct}% (${m.form_working}/${m.total} OK)
+          </span>
+          <span class="px-2.5 py-1 rounded-lg bg-sky-500/15 text-sky-300 light:text-sky-800 border border-sky-500/30 font-bold" title="Percentage of platforms in this tab with working Portal links">
+            🌐 Portal Accuracy: ${m.portal_accuracy_pct}% (${m.portal_working}/${m.total} OK)
+          </span>
+          <span class="px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-300 light:text-amber-800 border border-amber-500/30 font-bold">
+            ✨ Latest Search: ${m.latest_search_count || 0}
+          </span>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap text-[11px] text-slate-300 light:text-slate-700">
+          <span>Approved: <b>${sc.approved || 0}</b></span>
+          <span>· Submitted: <b>${sc.submitted || 0}</b></span>
+          <span>· In Review: <b>${sc.in_review || 0}</b></span>
+          ${(sc.unqualified || 0) > 0 ? `<span>· Rejected: <b>${sc.unqualified}</b></span>` : ''}
+        </div>
+      `;
+    }
 
     // Initialize application on load
     
@@ -4107,6 +4582,90 @@
         const depEl = document.getElementById('dash-deprioritized-count');
         if (depEl) depEl.innerText = data.deprioritized_count || 0;
 
+        // Quality Summary & Status Calibration Measures
+        const qs = data.quality_summary || {};
+        const cal = qs.scoring_calibration || {};
+        const calPill = document.getElementById('dash-calibration-pill');
+        const calMsg = document.getElementById('dash-calibration-msg');
+        if (calPill) {
+          if (cal.status === 'healthy') {
+            calPill.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 light:text-emerald-800 border border-emerald-500/40';
+            calPill.innerText = '✅ SCORING CALIBRATION HEALTHY';
+          } else if (cal.status === 'review_needed') {
+            calPill.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 light:text-amber-800 border border-amber-500/40';
+            calPill.innerText = '⚠️ WEIGHTING REVIEW NEEDED';
+          } else {
+            calPill.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-slate-800 text-slate-300 border border-slate-700';
+            calPill.innerText = 'CALIBRATION PENDING';
+          }
+        }
+        if (calMsg && cal.message) calMsg.innerText = cal.message;
+
+        const qFormPct = document.getElementById('q-form-accuracy-pct');
+        if (qFormPct) qFormPct.innerText = `${qs.active_form_accuracy_pct ?? 0}%`;
+        const qFormCnt = document.getElementById('q-form-counts');
+        if (qFormCnt) qFormCnt.innerText = `${qs.active_form_working ?? 0}/${(qs.active_form_working ?? 0) + (qs.active_form_broken ?? 0)} working`;
+        const qFormBar = document.getElementById('q-form-bar');
+        if (qFormBar) qFormBar.style.width = `${qs.active_form_accuracy_pct ?? 0}%`;
+
+        const qPortPct = document.getElementById('q-portal-accuracy-pct');
+        if (qPortPct) qPortPct.innerText = `${qs.active_portal_accuracy_pct ?? 0}%`;
+        const qPortCnt = document.getElementById('q-portal-counts');
+        if (qPortCnt) qPortCnt.innerText = `${qs.active_portal_working ?? 0}/${(qs.active_portal_working ?? 0) + (qs.active_portal_broken ?? 0)} working`;
+        const qPortBar = document.getElementById('q-portal-bar');
+        if (qPortBar) qPortBar.style.width = `${qs.active_portal_accuracy_pct ?? 0}%`;
+        const qDualPill = document.getElementById('q-dual-link-pill');
+        if (qDualPill) qDualPill.innerText = `Dual OK: ${qs.dual_link_integrity_pct ?? 0}%`;
+
+        const ls = qs.latest_search || {};
+        const qLatestCnt = document.getElementById('q-latest-added-count');
+        if (qLatestCnt) qLatestCnt.innerText = ls.marked_qualified_count ?? ls.marked_platforms_count ?? 0;
+        const qLatestSub = document.getElementById('q-latest-qualified-sub');
+        if (qLatestSub) qLatestSub.innerText = `qualified (${ls.marked_platforms_count ?? 0} total tagged)`;
+        const qLatestQuery = document.getElementById('q-latest-query');
+        if (qLatestQuery) qLatestQuery.innerText = ls.query || 'Latest Autonomous Batch';
+        const qLatestTime = document.getElementById('q-latest-time');
+        if (qLatestTime) qLatestTime.innerText = ls.started_at ? `Run: ${ls.started_at}` : 'Current Discovery Batch';
+
+        const qIntake = document.getElementById('q-intake-readiness');
+        if (qIntake) qIntake.innerText = `${qs.intake_readiness_pct ?? 0}%`;
+        const qYield = document.getElementById('q-gate-yield');
+        if (qYield) qYield.innerText = `${qs.gate_pass_yield_pct ?? 0}%`;
+        const qAppSub = document.getElementById('q-app-sub-avg');
+        if (qAppSub) qAppSub.innerText = `${qs.approved_submitted_avg_score ?? 0}`;
+
+        const calTbody = document.getElementById('dashboard-status-calibration-tbody');
+        if (calTbody && qs.by_status) {
+          const order = ['submitted', 'approved', 'in_review', 'perk_benefit', 'unqualified', 'dismissed'];
+          const rejSplit = qs.rejected_split || {};
+          calTbody.innerHTML = order.map(stKey => {
+            const st = qs.by_status[stKey];
+            if (!st) return '';
+            let insight = 'Active review pipeline';
+            if (stKey === 'submitted') insight = 'Highest priority target tier converted to live UTM listing';
+            else if (stKey === 'approved') insight = 'Vetted high-score directories ready for live submission';
+            else if (stKey === 'perk_benefit') insight = 'Cohort credit partners isolated from intake pool';
+            else if (stKey === 'unqualified') insight = `Hard Rejected: ${rejSplit.hard_rejected_count ?? 0} (avg ${rejSplit.hard_rejected_avg_score ?? 0}) · Deprioritized: ${rejSplit.deprioritized_count ?? 0} (avg ${rejSplit.deprioritized_avg_score ?? 0})`;
+            else if (stKey === 'dismissed') insight = 'Manually dismissed by staff';
+            return `
+              <tr class="hover:bg-slate-800/30 light:hover:bg-slate-50">
+                <td class="py-2.5 px-3 font-bold text-white light:text-slate-900">${escapeHtml(st.label || stKey)}</td>
+                <td class="py-2.5 px-3 font-bold">${st.total}</td>
+                <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-blue-500/15 text-blue-300 light:text-blue-800 border border-blue-500/30 font-bold">${st.avg_score}</span></td>
+                <td class="py-2.5 px-3"><span class="font-bold ${st.form_accuracy_pct >= 75 ? 'text-emerald-400 light:text-emerald-700' : 'text-amber-400 light:text-amber-700'}">${st.form_accuracy_pct}%</span> <span class="text-[10px] text-slate-400">(${st.form_working}/${st.total})</span></td>
+                <td class="py-2.5 px-3"><span class="font-bold ${st.portal_accuracy_pct >= 85 ? 'text-sky-400 light:text-sky-700' : 'text-rose-400 light:text-rose-700'}">${st.portal_accuracy_pct}%</span> <span class="text-[10px] text-slate-400">(${st.portal_working}/${st.total})</span></td>
+                <td class="py-2.5 px-3 text-[11px] text-slate-400 light:text-slate-600 font-sans">${escapeHtml(insight)}</td>
+              </tr>
+            `;
+          }).join('');
+        }
+
+        if (data.quality_definitions) {
+          renderQualityDefinitionsInto('quality-definitions-grid', data.quality_definitions);
+          renderQualityDefinitionsInto('modal-quality-definitions-grid', data.quality_definitions);
+        }
+        loadScoringCriteria();
+
         // Render Alerts from live DB stats
         const alertsContainer = document.getElementById('dashboard-alerts');
         if (alertsContainer && data.alerts && data.alerts.length > 0) {
@@ -4202,7 +4761,9 @@
           limit: presenceState.limit,
           min_score: presenceState.minScore,
           search: presenceState.search,
-          category: presenceState.category
+          category: presenceState.category,
+          sort_by: presenceState.sortBy || 'score_desc',
+          latest_only: presenceState.latestOnly ? 'true' : 'false'
         });
         if (presenceState.tier) {
           queryParams.append('tier', presenceState.tier);
@@ -4218,6 +4779,10 @@
         presenceState.pages = data.pages;
         presenceState.items = data.platforms;
 
+        if (data.tab_metrics) {
+          renderTabQualityBar('presence-tab-quality-bar', data.tab_metrics, data);
+        }
+
         document.getElementById('presence-count-label').innerText = `Showing ${data.platforms.length} of ${data.total} platforms`;
         document.getElementById('presence-pagination-info').innerText = `Page ${data.page} of ${data.pages || 1}`;
         document.getElementById('presence-prev-btn').disabled = data.page <= 1;
@@ -4227,8 +4792,10 @@
         if (data.platforms.length > 0) {
           tbody.innerHTML = data.platforms.map(p => {
             const portalUrl = p.url || `https://${p.domain}`;
+            const formUrl = p.form_url || '';
+            const formOk = Boolean(p.form_link_ok) && Boolean(formUrl);
+            const portalOk = Boolean(p.portal_link_ok);
             const hasLiveUrl = p.submitted_url && p.submitted_url.trim() !== '';
-            const isDirectDirectory = p.category_type === 'submittable_directory' || p.tier === 'tier_1' || p.high_level_category === 'Direct Startup Engagement & Intake';
 
             let hlBadge = '';
             if (p.is_smartmatch || p.high_level_category === 'SmartMatch & Dealflow Licensing Engines') {
@@ -4261,6 +4828,26 @@
               tierBadge = `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-slate-800 text-slate-400 border border-slate-700 font-mono">📁 DEPRIORITIZED</span>`;
             }
 
+            const latestBadge = p.is_latest_search
+              ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-amber-500/25 text-amber-300 light:text-amber-800 border border-amber-500/50 font-bold font-mono" title="Discovered in the latest search run">✨ Latest Search</span>`
+              : '';
+
+            const inlineDomainEl = portalOk
+              ? `<a href="${escapeHtml(portalUrl)}" target="_blank" class="text-[11px] text-slate-500 hover:text-blue-600 flex items-center gap-0.5 font-normal font-mono" title="Target Directory Portal: ${escapeHtml(portalUrl)}"><span>${escapeHtml(p.domain)}</span><i data-lucide="external-link" class="w-2.5 h-2.5"></i></a>`
+              : `<span class="text-[11px] text-rose-500 font-mono line-through cursor-not-allowed select-none" title="Portal link unreachable (${escapeHtml(p.link_error || 'Error')})">${escapeHtml(p.domain)}</span>`;
+
+            const inlineFormEl = formOk
+              ? `<a href="${escapeHtml(formUrl)}" target="_blank" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-emerald-50 text-emerald-800 border border-emerald-300 font-mono font-bold hover:bg-emerald-100 hover:underline" title="Exact Direct Application / Submission Form"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span><span>📝 Direct Form Link</span><i data-lucide="external-link" class="w-2.5 h-2.5"></i></a>`
+              : `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-rose-50 text-rose-700 border border-rose-200 font-mono font-bold cursor-not-allowed select-none opacity-80" title="Form link failed live verification (HTTP ${p.form_http_status || 'Err'}) — button disabled"><span>🚫 Form Broken (${p.form_http_status || 'Err'})</span></span>`;
+
+            const actionFormBtn = formOk
+              ? `<a href="${escapeHtml(formUrl)}" target="_blank" class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold inline-flex items-center gap-1 shadow-sm text-xs transition-colors" title="Open Verified Direct Form"><span>📝 Form</span><i data-lucide="external-link" class="w-3 h-3"></i></a>`
+              : `<span class="px-2 py-1 rounded-lg bg-slate-200 text-slate-500 font-bold inline-flex items-center gap-1 text-xs border border-slate-300 cursor-not-allowed select-none opacity-65" title="Form link broken (HTTP ${p.form_http_status || 'Err'}) — clickability removed">🚫 Form</span>`;
+
+            const actionPortalBtn = portalOk
+              ? `<a href="${escapeHtml(portalUrl)}" target="_blank" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold inline-flex items-center gap-1 text-xs border border-slate-300 transition-colors" title="Open Main Website Portal"><span>🌐 Portal</span><i data-lucide="external-link" class="w-3 h-3"></i></a>`
+              : `<span class="px-2 py-1 rounded-lg bg-rose-50 text-rose-500 font-semibold inline-flex items-center gap-1 text-xs border border-rose-200 cursor-not-allowed select-none opacity-65" title="Portal link unreachable (HTTP ${p.portal_http_status || 'Err'}) — clickability removed">🚫 Portal</span>`;
+
             return `
             <tr class="hover:bg-slate-50 transition-colors">
               <td class="py-3 px-3">
@@ -4268,6 +4855,7 @@
                   <button onclick="openPlatformDetail(${p.id})" class="font-bold text-slate-900 hover:text-blue-600 text-left block text-xs cursor-pointer">
                     ${escapeHtml(p.name)}
                   </button>
+                  ${latestBadge}
                   ${tierBadge}
                   ${hlBadge}
                   <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-sky-50 text-sky-800 border border-sky-300 font-mono font-bold" title="24/7 Monitored by DeepSeek Flash v4.1 Engine"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>🤖 DeepSeek v4.1</span>
@@ -4275,15 +4863,8 @@
                 ${p.intake_features ? `<div class="text-[11px] text-amber-700 dark:text-amber-300 font-mono mt-0.5 mb-1 flex items-center gap-1"><span class="text-xs">🎯</span> <span>${escapeHtml(p.intake_features)}</span></div>` : ''}
                 ${p.licensing_notes ? `<div class="text-[11px] text-purple-700 dark:text-purple-300 font-mono mt-0.5 mb-1 flex items-center gap-1.5"><span class="text-xs">${(p.is_smartmatch || p.high_level_category === 'SmartMatch & Dealflow Licensing Engines') ? '🔑' : '🔬'}</span> <span class="font-bold">${(p.is_smartmatch || p.high_level_category === 'SmartMatch & Dealflow Licensing Engines') ? 'Dealflow Licence:' : 'DeepSeek Gate:'}</span> <span>${escapeHtml(p.licensing_notes)}</span></div>` : ''}
                 <div class="flex items-center gap-2 mt-0.5 flex-wrap">
-                  <a href="${escapeHtml(portalUrl)}" target="_blank" class="text-[11px] text-slate-500 hover:text-blue-600 flex items-center gap-0.5 font-normal font-mono" title="Target Directory Portal: ${escapeHtml(portalUrl)}">
-                    <span>${escapeHtml(p.domain)}</span>
-                    <i data-lucide="external-link" class="w-2.5 h-2.5"></i>
-                  </a>
-                  <a href="${escapeHtml(p.form_url || portalUrl)}" target="_blank" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-emerald-50 text-emerald-800 border border-emerald-300 font-mono font-bold hover:bg-emerald-100 hover:underline" title="Exact Direct Application / Submission Form">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>📝 Direct Form Link</span>
-                    <i data-lucide="external-link" class="w-2.5 h-2.5"></i>
-                  </a>
+                  ${inlineDomainEl}
+                  ${inlineFormEl}
                   ${hasLiveUrl ? `
                     <a href="${escapeHtml(p.submitted_url)}" target="_blank" class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] bg-teal-100 text-teal-800 border border-teal-300 font-mono font-bold hover:underline" title="Live Listing: ${escapeHtml(p.submitted_url)}">
                       <span class="w-1.5 h-1.5 rounded-full bg-teal-500"></span>
@@ -4302,6 +4883,10 @@
                   ${escapeHtml(p.status.replace(/_/g, ' '))}
                 </span>
               </td>
+              <td class="py-3 px-3 whitespace-nowrap">
+                <div class="font-mono font-bold text-xs text-slate-800 dark:text-slate-200">${escapeHtml(p.date_added_label || 'Earlier')}</div>
+                <div class="font-mono text-[10px] text-slate-400">${escapeHtml(p.exact_date_added || '')}</div>
+              </td>
               <td class="py-3 px-3">
                 <button onclick="copyUtmLink('${escapeHtml(p.tracking_url)}')" class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 text-[11px] border border-slate-300 font-medium">
                   <i data-lucide="copy" class="w-3 h-3 text-slate-500"></i>
@@ -4309,14 +4894,8 @@
                 </button>
               </td>
               <td class="py-3 px-3 text-right space-x-1.5 whitespace-nowrap">
-                <a href="${escapeHtml(p.form_url || portalUrl)}" target="_blank" class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold inline-flex items-center gap-1 shadow-sm text-xs transition-colors" title="Open Direct Application / Submission Form">
-                  <span>📝 Form</span>
-                  <i data-lucide="external-link" class="w-3 h-3"></i>
-                </a>
-                <a href="${escapeHtml(portalUrl)}" target="_blank" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold inline-flex items-center gap-1 text-xs border border-slate-300 transition-colors" title="Open Main Website Portal">
-                  <span>🌐 Portal</span>
-                  <i data-lucide="external-link" class="w-3 h-3"></i>
-                </a>
+                ${actionFormBtn}
+                ${actionPortalBtn}
                 <button onclick="testUtmTracking('${escapeHtml(p.domain)}')" class="px-2 py-1 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-700 font-semibold inline-flex items-center gap-1 text-xs border border-sky-200 transition-colors" title="⚡ Simulate & verify visitor attribution for this directory">
                   <span>⚡ Test</span>
                 </button>
@@ -4337,7 +4916,7 @@
           `;
           }).join('');
         } else {
-          tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-500">No platforms matching current filters.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-500">No platforms matching current filters.</td></tr>`;
         }
         lucide.createIcons();
       } catch (err) {
@@ -4379,6 +4958,19 @@
       loadPresencePlatforms();
     }
 
+    function handlePresenceSort(val) {
+      presenceState.sortBy = val || 'score_desc';
+      presenceState.page = 1;
+      loadPresencePlatforms();
+    }
+
+    function togglePresenceLatestOnly() {
+      presenceState.latestOnly = !presenceState.latestOnly;
+      presenceState.page = 1;
+      updateLatestOnlyBtnUi('presence-latest-only-btn', presenceState.latestOnly);
+      loadPresencePlatforms();
+    }
+
     function changePresencePage(delta) {
       presenceState.page += delta;
       loadPresencePlatforms();
@@ -4390,7 +4982,9 @@
         const queryParams = new URLSearchParams({
           page: reviewState.page,
           limit: reviewState.limit,
-          status: reviewState.tab
+          status: reviewState.tab,
+          sort_by: reviewState.sortBy || 'score_desc',
+          latest_only: reviewState.latestOnly ? 'true' : 'false'
         });
         if (reviewState.tier) {
           queryParams.append('tier', reviewState.tier);
@@ -4407,6 +5001,10 @@
 
         const res = await fetch(`/api/platforms?${queryParams.toString()}`);
         const data = await res.json();
+
+        if (data.tab_metrics) {
+          renderTabQualityBar('review-tab-quality-bar', data.tab_metrics, data);
+        }
         
         if (data.total !== undefined) {
           const badgeEl = document.getElementById('count-submittable-badge');
@@ -4444,6 +5042,9 @@
         if (data.platforms.length > 0) {
           tbody.innerHTML = data.platforms.map(p => {
             const portalUrl = p.url || `https://${p.domain}`;
+            const formUrl = p.form_url || '';
+            const formOk = Boolean(p.form_link_ok) && Boolean(formUrl);
+            const portalOk = Boolean(p.portal_link_ok);
             const hasLiveUrl = p.submitted_url && p.submitted_url.trim() !== '';
             const isDirectDirectory = p.category_type === 'submittable_directory' || p.tier === 'tier_1' || p.high_level_category === 'Direct Startup Engagement & Intake';
             
@@ -4478,6 +5079,26 @@
               tierBadge = `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-slate-800 text-slate-400 border border-slate-700 font-mono">📁 ARCHIVE</span>`;
             }
 
+            const latestBadge = p.is_latest_search
+              ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-amber-500/25 text-amber-300 light:text-amber-800 border border-amber-500/50 font-bold font-mono" title="Discovered in the latest search run">✨ Latest Search</span>`
+              : '';
+
+            const inlineDomainEl = portalOk
+              ? `<a href="${escapeHtml(portalUrl)}" target="_blank" class="text-[11px] text-slate-500 hover:text-blue-600 flex items-center gap-0.5 font-normal font-mono" title="Portal: ${escapeHtml(portalUrl)}"><span>${escapeHtml(p.domain)}</span><i data-lucide="external-link" class="w-2.5 h-2.5"></i></a>`
+              : `<span class="text-[11px] text-rose-500 font-mono line-through cursor-not-allowed select-none" title="Portal unreachable (${escapeHtml(p.link_error || 'Error')})">${escapeHtml(p.domain)}</span>`;
+
+            const inlineFormEl = formOk
+              ? `<a href="${escapeHtml(formUrl)}" target="_blank" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-emerald-50 text-emerald-800 border border-emerald-300 font-mono font-bold hover:bg-emerald-100 hover:underline" title="Exact Direct Application / Submission Form"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span><span>📝 Direct Form Link</span><i data-lucide="external-link" class="w-2.5 h-2.5"></i></a>`
+              : `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-rose-50 text-rose-700 border border-rose-200 font-mono font-bold cursor-not-allowed select-none opacity-80" title="Form link failed live verification (HTTP ${p.form_http_status || 'Err'}) — button disabled"><span>🚫 Form Broken (${p.form_http_status || 'Err'})</span></span>`;
+
+            const actionFormBtn = formOk
+              ? `<a href="${escapeHtml(formUrl)}" target="_blank" class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold inline-flex items-center gap-1 shadow-sm text-xs transition-colors" title="Open Verified Direct Form"><span>📝 Form</span><i data-lucide="external-link" class="w-3 h-3"></i></a>`
+              : `<span class="px-2 py-1 rounded-lg bg-slate-200 text-slate-500 font-bold inline-flex items-center gap-1 text-xs border border-slate-300 cursor-not-allowed select-none opacity-65" title="Form link broken (HTTP ${p.form_http_status || 'Err'}) — clickability removed">🚫 Form</span>`;
+
+            const actionPortalBtn = portalOk
+              ? `<a href="${escapeHtml(portalUrl)}" target="_blank" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold inline-flex items-center gap-1 text-xs border border-slate-300 transition-colors" title="Open Main Website Portal"><span>🌐 Portal</span><i data-lucide="external-link" class="w-3 h-3"></i></a>`
+              : `<span class="px-2 py-1 rounded-lg bg-rose-50 text-rose-500 font-semibold inline-flex items-center gap-1 text-xs border border-rose-200 cursor-not-allowed select-none opacity-65" title="Portal link unreachable (HTTP ${p.portal_http_status || 'Err'}) — clickability removed">🚫 Portal</span>`;
+
             return `
             <tr class="hover:bg-slate-50 transition-colors">
               <td class="py-3 px-3">
@@ -4485,6 +5106,7 @@
                   <button onclick="openPlatformDetail(${p.id})" class="font-bold text-slate-900 hover:text-blue-600 text-left block text-xs cursor-pointer">
                     ${escapeHtml(p.name)}
                   </button>
+                  ${latestBadge}
                   ${tierBadge}
                   ${hlBadge}
                   <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-sky-50 text-sky-800 border border-sky-300 font-mono font-bold" title="24/7 Monitored by DeepSeek Flash v4.1 Engine"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>🤖 DeepSeek v4.1</span>
@@ -4492,16 +5114,9 @@
                 ${p.intake_features ? `<div class="text-[11px] text-amber-700 dark:text-amber-300 font-mono mt-0.5 mb-1 flex items-center gap-1"><span class="text-xs">🎯</span> <span>${escapeHtml(p.intake_features)}</span></div>` : ''}
                 ${p.licensing_notes ? `<div class="text-[11px] text-purple-700 dark:text-purple-300 font-mono mt-0.5 mb-1 flex items-center gap-1.5"><span class="text-xs">${(p.is_smartmatch || p.high_level_category === 'SmartMatch & Dealflow Licensing Engines') ? '🔑' : '🔬'}</span> <span class="font-bold">${(p.is_smartmatch || p.high_level_category === 'SmartMatch & Dealflow Licensing Engines') ? 'Dealflow Licence:' : 'DeepSeek Gate:'}</span> <span>${escapeHtml(p.licensing_notes)}</span></div>` : ''}
                 <div class="flex items-center gap-2 mt-0.5 flex-wrap">
-                  <a href="${escapeHtml(portalUrl)}" target="_blank" class="text-[11px] text-slate-500 hover:text-blue-600 flex items-center gap-0.5 font-normal font-mono" title="Portal: ${escapeHtml(portalUrl)}">
-                    <span>${escapeHtml(p.domain)}</span>
-                    <i data-lucide="external-link" class="w-2.5 h-2.5"></i>
-                  </a>
+                  ${inlineDomainEl}
                   <span class="text-[11px] text-slate-400">· ${escapeHtml(p.category)}</span>
-                  <a href="${escapeHtml(p.form_url || portalUrl)}" target="_blank" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-emerald-50 text-emerald-800 border border-emerald-300 font-mono font-bold hover:bg-emerald-100 hover:underline" title="Exact Direct Application / Submission Form">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>📝 Direct Form Link</span>
-                    <i data-lucide="external-link" class="w-2.5 h-2.5"></i>
-                  </a>
+                  ${inlineFormEl}
                   ${hasLiveUrl ? `
                     <a href="${escapeHtml(p.submitted_url)}" target="_blank" class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] bg-teal-100 text-teal-800 border border-teal-300 font-mono font-bold hover:underline" title="Live Listing: ${escapeHtml(p.submitted_url)}">
                       <span class="w-1.5 h-1.5 rounded-full bg-teal-500"></span>
@@ -4522,15 +5137,13 @@
                   ${escapeHtml(p.status.replace(/_/g, ' '))}
                 </span>
               </td>
+              <td class="py-3 px-3 whitespace-nowrap">
+                <div class="font-mono font-bold text-xs text-slate-800 dark:text-slate-200">${escapeHtml(p.date_added_label || 'Earlier')}</div>
+                <div class="font-mono text-[10px] text-slate-400">${escapeHtml(p.exact_date_added || '')}</div>
+              </td>
               <td class="py-3 px-3 text-right space-x-1.5 whitespace-nowrap">
-                <a href="${escapeHtml(p.form_url || portalUrl)}" target="_blank" class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold inline-flex items-center gap-1 shadow-sm text-xs transition-colors" title="Open Direct Application / Submission Form">
-                  <span>📝 Form</span>
-                  <i data-lucide="external-link" class="w-3 h-3"></i>
-                </a>
-                <a href="${escapeHtml(portalUrl)}" target="_blank" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold inline-flex items-center gap-1 text-xs border border-slate-300 transition-colors" title="Open Main Website Portal">
-                  <span>🌐 Portal</span>
-                  <i data-lucide="external-link" class="w-3 h-3"></i>
-                </a>
+                ${actionFormBtn}
+                ${actionPortalBtn}
                 <button onclick="testUtmTracking('${escapeHtml(p.domain)}')" class="px-2 py-1 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-700 font-semibold inline-flex items-center gap-1 text-xs border border-sky-200 transition-colors" title="⚡ Simulate & verify visitor attribution for this directory">
                   <span>⚡ Test</span>
                 </button>
@@ -4541,12 +5154,25 @@
           `;
           }).join('');
         } else {
-          tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-500">No items in this queue tab.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-500">No items in this queue tab.</td></tr>`;
         }
         lucide.createIcons();
       } catch (err) {
         console.error('Failed to load review queue:', err);
       }
+    }
+
+    function handleReviewSort(val) {
+      reviewState.sortBy = val || 'score_desc';
+      reviewState.page = 1;
+      loadReviewQueue();
+    }
+
+    function toggleReviewLatestOnly() {
+      reviewState.latestOnly = !reviewState.latestOnly;
+      reviewState.page = 1;
+      updateLatestOnlyBtnUi('review-latest-only-btn', reviewState.latestOnly);
+      loadReviewQueue();
     }
 
     function setReviewPlatformType(type) {
@@ -4795,32 +5421,119 @@
         document.getElementById('detail-draft-pitch').innerText = p.draft_pitch || 'Pitch draft ready for review.';
         document.getElementById('detail-utm-link').value = p.tracking_url;
 
-        // Populate Direct Form URL (Primary Action)
-        const formLink = document.getElementById('detail-form-url-link');
-        const formBtn = document.getElementById('detail-form-url-btn');
-        const portalFallbackBtn = document.getElementById('detail-portal-fallback-btn');
+        const detLatest = document.getElementById('detail-latest-search-badge');
+        if (detLatest) detLatest.classList.toggle('hidden', !p.is_latest_search);
+        const detDate = document.getElementById('detail-date-added-badge');
+        if (detDate) detDate.innerText = `Added: ${p.date_added_label || 'Earlier'} (${p.exact_date_added || p.discovered_at || '—'})`;
+
         const portalUrl = p.url || `https://${p.domain}`;
-        const directFormUrl = p.form_url || portalUrl;
-        if (formLink && formBtn) {
-          formLink.href = directFormUrl;
-          formLink.innerText = directFormUrl;
-          formLink.title = directFormUrl;
-          formBtn.href = directFormUrl;
+        const directFormUrl = p.form_url || '';
+        const formOk = Boolean(p.form_link_ok) && Boolean(directFormUrl);
+        const portalOk = Boolean(p.portal_link_ok);
+
+        const formHealthPill = document.getElementById('detail-form-health-pill');
+        const formHelperMsg = document.getElementById('detail-form-helper-msg');
+        const formLink = document.getElementById('detail-form-url-link');
+        const formBrokenText = document.getElementById('detail-form-url-broken-text');
+        const formBtn = document.getElementById('detail-form-url-btn');
+        const formDis = document.getElementById('detail-form-url-disabled');
+        const portalFallbackBtn = document.getElementById('detail-portal-fallback-btn');
+        const portalFallbackDis = document.getElementById('detail-portal-fallback-disabled');
+
+        if (formOk) {
+          if (formHealthPill) {
+            formHealthPill.className = "text-[10px] font-mono px-2 py-0.5 rounded-full font-extrabold uppercase bg-emerald-600 text-white shadow-sm";
+            formHealthPill.innerText = "⚡ Form Verified Working";
+          }
+          if (formLink) { formLink.href = directFormUrl; formLink.innerText = directFormUrl; formLink.title = directFormUrl; formLink.classList.remove('hidden'); }
+          if (formBrokenText) formBrokenText.classList.add('hidden');
+          if (formBtn) { formBtn.href = directFormUrl; formBtn.classList.remove('hidden'); }
+          if (formDis) formDis.classList.add('hidden');
+          if (formHelperMsg) formHelperMsg.innerHTML = `<span>✅</span><span>Verified direct registration/application URL. Click <b>Open Direct Form</b> to jump straight to the intake page.</span>`;
+        } else {
+          if (formHealthPill) {
+            formHealthPill.className = "text-[10px] font-mono px-2 py-0.5 rounded-full font-extrabold uppercase bg-rose-600 text-white shadow-sm";
+            formHealthPill.innerText = `🚫 Form Broken (HTTP ${p.form_http_status || 'Err'})`;
+          }
+          if (formLink) { formLink.removeAttribute('href'); formLink.classList.add('hidden'); }
+          if (formBrokenText) { formBrokenText.innerText = directFormUrl || 'No working form link'; formBrokenText.classList.remove('hidden'); }
+          if (formBtn) { formBtn.removeAttribute('href'); formBtn.classList.add('hidden'); }
+          if (formDis) formDis.classList.remove('hidden');
+          if (formHelperMsg) formHelperMsg.innerHTML = `<span>⚠️</span><span>Direct Form URL failed live health verification (${escapeHtml(p.link_error || ('HTTP ' + (p.form_http_status || 'Error')))}). Clickability has been disabled so users never hit an error / 404 page.</span>`;
         }
-        if (portalFallbackBtn) {
-          portalFallbackBtn.href = portalUrl;
-          portalFallbackBtn.title = portalUrl;
+
+        if (portalFallbackBtn && portalFallbackDis) {
+          if (portalOk) {
+            portalFallbackBtn.href = portalUrl;
+            portalFallbackBtn.title = portalUrl;
+            portalFallbackBtn.classList.remove('hidden');
+            portalFallbackDis.classList.add('hidden');
+          } else {
+            portalFallbackBtn.removeAttribute('href');
+            portalFallbackBtn.classList.add('hidden');
+            portalFallbackDis.classList.remove('hidden');
+          }
+        }
+
+        // Live link verification card telemetry
+        const sentryPill = document.getElementById('detail-sentry-health-pill');
+        const pHttpEl = document.getElementById('detail-portal-http-status');
+        const fHttpEl = document.getElementById('detail-form-http-status');
+        const checkedEl = document.getElementById('detail-link-checked-at');
+        if (pHttpEl) {
+          pHttpEl.innerText = portalOk ? `${p.portal_http_status || 200} OK` : `BROKEN (${p.portal_http_status || 'ERR'})`;
+          pHttpEl.className = portalOk ? "text-emerald-400 font-bold" : "text-rose-400 font-bold";
+        }
+        if (fHttpEl) {
+          fHttpEl.innerText = formOk ? `${p.form_http_status || 200} OK` : `BROKEN (${p.form_http_status || 'ERR'})`;
+          fHttpEl.className = formOk ? "text-emerald-400 font-bold" : "text-rose-400 font-bold";
+        }
+        if (checkedEl) checkedEl.innerText = p.link_checked_at ? p.link_checked_at.slice(0, 16) : 'Verified Live';
+        if (sentryPill) {
+          if (portalOk && formOk) {
+            sentryPill.className = "px-2 py-0.5 rounded text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold";
+            sentryPill.innerText = "DUAL LINKS HEALTHY";
+          } else if (portalOk) {
+            sentryPill.className = "px-2 py-0.5 rounded text-[10px] bg-amber-950 text-amber-300 border border-amber-800 font-bold";
+            sentryPill.innerText = "PORTAL OK · FORM BROKEN";
+          } else {
+            sentryPill.className = "px-2 py-0.5 rounded text-[10px] bg-rose-950 text-rose-300 border border-rose-800 font-bold";
+            sentryPill.innerText = "LINK ACTION REQUIRED";
+          }
         }
 
         // Populate Target Portal URL (Reference)
         const portalLink = document.getElementById('detail-portal-url-link');
+        const portalBrokenText = document.getElementById('detail-portal-url-broken-text');
         const portalBtn = document.getElementById('detail-portal-url-btn');
-        const targetUrl = p.url || `https://${p.domain}`;
-        if (portalLink && portalBtn) {
-          portalLink.href = targetUrl;
-          portalLink.innerText = targetUrl;
-          portalLink.title = targetUrl;
-          portalBtn.href = targetUrl;
+        const portalDis = document.getElementById('detail-portal-url-disabled');
+        if (portalOk) {
+          if (portalLink) { portalLink.href = portalUrl; portalLink.innerText = portalUrl; portalLink.title = portalUrl; portalLink.classList.remove('hidden'); }
+          if (portalBrokenText) portalBrokenText.classList.add('hidden');
+          if (portalBtn) { portalBtn.href = portalUrl; portalBtn.classList.remove('hidden'); }
+          if (portalDis) portalDis.classList.add('hidden');
+        } else {
+          if (portalLink) { portalLink.removeAttribute('href'); portalLink.classList.add('hidden'); }
+          if (portalBrokenText) { portalBrokenText.innerText = portalUrl; portalBrokenText.classList.remove('hidden'); }
+          if (portalBtn) { portalBtn.removeAttribute('href'); portalBtn.classList.add('hidden'); }
+          if (portalDis) portalDis.classList.remove('hidden');
+        }
+
+        // Point System Criteria Breakdown Pills
+        const critBox = document.getElementById('detail-criteria-pills');
+        if (critBox) {
+          const cb = Array.isArray(p.criteria_breakdown_list) ? p.criteria_breakdown_list : [];
+          if (cb.length > 0) {
+            critBox.innerHTML = cb.map(c => {
+              const pts = c.points >= 0 ? `+${c.points}` : `${c.points}`;
+              const cls = c.type === 'positive'
+                ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
+                : 'bg-rose-100 text-rose-800 border-rose-300';
+              return `<span class="px-2 py-0.5 rounded border text-[10px] font-mono font-bold ${cls}">${escapeHtml(c.label)} (${pts})</span>`;
+            }).join('');
+          } else {
+            critBox.innerHTML = `<span class="text-[11px] text-slate-500">Evaluated via DeepSeek Flash v4.1 Benchmark & Four-Gate Pre-Qualification.</span>`;
+          }
         }
 
         // Populate Live Published Listing URL

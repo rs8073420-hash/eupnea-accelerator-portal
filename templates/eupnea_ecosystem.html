@@ -566,13 +566,27 @@
       background-color: #FFFFFF !important;
       border-color: #E2E8F0 !important;
     }
-    html.light .bg-slate-900,
+    html.light .bg-slate-900.text-white:not([id^="nav-btn-"]),
+    html.light .bg-slate-800.text-white:not([id^="nav-btn-"]) {
+      background-color: #0F172A !important;
+      border-color: #0F172A !important;
+      color: #FFFFFF !important;
+    }
+    html.light button.bg-slate-900.text-white:not([id^="nav-btn-"]):hover,
+    html.light a.bg-slate-900.text-white:hover,
+    html.light button.bg-slate-800.text-white:not([id^="nav-btn-"]):hover,
+    html.light a.bg-slate-800.text-white:hover {
+      background-color: #1E293B !important;
+      border-color: #1E293B !important;
+      color: #FFFFFF !important;
+    }
+    html.light .bg-slate-900:not(.text-white):not(button):not(a),
     html.light .bg-slate-900\/60 {
       background-color: #F8FAFC !important;
       border-color: #E2E8F0 !important;
       color: #0F172A !important;
     }
-    html.light .bg-slate-800,
+    html.light .bg-slate-800:not(.text-white):not(button):not(a),
     html.light .bg-slate-800\/80 {
       background-color: #F1F5F9 !important;
       border-color: #CBD5E1 !important;
@@ -2756,8 +2770,8 @@
 
             <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
               <div class="flex items-center gap-2">
-                <button onclick="runBespokeSearch()" id="bespoke-run-btn" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors">
-                  <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                <button onclick="runBespokeSearch()" id="bespoke-run-btn" class="px-4 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-semibold flex items-center gap-2 cursor-pointer shadow-sm transition-colors">
+                  <i data-lucide="search" class="w-3.5 h-3.5 text-white"></i>
                   <span>Run Bespoke Search</span>
                 </button>
                 <button onclick="clearBespokeSearch()" class="px-3 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-medium text-slate-600 cursor-pointer">

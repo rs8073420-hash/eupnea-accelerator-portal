@@ -605,8 +605,8 @@ def run_coordinated_orchestration_cycle():
             "report": report
         }
 
-    # Parallel Execution across 90 Search Specialist threads (1:1 per agent)
-    with ThreadPoolExecutor(max_workers=10, thread_name_prefix="TurboBrowserAgent") as executor:
+    # Parallel Execution across 90 Search Tasks (bounded pool for Render 0.1-vCPU friendliness)
+    with ThreadPoolExecutor(max_workers=4, thread_name_prefix="TurboBrowserAgent") as executor:
         futures = {
             executor.submit(search_worker, search_agents[i], platforms[i], i): i 
             for i in range(90)
@@ -614,14 +614,14 @@ def run_coordinated_orchestration_cycle():
         for future in as_completed(futures):
             search_results.append(future.result())
 
-    # Commit results & Management Updates in single atomic transaction
+    # Commit results & Management Updates without holding nested SQLite locks
     conn = sqlite3.connect(DB_PATH, timeout=30.0)
     conn.execute("PRAGMA journal_mode=WAL;")
     conn.execute("PRAGMA busy_timeout=30000;")
     c = conn.cursor()
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # Update 90 search agents progress (Turbo Parallel Processing)
+    # Update 90 search agents progress
     for res in search_results:
         c.execute("""
             UPDATE orchestration_agents
@@ -641,8 +641,9 @@ def run_coordinated_orchestration_cycle():
             res["report"],
             res["agent_id"]
         ))
+    conn.commit()
 
-    # Calculate Leaderboard for Astra-M01 Manager Evaluation
+    # Calculate Leaderboard after releasing write transaction lock
     eval_data = compute_fleet_evaluation()
 
     # Dynamic Management Updates reflecting continuous coordination
@@ -840,11 +841,12 @@ def _continuous_orchestration_loop():
                 print(f"[24x7 FLEET HEARTBEAT]: Cycle #{_swarm_cycle_count} completed in {round((time.time()-t0)*1000, 1)}ms | 90 agents active | S-Tier: {res.get('squad_performance', {}).get('best_squad', 'Alpha')}")
         except sqlite3.OperationalError as oe:
             # Resilient lock backoff
-            time.sleep(0.3)
+            time.sleep(0.5)
         except Exception as e:
             print(f"[24x7 FLEET SELF-HEALING]: Recovering from cycle anomaly: {e}")
-            time.sleep(0.5)
-        time.sleep(5.0)
+            time.sleep(1.0)
+        cycle_sleep = 45.0 if (os.environ.get("RENDER") or os.environ.get("SPACE_ID")) else 15.0
+        time.sleep(cycle_sleep)
 
 def _swarm_supervisor_watchdog():
     """Self-healing watchdog that guarantees the 24x7 daemon is ALWAYS running."""

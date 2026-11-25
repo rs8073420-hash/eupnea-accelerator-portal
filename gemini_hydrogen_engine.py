@@ -25,6 +25,7 @@ Zero DeepSeek dependencies. Strictly powered by Gemini 4 Hydrogen + Live Probe:
 
 import os
 import re
+import time
 import json
 import socket
 import sqlite3
@@ -374,6 +375,9 @@ class GeminiHydrogenEngine:
         gemini_ids = [mid for mid in ids if "gemini" in mid.lower()]
         return gemini_ids[0] if gemini_ids else "gemini-3.7-flash"
 
+    _llm_cache_val: Optional[Tuple[Optional[str], Optional[str], str]] = None
+    _llm_cache_ts: float = 0.0
+
     @classmethod
     def get_llm_endpoint_info(cls) -> Tuple[Optional[str], Optional[str], str]:
         """Resolves Gemini API or Local Gemini Gateway (ZERO DeepSeek calls)."""
@@ -381,15 +385,32 @@ class GeminiHydrogenEngine:
         if gem_key:
             cloud_model = os.environ.get("EUPNEA_GEMINI_API_MODEL", "gemini-2.5-flash")
             return GEMINI_OPENAI_URL, gem_key, cloud_model
+
+        now = time.time()
+        if cls._llm_cache_val is not None and (now - cls._llm_cache_ts) < 120.0:
+            return cls._llm_cache_val
+
+        if os.environ.get("RENDER") or os.environ.get("SPACE_ID"):
+            res = (None, None, "gemini-4-hydrogen-deterministic-4gate")
+            cls._llm_cache_val = res
+            cls._llm_cache_ts = now
+            return res
+
         try:
             models_url = LOCAL_LLM_URL.rsplit("/chat/completions", 1)[0] + "/models"
-            r = httpx.get(models_url, timeout=1.2)
+            r = httpx.get(models_url, timeout=0.6)
             if r.status_code == 200:
                 chosen = cls._select_local_gemini_model(r.json())
-                return LOCAL_LLM_URL, None, chosen
+                res = (LOCAL_LLM_URL, None, chosen)
+                cls._llm_cache_val = res
+                cls._llm_cache_ts = now
+                return res
         except Exception:
             pass
-        return None, None, "gemini-4-hydrogen-deterministic-4gate"
+        res = (None, None, "gemini-4-hydrogen-deterministic-4gate")
+        cls._llm_cache_val = res
+        cls._llm_cache_ts = now
+        return res
 
     @classmethod
     def get_engine_status(cls) -> Dict[str, Any]:

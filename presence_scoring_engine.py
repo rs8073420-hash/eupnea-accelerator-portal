@@ -351,11 +351,23 @@ def init_scoring_criteria_db(db_path: str = DEFAULT_DB_PATH) -> None:
 
 def get_scoring_criteria(db_path: str = DEFAULT_DB_PATH) -> Dict[str, Any]:
     """Returns all editable scoring criteria (defaults vs current weightings) and quality definitions."""
-    init_scoring_criteria_db(db_path)
-    conn = sqlite3.connect(db_path, timeout=30.0)
-    conn.row_factory = sqlite3.Row
-    rows = conn.execute("SELECT * FROM scoring_criteria ORDER BY display_order ASC").fetchall()
-    conn.close()
+    rows = []
+    try:
+        conn = sqlite3.connect(db_path, timeout=30.0)
+        conn.row_factory = sqlite3.Row
+        exists = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='scoring_criteria'").fetchone()
+        if exists:
+            rows = conn.execute("SELECT * FROM scoring_criteria ORDER BY display_order ASC").fetchall()
+        conn.close()
+    except Exception:
+        rows = []
+
+    if not rows:
+        init_scoring_criteria_db(db_path)
+        conn = sqlite3.connect(db_path, timeout=30.0)
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute("SELECT * FROM scoring_criteria ORDER BY display_order ASC").fetchall()
+        conn.close()
     criteria = [dict(r) for r in rows]
     modified_count = sum(1 for item in criteria if item["current_points"] != item["default_points"])
     return {

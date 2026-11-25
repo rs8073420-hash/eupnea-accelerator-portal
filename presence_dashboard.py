@@ -1935,11 +1935,16 @@ def track_utm_visit(req: TrackVisitRequest, request: Request):
 # ================================================================================
 import orchestration_engine as orch_eng
 
+_orch_bootstrapped = False
+
 @app.get("/api/orchestration/fleet")
 def get_orchestration_fleet():
+    global _orch_bootstrapped
     try:
-        orch_eng.init_orchestration_db()
-        orch_eng.start_continuous_orchestrator()
+        if not _orch_bootstrapped:
+            orch_eng.init_orchestration_db()
+            orch_eng.start_continuous_orchestrator()
+            _orch_bootstrapped = True
         data = orch_eng.get_fleet_status_summary()
         return data
     except Exception as e:

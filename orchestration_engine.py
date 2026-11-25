@@ -1,9 +1,9 @@
 """
 Eupnea v2 - Autonomous 100-Agent Orchestration Swarm Engine
-Powered by 'browser-use' (github.com/browser-use/browser-use)
+Powered by Gemini 4 Hydrogen & Category-Trained Hunting Intelligence + 'browser-use'
 90 Dedicated Search Agents with Personal Browser Profiles (agent_01 to agent_90)
 10 Strategic Management Directorate Agents
-UNLIMITED EXPANSION MODE: Continuous dynamic discovery targeting 10,000+ directories.
+UNLIMITED EXPANSION MODE: Continuous dynamic discovery with strict category alignment.
 """
 
 import os

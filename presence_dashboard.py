@@ -55,6 +55,7 @@ from pydantic import BaseModel
 import presence_scoring_engine as pse
 import orchestration_engine as orch_eng
 import gemini_hydrogen_engine as ghe
+import category_agent_trainer as cat_trainer
 
 try:
     from eupnea_presence_agent_upgrade import presence_upgrade_controller
@@ -990,6 +991,41 @@ def run_all_category_agents():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/api/category-agents/{agent_id}/training-profile")
+def get_category_agent_training_profile(agent_id: str):
+    try:
+        agents = {a["id"]: a for a in caf.CATEGORY_AGENTS_CONFIG}
+        if agent_id not in agents:
+            raise HTTPException(status_code=404, detail=f"Agent '{agent_id}' not found.")
+        prof = cat_trainer.get_training_profile(agent_id, db_path=DB_PATH)
+        if not prof:
+            prof = cat_trainer.train_category_agent(agent_id, db_path=DB_PATH, use_llm=False)
+        return prof
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/category-agents/{agent_id}/train")
+def train_single_category_agent_endpoint(agent_id: str, body: Optional[Dict[str, Any]] = Body(default=None)):
+    try:
+        agents = {a["id"]: a for a in caf.CATEGORY_AGENTS_CONFIG}
+        if agent_id not in agents:
+            raise HTTPException(status_code=404, detail=f"Agent '{agent_id}' not found.")
+        custom_dir = (body or {}).get("custom_directive", "") if isinstance(body, dict) else ""
+        return cat_trainer.train_category_agent(agent_id, custom_directive=custom_dir, db_path=DB_PATH, use_llm=True)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/category-agents/train-all")
+def train_all_category_agents_endpoint():
+    try:
+        return cat_trainer.train_all_category_agents(db_path=DB_PATH, use_llm=False)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/api/platforms/verify-links")
 def verify_batch_links_endpoint(limit: int = Query(25, ge=1, le=100)):
     """Runs live HTTP & Form verification on active qualified platforms and updates link health accuracy."""
@@ -1567,6 +1603,22 @@ def run_single_category_browser_worker(run_id: int, spec: Dict[str, Any], pool_c
         needed = batch_per_cat - len(selected)
         dynamic_cands = get_dynamic_category_candidates(cat_name, needed, existing_domains, existing_names)
         selected.extend(dynamic_cands)
+
+    cat_key_map = {
+        "SmartMatch & Dealflow Licensing Engines": "smartmatch",
+        "UK Accelerator Review & Ranking Platforms": "uk_reviews",
+        "Direct Startup Engagement & Intake": "engagement_intake",
+        "Investor Match & Capital Networks": "investor_networks",
+        "Ecosystem Visibility & Program Discovery": "ecosystem_visibility",
+        "Regional Chambers & Business Networks": "regional_chambers",
+    }
+    cat_key_for_spec = cat_key_map.get(cat_name)
+    if len(selected) < batch_per_cat and cat_key_for_spec:
+        needed_live = batch_per_cat - len(selected)
+        live_cands = cat_trainer.search_live_web_for_category(cat_key_for_spec, existing_domains, max_candidates=max(4, needed_live * 2), db_path=DB_PATH)
+        for lc in live_cands:
+            lc["target_category"] = cat_name
+        selected.extend(live_cands[:needed_live * 2])
     discovered = []
 
     # Thread-safe database connection
@@ -1600,7 +1652,13 @@ def run_single_category_browser_worker(run_id: int, spec: Dict[str, Any], pool_c
         tracking_url = f"https://eupnea.co.uk/?utm_source={domain.replace('.', '_')}&utm_medium=directory&utm_campaign=accelerator_2026"
         category = get_master_category(name, domain, "")
 
-        # Strict Gemini 4 Hydrogen Algorithmic, Hub Classifier & Live Network Gate
+        # Strict Trained Category Alignment Gate + Gemini 4 Hydrogen Live Network Gate
+        if cat_key_for_spec:
+            cat_probe = ghe.GeminiHydrogenEngine.probe_live_website(url, form_url)
+            cat_match = cat_trainer.classify_candidate_for_category(cand, cat_key_for_spec, probe=cat_probe, use_llm=True)
+            if not cat_match.get("match"):
+                continue
+
         cand_with_cat = {**cand, "high_level_category": cat_name}
         score_eval = ghe.GeminiHydrogenEngine.score_platform(cand_with_cat, verify_network=True, use_llm=True)
         if not score_eval.get("is_qualified") or score_eval.get("score", 0) <= 0:

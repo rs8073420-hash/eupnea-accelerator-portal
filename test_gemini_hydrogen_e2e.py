@@ -17,6 +17,7 @@ import gemini_hydrogen_engine as ghe
 import presence_scoring_engine as pse
 import presence_dashboard as pdash
 import category_agent_fleet as caf
+import category_agent_trainer as cat_trainer
 import orchestration_engine as orch
 
 
@@ -38,6 +39,8 @@ def run_suite():
     assert "Gemini 4 Hydrogen" in html
     assert "F6S/Gust Hubs" in html
     assert "q-reg-hubs-count" in html
+    assert "trainAllCategoryAgents" in html
+    assert "Train All 7 Agents" in html
     assert "DeepSeek v4.1" not in html
     assert "DEEPSEEK V4.1" not in html
     print("1. HTML UI & Health checks passed.")
@@ -107,19 +110,54 @@ def run_suite():
         pse.reset_criteria_weights(db_path=tmp_db, recalculate=True)
     print("4. Editable 21-Criteria Point System & Single-Entity Tier-1 Guard passed.")
 
-    # 5. LinkedIn Rankers & Upgraded Category Fleet Config
+    # 5. Category Fleet Training Profiles, Strict Category Gate & Rankers
     r_rank = client.get("/api/rankers")
     assert r_rank.status_code == 200
     rankers = r_rank.json()
     assert len(rankers) >= 53, len(rankers)
 
-    roster = caf.get_category_agents_roster()
+    r_train_all = client.post("/api/category-agents/train-all")
+    assert r_train_all.status_code == 200, r_train_all.text
+    train_res = r_train_all.json()
+    assert train_res["trained_agents"] == 7
+    assert train_res["avg_validation_accuracy"] == 100.0, train_res
+
+    r_agents = client.get("/api/category-agents")
+    assert r_agents.status_code == 200
+    roster = r_agents.json()
     assert len(roster) == 7
+    for ag in roster:
+        assert ag.get("trained") is True, ag
+        assert ag.get("accuracy_score") == 100.0, ag
+
+    r_prof = client.get("/api/category-agents/astra_i01/training-profile")
+    assert r_prof.status_code == 200
+    prof = r_prof.json()
+    assert len(prof.get("positive_examples", [])) > 0
+    assert len(prof.get("search_queries", [])) > 0
+
     astra_i = next(a for a in roster if a["id"] == "astra_i01")
     assert "F6S/Gust" in astra_i["name"], astra_i["name"]
     assert "Gemini 4 Hydrogen" in astra_i["specialization"], astra_i["specialization"]
     assert not any("ox.ac.uk" in x["domain"] or "jbs.cam.ac.uk" in x["domain"] for x in caf.INTAKE_EXPANSION_POOL)
-    print(f"5. Category Fleet & Rankers verified (rankers={len(rankers)}, agents={len(roster)}).")
+
+    # Strict Category Alignment Gate Assertions (Zero cross-category leaks)
+    assert cat_trainer.classify_candidate_for_category(
+        {"name": "University of Glasgow Incubator", "domain": "gla.ac.uk"}, "engagement_intake"
+    )["match"] is False
+    assert cat_trainer.classify_candidate_for_category(
+        {"name": "Greater Manchester Chamber of Commerce", "domain": "gmchamber.co.uk"}, "engagement_intake"
+    )["match"] is False
+    assert cat_trainer.classify_candidate_for_category(
+        {"name": "Greater Manchester Chamber of Commerce", "domain": "gmchamber.co.uk"}, "regional_chambers"
+    )["match"] is True
+    assert cat_trainer.classify_candidate_for_category(
+        {"name": "SeedLegals Top UK Accelerators", "domain": "seedlegals.com"}, "uk_reviews"
+    )["match"] is True
+    assert cat_trainer.classify_candidate_for_category(
+        {"name": "US Local Tech News Blog", "domain": "exampleus.com"}, "uk_reviews"
+    )["match"] is False
+    print(f"5. Trained Category Fleet (7/7 @ 100.0% Acc) & Strict Category Gate verified (rankers={len(rankers)}).")
 
     # 6. Check orchestration fleet endpoints (read-only + live agent metadata)
     r_fleet = client.get("/api/orchestration/fleet")

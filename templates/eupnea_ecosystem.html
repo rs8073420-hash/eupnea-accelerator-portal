@@ -3501,10 +3501,15 @@
           </div>
         </div>
 
-        <button onclick="runAllCategoryAgents()" id="btn-run-all-cat-agents" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-mono font-bold text-xs flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition-all cursor-pointer">
-          <i data-lucide="zap" class="w-3.5 h-3.5"></i>
-          <span>⚡ Execute All 7 Category Agents Concurrently</span>
-        </button>
+        <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="trainAllCategoryAgents(this)" id="btn-train-all-cat-agents" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-mono font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-emerald-600/20 transition-all cursor-pointer">
+            <span>🧠 Train All 7 Agents</span>
+          </button>
+          <button onclick="runAllCategoryAgents()" id="btn-run-all-cat-agents" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-mono font-bold text-xs flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition-all cursor-pointer">
+            <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+            <span>⚡ Execute All 7 Category Agents Concurrently</span>
+          </button>
+        </div>
       </div>
 
       <!-- Live Category Agents Roster Grid -->
@@ -7141,6 +7146,12 @@
           const queryChips = queries.slice(0, 2).map(q => 
             `<span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-300 truncate max-w-[200px]" title="${escapeHtml(q)}">${escapeHtml(q)}</span>`
           ).join('');
+          const posSigs = (ag.positive_signals || []).slice(0, 5).map(s =>
+            `<span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-950/60 border border-emerald-500/30 text-emerald-300">${escapeHtml(s)}</span>`
+          ).join('');
+          const accBadge = ag.trained
+            ? `<span class="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40" title="${escapeHtml(ag.compiled_instruction || '')}">🧠 Trained · ${ag.accuracy_score ?? 100}% Acc (${ag.training_samples_count || 0} samples)</span>`
+            : `<span class="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">Needs Training</span>`;
 
           let badgeColor = 'text-indigo-300 border-indigo-500/40 bg-indigo-500/10';
           if (ag.id === 'astra_r01') badgeColor = 'text-pink-300 border-pink-500/40 bg-pink-500/15 font-bold';
@@ -7155,9 +7166,10 @@
                   <div class="flex items-center gap-2 flex-wrap">
                     <span class="px-2 py-0.5 rounded text-[10px] font-mono border ${badgeColor}">${escapeHtml(ag.agent_code)}</span>
                     <h4 class="font-syne font-bold text-sm text-white">${escapeHtml(ag.name)}</h4>
+                    ${accBadge}
                   </div>
                   <div class="text-[11px] font-mono text-slate-400 mt-1">
-                    Category: <span class="text-indigo-400 font-bold">${escapeHtml(ag.category_name)}</span>
+                    Category: <span class="text-indigo-400 font-bold">${escapeHtml(ag.category_name)}</span> · <span class="text-sky-400">⚛️ Gemini 4 Hydrogen</span>
                   </div>
                 </div>
 
@@ -7168,9 +7180,11 @@
                 </div>
               </div>
 
-              <p class="text-[11px] text-slate-300 leading-relaxed mb-3">
+              <p class="text-[11px] text-slate-300 leading-relaxed mb-2">
                 ${escapeHtml(ag.specialization)}
               </p>
+
+              ${posSigs ? `<div class="flex items-center gap-1 mb-2 flex-wrap"><span class="text-[9px] font-mono text-emerald-400">TRAINED SIGNALS:</span>${posSigs}</div>` : ''}
 
               <!-- Query Chips -->
               <div class="flex items-center gap-1.5 mb-3 flex-wrap">
@@ -7179,14 +7193,19 @@
               </div>
             </div>
 
-            <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
+            <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2 flex-wrap">
               <span class="text-[10px] font-mono text-slate-400">
-                ${ag.last_run ? `Last run: ${ag.last_run.split(' ')[1] || ag.last_run}` : 'Ready to execute'}
+                ${ag.trained_at ? `Trained: ${ag.trained_at.split(' ')[1] || ag.trained_at}` : (ag.last_run ? `Last run: ${ag.last_run.split(' ')[1] || ag.last_run}` : 'Ready')}
               </span>
 
-              <button onclick="runCategoryAgent('${ag.id}', this)" id="btn-agent-${ag.id}" class="px-3 py-1 rounded-lg bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-200 border border-indigo-500/50 text-xs font-mono font-bold flex items-center gap-1 transition-all cursor-pointer">
-                <span>⚡ Run Agent</span>
-              </button>
+              <div class="flex items-center gap-1.5">
+                <button onclick="trainCategoryAgent('${ag.id}', this)" class="px-2.5 py-1 rounded-lg bg-emerald-600/25 hover:bg-emerald-600/45 text-emerald-200 border border-emerald-500/40 text-xs font-mono font-bold flex items-center gap-1 transition-all cursor-pointer" title="Train ${escapeHtml(ag.agent_code)} strictly on ${escapeHtml(ag.category_name)} examples & signals">
+                  <span>🧠 Train</span>
+                </button>
+                <button onclick="runCategoryAgent('${ag.id}', this)" id="btn-agent-${ag.id}" class="px-3 py-1 rounded-lg bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-200 border border-indigo-500/50 text-xs font-mono font-bold flex items-center gap-1 transition-all cursor-pointer">
+                  <span>⚡ Run Hunt</span>
+                </button>
+              </div>
             </div>
           </div>
           `;
@@ -7222,7 +7241,59 @@
       } finally {
         if (btnEl) {
           btnEl.disabled = false;
-          btnEl.innerHTML = `<span>⚡ Run Agent</span>`;
+          btnEl.innerHTML = `<span>⚡ Run Hunt</span>`;
+        }
+      }
+    }
+
+    async function trainCategoryAgent(agentId, btnEl) {
+      if (btnEl) {
+        btnEl.disabled = true;
+        btnEl.innerHTML = `<span class="w-2.5 h-2.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>`;
+      }
+      try {
+        const res = await fetch(`/api/category-agents/${agentId}/train`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({})
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`🧠 ${data.agent_code} trained (${data.accuracy_score}% acc on ${data.training_samples_count} samples)!`);
+          await loadCategoryFleet();
+        } else {
+          showToast(data.detail || 'Training complete');
+        }
+      } catch (err) {
+        console.error('Error training agent:', err);
+        showToast('Error training category agent.');
+      } finally {
+        if (btnEl) {
+          btnEl.disabled = false;
+          btnEl.innerHTML = `<span>🧠 Train</span>`;
+        }
+      }
+    }
+
+    async function trainAllCategoryAgents(btnEl) {
+      if (btnEl) {
+        btnEl.disabled = true;
+        btnEl.innerHTML = `<span class="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></span> <span>Training 7 Agents...</span>`;
+      }
+      try {
+        const res = await fetch('/api/category-agents/train-all', { method: 'POST' });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`🧠 Trained all ${data.trained_agents} Category Agents · Avg Accuracy: ${data.avg_validation_accuracy}%!`);
+          await loadCategoryFleet();
+        }
+      } catch (err) {
+        console.error('Error training all agents:', err);
+        showToast('Failed to train all category agents.');
+      } finally {
+        if (btnEl) {
+          btnEl.disabled = false;
+          btnEl.innerHTML = `<span>🧠 Train All 7 Agents</span>`;
         }
       }
     }

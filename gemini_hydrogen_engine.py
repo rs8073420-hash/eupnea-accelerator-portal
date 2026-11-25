@@ -295,6 +295,9 @@ HARD_REJECT_DOMAINS = {
     "innoloft.com": "Gate 3 Failed: Private innovation ecosystem software provider, not open programme intake.",
     "awardforce.com": "Gate 3 Failed: Awards management SaaS software, not an accelerator discovery hub.",
     "judgify.me": "Gate 3 Failed: Awards/event judging software tool, not an accelerator programme hub.",
+    "acceleratorgate.eu": "Gate 1/2 Failed: Unverified/dead European portal flagged unqualified during audit.",
+    "dealflowdirect.com": "Gate 1/2 Failed: Unverified synthetic/dead dealflow engine flagged unqualified during audit.",
+    "venturesource.co.uk": "Gate 1/3 Failed: Legacy Dow Jones database flagged unqualified during audit.",
 }
 
 PERK_DOMAINS = {

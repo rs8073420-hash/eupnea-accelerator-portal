@@ -52,10 +52,13 @@ from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+import csv
+import io
 import presence_scoring_engine as pse
 import orchestration_engine as orch_eng
 import gemini_hydrogen_engine as ghe
 import category_agent_trainer as cat_trainer
+import competitor_analysis_engine as comp_eng
 
 try:
     from eupnea_presence_agent_upgrade import presence_upgrade_controller
@@ -74,6 +77,7 @@ def on_app_startup():
     try:
         ensure_platform_columns()
         pse.init_scoring_criteria_db(DB_PATH)
+        comp_eng.init_competitor_db(DB_PATH)
     except Exception as e:
         print(f"Schema/Criteria init notice: {e}")
     try:
@@ -2552,6 +2556,196 @@ def serve_live_listing_view(slug: str):
         </body>
         </html>"""
     )
+
+# ================================================================================
+# COMPETITOR LISTINGS INTELLIGENCE API (TOP 100 UK & GLOBAL-IN-UK ACCELERATORS)
+# ================================================================================
+
+class CompetitorScanRequest(BaseModel):
+    platform_domains: Optional[List[str]] = None
+    use_browser_use: bool = True
+
+
+class CompetitorAddQueueRequest(BaseModel):
+    domain: str
+    name: str = ""
+    url: str = ""
+    form_url: str = ""
+    category: str = ""
+    high_level_category: str = ""
+    listed_count: int = 0
+    popularity_score: int = 0
+    open_crm_status: str = ""
+
+
+@app.get("/api/competitors/overview")
+async def api_competitors_overview(
+    search: str = Query(""),
+    gap_filter: str = Query("all"),
+    min_popularity: int = Query(0),
+):
+    comp_eng.init_competitor_db(DB_PATH)
+    return comp_eng.get_competitor_analysis_overview(
+        search=search,
+        gap_filter=gap_filter,
+        min_popularity=min_popularity,
+        db_path=DB_PATH,
+    )
+
+
+@app.post("/api/competitors/run-scan")
+async def api_competitors_run_scan(req: CompetitorScanRequest = Body(default=CompetitorScanRequest())):
+    comp_eng.init_competitor_db(DB_PATH)
+    scan_res = comp_eng.run_competitor_listing_scan(
+        platform_domains=req.platform_domains,
+        use_browser_use=req.use_browser_use,
+        db_path=DB_PATH,
+    )
+    overview = comp_eng.get_competitor_analysis_overview(db_path=DB_PATH)
+    return {"scan": scan_res, "overview": overview}
+
+
+@app.post("/api/competitors/add-to-queue")
+async def api_competitors_add_to_queue(req: CompetitorAddQueueRequest):
+    norm_dom = (req.domain or "").strip().lower().removeprefix("www.")
+    if not norm_dom or "." not in norm_dom:
+        raise HTTPException(status_code=400, detail="Valid platform domain is required.")
+
+    valid_crm = {"Created", "Pending Approval", "Live", "Receiving Registrations"}
+    requested_crm = (req.open_crm_status or "").strip()
+    now_str = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    try:
+        existing = conn.execute(
+            "SELECT * FROM platforms WHERE lower(replace(domain, 'www.', '')) = ? LIMIT 1",
+            (norm_dom,),
+        ).fetchone()
+        if existing:
+            pid = existing["id"]
+            updates = []
+            params: List[Any] = []
+            if req.form_url and not (existing["form_url"] or "").strip():
+                updates.append("form_url = ?")
+                params.append(req.form_url.strip())
+                updates.append("is_registration_hub = 1")
+            if requested_crm in valid_crm:
+                updates.append("profile_status = ?")
+                params.append(requested_crm)
+                updates.append("profile_last_checked = ?")
+                params.append(now_str)
+            if updates:
+                params.append(pid)
+                conn.execute(f"UPDATE platforms SET {', '.join(updates)} WHERE id = ?", params)
+                conn.commit()
+            return {
+                "status": "exists",
+                "platform_id": pid,
+                "message": f"{norm_dom} is already in your workspace index (#{pid}).",
+            }
+
+        calc_score = max(70, min(98, 55 + int(req.popularity_score or 0)))
+        calc_tier = "tier_1" if int(req.popularity_score or 0) >= 10 else "tier_2"
+        p_url = (req.url or f"https://{norm_dom}").strip()
+        f_url = (req.form_url or "").strip()
+        is_hub = 1 if f_url else 0
+        hl_cat = (req.high_level_category or "Ecosystem Visibility & Program Discovery").strip()
+        cat = (req.category or "Competitor Listing Hub").strip()
+        reasons = json.dumps([
+            f"Competitor Benchmark: {int(req.listed_count or 0)}/100 Top UK Accelerators listed (Popularity {int(req.popularity_score or 0)}/100)"
+        ])
+        prof_st = requested_crm if requested_crm in valid_crm else ""
+        prof_chk = now_str if prof_st else ""
+
+        cur = conn.execute(
+            """
+            INSERT INTO platforms (
+                name, category, url, domain, score, score_reasons, status, discovered_at,
+                category_type, form_url, tier, intake_type, is_registration_hub,
+                high_level_category, portal_link_ok, form_link_ok, profile_status, profile_last_checked
+            ) VALUES (?, ?, ?, ?, ?, ?, 'in_review', ?, 'submittable_directory', ?, ?, ?, ?, ?, 1, ?, ?, ?)
+            """,
+            (
+                (req.name or norm_dom).strip(),
+                cat,
+                p_url,
+                norm_dom,
+                calc_score,
+                reasons,
+                now_str,
+                f_url,
+                calc_tier,
+                "Registration Hub" if is_hub else "Directory Listing",
+                is_hub,
+                hl_cat,
+                1 if f_url else 0,
+                prof_st,
+                prof_chk,
+            ),
+        )
+        conn.commit()
+        new_id = cur.lastrowid
+        return {
+            "status": "added",
+            "platform_id": new_id,
+            "message": f"{req.name or norm_dom} added to Review Queue (Score {calc_score}).",
+        }
+    finally:
+        conn.close()
+
+
+@app.get("/api/competitors/export-csv")
+async def api_competitors_export_csv(
+    search: str = Query(""),
+    gap_filter: str = Query("all"),
+    min_popularity: int = Query(0),
+):
+    comp_eng.init_competitor_db(DB_PATH)
+    ov = comp_eng.get_competitor_analysis_overview(
+        search=search,
+        gap_filter=gap_filter,
+        min_popularity=min_popularity,
+        db_path=DB_PATH,
+    )
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow([
+        "Rank",
+        "Platform Name",
+        "Domain",
+        "Popularity Score (0-100)",
+        "Top 100 UK Accelerators Listed",
+        "Eupnea Listed",
+        "Eupnea Profile Status",
+        "Eupnea Managed By",
+        "High Level Category",
+        "Portal URL",
+        "Direct Form URL",
+        "Listed Competitor Accelerators",
+    ])
+    for idx, p in enumerate(ov.get("platforms", []), start=1):
+        acc_names = "; ".join(a.get("name", "") for a in (p.get("listed_accelerators") or []))
+        writer.writerow([
+            idx,
+            p.get("name", ""),
+            p.get("domain", ""),
+            p.get("popularity_score", 0),
+            p.get("top100_listed_count", 0),
+            "Yes" if p.get("eupnea_listed") else "No",
+            p.get("profile_status", "") or "Not Created",
+            p.get("profile_managed_by", "") or "Unassigned",
+            p.get("high_level_category", ""),
+            p.get("platform_url", ""),
+            p.get("form_url", ""),
+            acc_names,
+        ])
+    return Response(
+        content=output.getvalue(),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": "attachment; filename=eupnea_competitor_listing_analysis.csv"},
+    )
+
 
 # ================================================================================
 # MAIN ENTRYPOINT — TWO DOORS UNIFIED SPA

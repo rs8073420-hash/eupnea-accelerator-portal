@@ -896,19 +896,34 @@ def execute_bespoke_search(prompt: str, db_path: str = DEFAULT_DB_PATH) -> Dict[
     existing_rows = conn.execute(
         """
         SELECT name, domain, url, form_url, score_reasons, draft_pitch, high_level_category,
-               portal_link_ok, portal_http_status, form_link_ok, form_http_status, status
+               portal_link_ok, portal_http_status, form_link_ok, form_http_status, status,
+               COALESCE(profile_status, '') AS profile_status
         FROM platforms
         WHERE status NOT IN ('unqualified', 'not_suitable', 'dismissed')
         """
     ).fetchall()
+    profile_rows = conn.execute(
+        """
+        SELECT domain FROM platforms
+        WHERE domain IS NOT NULL
+          AND COALESCE(profile_status, '') IN ('Created', 'Pending Approval', 'Live', 'Receiving Registrations')
+        """
+    ).fetchall()
     conn.close()
 
-    existing_domains = set((r["domain"] or "").lower().replace("www.", "") for r in existing_rows)
+    excluded_profile_domains = set((r["domain"] or "").lower().replace("www.", "") for r in profile_rows if r["domain"])
+    existing_domains = set((r["domain"] or "").lower().replace("www.", "") for r in existing_rows) | excluded_profile_domains
     candidates = _gather_agent_candidates(parsed)
+    for ex_dom in list(candidates.keys()):
+        clean_k = ex_dom.lower().replace("www.", "")
+        if clean_k in excluded_profile_domains or (candidates[ex_dom].get("domain") or "").lower().replace("www.", "") in excluded_profile_domains:
+            candidates.pop(ex_dom, None)
 
     index_matches: List[Dict[str, Any]] = []
     for r in existing_rows:
         dom = (r["domain"] or "").lower().replace("www.", "")
+        if dom in excluded_profile_domains or (r["profile_status"] or "") in ("Created", "Pending Approval", "Live", "Receiving Registrations"):
+            continue
         blob = f"{r['name']} {dom} {r['score_reasons'] or ''} {r['draft_pitch'] or ''} {r['high_level_category'] or ''}".lower()
         hits = sum(1 for t in focus_terms if re.search(r"\b" + re.escape(t) + r"\b", blob))
         is_hub = "f6s" in dom or "gust" in dom or "younoodle" in dom or "Direct Startup Engagement" in (r["high_level_category"] or "")
@@ -952,6 +967,8 @@ def execute_bespoke_search(prompt: str, db_path: str = DEFAULT_DB_PATH) -> Dict[
             try:
                 res = fut.result()
                 if res and res["domain"] not in seen_res_domains:
+                    if res["domain"].lower().replace("www.", "") in excluded_profile_domains:
+                        continue
                     if parsed.get("require_registration") and not res.get("supports_registration"):
                         continue
                     seen_res_domains.add(res["domain"])
@@ -1041,6 +1058,7 @@ def execute_bespoke_search(prompt: str, db_path: str = DEFAULT_DB_PATH) -> Dict[
         "browser_engine": parsed.get("browser_engine"),
         "total_found": len(final_results),
         "new_discoveries_count": sum(1 for r in final_results if not r.get("already_in_index")),
+        "excluded_existing_profiles_count": len(excluded_profile_domains),
         "results": final_results,
         "created_at": now_str,
     }

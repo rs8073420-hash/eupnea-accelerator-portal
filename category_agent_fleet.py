@@ -2008,6 +2008,15 @@ def run_category_platform_hunter(agent_id: str, category_key: str, batch_size: i
         conn = get_db()
         c = conn.cursor()
         existing_domains = set(row[0].lower().replace("www.", "") for row in c.execute("SELECT domain FROM platforms WHERE domain IS NOT NULL").fetchall())
+        try:
+            existing_domains.update(
+                row[0].lower().replace("www.", "")
+                for row in c.execute(
+                    "SELECT domain FROM platforms WHERE domain IS NOT NULL AND COALESCE(profile_status, '') IN ('Created', 'Pending Approval', 'Live', 'Receiving Registrations')"
+                ).fetchall()
+            )
+        except Exception:
+            pass
         existing_names = set(row[0].lower() for row in c.execute("SELECT name FROM platforms WHERE name IS NOT NULL").fetchall())
         conn.close()
 

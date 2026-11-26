@@ -1805,6 +1805,13 @@
           </div>
           <span class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-sky-50 text-sky-800 border border-sky-200 font-semibold">Live</span>
         </button>
+        <button onclick="switchRoom('profiles')" id="nav-btn-profiles" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer">
+          <div class="flex items-center gap-3">
+            <i data-lucide="briefcase" class="w-4 h-4 text-emerald-700"></i>
+            <span>Created Profiles</span>
+          </div>
+          <span id="nav-profiles-badge" class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold">0</span>
+        </button>
         <button onclick="switchRoom('team')" id="nav-btn-team" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
           <i data-lucide="users" class="w-4 h-4 text-indigo-600"></i>
           <span>Team</span>
@@ -2423,6 +2430,7 @@
                   <th class="py-2.5 px-3">Platform &amp; Domain</th>
                   <th class="py-2.5 px-3">Category &amp; Tier</th>
                   <th class="py-2.5 px-3">Verified Links</th>
+                  <th class="py-2.5 px-3">CRM Profile &amp; Owner</th>
                   <th class="py-2.5 px-3">Score</th>
                   <th class="py-2.5 px-3">Status</th>
                   <th class="py-2.5 px-3">Date Added</th>
@@ -2462,6 +2470,7 @@
             <button onclick="setReviewTab('perk_benefit')" id="rtab-perk_benefit" class="px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 cursor-pointer">Cohort Perks</button>
             <button onclick="setReviewTab('unqualified')" id="rtab-unqualified" class="px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 cursor-pointer">Unqualified</button>
             <button onclick="setReviewTab('dismissed')" id="rtab-dismissed" class="px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 cursor-pointer">Dismissed</button>
+            <button onclick="setReviewTab('profiles')" id="rtab-profiles" class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 font-semibold cursor-pointer">Created Profiles</button>
           </div>
 
           <div class="flex items-center gap-2.5 text-xs font-mono flex-wrap">
@@ -2470,6 +2479,9 @@
             </button>
             <button onclick="toggleReviewLatestOnly()" id="review-latest-only-btn" class="px-2.5 py-1.5 rounded-xl bg-amber-50 text-amber-800 border border-amber-300 text-xs font-semibold cursor-pointer hover:bg-amber-100">
               Latest Search Only
+            </button>
+            <button onclick="toggleReviewExcludeProfiles()" id="review-hide-profiles-btn" class="px-2.5 py-1.5 rounded-xl bg-white text-slate-700 border border-slate-300 text-xs font-semibold cursor-pointer hover:bg-slate-50" title="Hide platforms where Eupnea already created a profile">
+              Hide Created Profiles
             </button>
             <select id="review-sort-by" onchange="handleReviewSort(this.value)" class="bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none">
               <option value="score_desc">Sort: Score (High → Low)</option>
@@ -2547,6 +2559,7 @@
                   <th class="py-2.5 px-3">Platform &amp; Domain</th>
                   <th class="py-2.5 px-3">Category &amp; Tier</th>
                   <th class="py-2.5 px-3">Verified Links</th>
+                  <th class="py-2.5 px-3">CRM Profile &amp; Owner</th>
                   <th class="py-2.5 px-3">Pitch Preview</th>
                   <th class="py-2.5 px-3">Score</th>
                   <th class="py-2.5 px-3">Status</th>
@@ -2870,6 +2883,113 @@
           </div>
           <div id="bespoke-history-list" class="space-y-2 text-xs">
             <p class="text-slate-500">No saved bespoke searches yet.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================== -->
+      <!-- ROOM 5B: CREATED PROFILES & LISTINGS CRM (Separate Profiles Tab) -->
+      <!-- ==================================================================== -->
+      <div id="room-profiles" class="hidden p-6 space-y-6 fade-in">
+        <div class="glass-card rounded-2xl p-6 border border-slate-200 bg-white shadow-xs">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2 mb-1 flex-wrap">
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-semibold uppercase bg-emerald-50 text-emerald-800 border border-emerald-200">CRM Listing Tracker</span>
+                <h3 class="font-syne font-bold text-lg text-slate-900">Created Profiles &amp; Active Listings CRM</h3>
+              </div>
+              <p class="text-xs text-slate-600 max-w-3xl leading-relaxed">
+                Dedicated workspace for every platform where Eupnea has created an Accelerator profile (<strong>Created</strong>, <strong>Pending Approval</strong>, <strong>Live</strong>, or <strong>Receiving Registrations</strong>). All platforms listed here are automatically excluded from new AI searches so teams never waste time re-reviewing existing profiles.
+              </p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0 flex-wrap">
+              <button onclick="switchRoom('presence')" class="px-3.5 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-xs font-medium text-slate-800 cursor-pointer">
+                + Assign Profile from Directory
+              </button>
+              <button onclick="loadProfilesCrmRoom()" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold cursor-pointer">
+                Refresh CRM
+              </button>
+            </div>
+          </div>
+
+          <!-- CRM KPI Strip -->
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-5 pt-4 border-t border-slate-200 text-xs">
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <span class="text-slate-500 block text-[10px] font-mono uppercase">Total Created Profiles</span>
+              <span id="crm-kpi-total" class="text-xl font-bold font-syne text-slate-900">0</span>
+            </div>
+            <div class="p-3 rounded-xl bg-amber-50/70 border border-amber-200">
+              <span class="text-amber-800 block text-[10px] font-mono uppercase">Created / Pending Approval</span>
+              <span id="crm-kpi-pending" class="text-xl font-bold font-syne text-amber-900">0</span>
+            </div>
+            <div class="p-3 rounded-xl bg-emerald-50/70 border border-emerald-200">
+              <span class="text-emerald-800 block text-[10px] font-mono uppercase">Live / Receiving Regs</span>
+              <span id="crm-kpi-live" class="text-xl font-bold font-syne text-emerald-800">0</span>
+            </div>
+            <div class="p-3 rounded-xl bg-sky-50/70 border border-sky-200">
+              <span class="text-sky-900 block text-[10px] font-mono uppercase">New Registration Flagged</span>
+              <span id="crm-kpi-newreg" class="text-xl font-bold font-syne text-sky-800">0</span>
+            </div>
+            <div class="p-3 rounded-xl bg-rose-50/70 border border-rose-200">
+              <span class="text-rose-900 block text-[10px] font-mono uppercase">Action Needed</span>
+              <span id="crm-kpi-action" class="text-xl font-bold font-syne text-rose-800">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CRM Filter Toolbar -->
+        <div class="glass-card rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 bg-white border border-slate-200 shadow-xs text-xs font-mono">
+          <div class="flex items-center gap-2.5 flex-wrap flex-1">
+            <input type="text" id="profiles-crm-search" oninput="handleProfilesCrmFilter()" placeholder="Search platform, owner, note..." class="w-56 px-3 py-1.5 rounded-xl bg-white border border-slate-300 text-xs text-slate-900 font-sans focus:outline-none focus:border-blue-600">
+            <select id="profiles-crm-status-filter" onchange="handleProfilesCrmFilter()" class="bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs text-slate-800">
+              <option value="all">All Profile Stages</option>
+              <option value="Created">Created</option>
+              <option value="Pending Approval">Pending Approval</option>
+              <option value="Live">Live</option>
+              <option value="Receiving Registrations">Receiving Registrations</option>
+            </select>
+            <select id="profiles-crm-owner-filter" onchange="handleProfilesCrmFilter()" class="bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs text-slate-800">
+              <option value="all">All Team Owners</option>
+              <option value="__unassigned__">Unassigned</option>
+            </select>
+            <button onclick="toggleProfilesNewRegFilter()" id="profiles-newreg-btn" class="px-2.5 py-1.5 rounded-xl bg-sky-50 text-sky-800 border border-sky-200 text-xs font-semibold cursor-pointer hover:bg-sky-100">
+              New Registrations Only
+            </button>
+            <button onclick="toggleProfilesActionFilter()" id="profiles-action-btn" class="px-2.5 py-1.5 rounded-xl bg-rose-50 text-rose-800 border border-rose-200 text-xs font-semibold cursor-pointer hover:bg-rose-100">
+              Action Needed Only
+            </button>
+          </div>
+          <select id="profiles-crm-sort" onchange="handleProfilesCrmFilter()" class="bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs text-slate-800">
+            <option value="new_reg_first">Sort: New Registrations &amp; Actions First</option>
+            <option value="last_checked_asc">Sort: Oldest Checked First (Audit Due)</option>
+            <option value="score_desc">Sort: Score (High → Low)</option>
+            <option value="date_desc">Sort: Date Added (Newest First)</option>
+          </select>
+        </div>
+
+        <!-- CRM Listings Table -->
+        <div class="glass-card rounded-2xl p-5 bg-white border border-slate-200 shadow-xs">
+          <div class="flex items-center justify-between mb-3">
+            <span class="font-syne font-bold text-sm text-slate-900">Managed Accelerator Listings &amp; Inbound Activity</span>
+            <span id="profiles-crm-count-label" class="font-mono text-xs text-slate-500">0 profiles</span>
+          </div>
+          <div class="overflow-x-auto rounded-xl border border-slate-200">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead class="font-mono uppercase text-[10px] text-slate-600 bg-slate-50 border-b border-slate-200">
+                <tr>
+                  <th class="py-2.5 px-3">Platform &amp; Profile Link</th>
+                  <th class="py-2.5 px-3">Profile Stage</th>
+                  <th class="py-2.5 px-3">Profile Managed by</th>
+                  <th class="py-2.5 px-3">Profile Last Checked</th>
+                  <th class="py-2.5 px-3">New Registration</th>
+                  <th class="py-2.5 px-3">Action Needed &amp; Notes</th>
+                  <th class="py-2.5 px-3 text-right">Manage</th>
+                </tr>
+              </thead>
+              <tbody id="profiles-crm-tbody" class="divide-y divide-slate-200 font-sans">
+                <tr><td colspan="7" class="p-8 text-center text-slate-500 font-mono text-xs">Loading Created Profiles CRM...</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -3267,6 +3387,80 @@
             <span id="detail-live-status-pill" class="text-[10px] font-mono px-2 py-0.5 rounded font-semibold uppercase"></span>
           </div>
           <div id="detail-live-url-container" class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+          </div>
+        </div>
+
+        <!-- CRM LISTING TRACKER PANEL (Profile Status, Owner, Distinct Profile Link, Last Checked, New Reg, Action Needed) -->
+        <div class="p-4 rounded-xl bg-blue-50/40 border border-blue-200 space-y-3">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <span class="font-mono text-blue-900 font-bold text-xs uppercase tracking-wide flex items-center gap-1.5">
+              <i data-lucide="briefcase" class="w-4 h-4 text-blue-700"></i>
+              <span>Accelerator Profile &amp; Listing CRM</span>
+            </span>
+            <span id="detail-crm-last-checked" class="text-[10px] font-mono px-2 py-0.5 rounded bg-white border border-blue-200 text-slate-700 font-semibold">
+              Last Checked: Never
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label for="detail-crm-profile-status" class="block text-[10px] font-mono font-bold uppercase text-slate-600 mb-1">Profile Status (Dropdown)</label>
+              <select id="detail-crm-profile-status" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-2 text-xs font-semibold text-slate-900">
+                <option value="">Not Created (Available for AI Search)</option>
+                <option value="Created">Created</option>
+                <option value="Pending Approval">Pending Approval</option>
+                <option value="Live">Live</option>
+                <option value="Receiving Registrations">Receiving Registrations</option>
+              </select>
+            </div>
+            <div>
+              <label for="detail-crm-managed-by" class="block text-[10px] font-mono font-bold uppercase text-slate-600 mb-1">Profile Managed by</label>
+              <select id="detail-crm-managed-by" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-2 text-xs font-semibold text-slate-900">
+                <option value="">Unassigned</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label for="detail-crm-profile-url" class="block text-[10px] font-mono font-bold uppercase text-slate-600 mb-1">Profile Listing Link (Actual Eupnea Accelerator Listing — Distinct from Form &amp; Portal)</label>
+            <div class="flex items-center gap-2">
+              <input type="url" id="detail-crm-profile-url" placeholder="https://platform.com/accelerators/eupnea" class="flex-1 bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-mono text-slate-900">
+              <a id="detail-crm-profile-open-btn" href="#" target="_blank" class="hidden px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-mono text-xs font-semibold items-center gap-1 shrink-0">
+                <span>Open Profile</span>
+                <i data-lucide="external-link" class="w-3 h-3"></i>
+              </a>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <label class="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-white border border-slate-200 cursor-pointer">
+              <div class="flex items-center gap-2">
+                <input type="checkbox" id="detail-crm-new-reg" class="w-4 h-4 accent-emerald-600 rounded">
+                <span class="font-semibold text-slate-800 text-xs">New Registration Received</span>
+              </div>
+              <span class="font-mono text-[10px] text-emerald-800 font-bold" id="detail-crm-reg-count">0 total</span>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 rounded-lg bg-white border border-slate-200 cursor-pointer">
+              <input type="checkbox" id="detail-crm-action-needed" class="w-4 h-4 accent-rose-600 rounded">
+              <span class="font-semibold text-slate-800 text-xs">Action Needed / Follow-up Due</span>
+            </label>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label for="detail-crm-next-action" class="block text-[10px] font-mono font-bold uppercase text-slate-600 mb-1">Next Action</label>
+              <input type="text" id="detail-crm-next-action" placeholder="e.g. Update cohort brief, respond to messages" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900">
+            </div>
+            <div>
+              <label for="detail-crm-notes" class="block text-[10px] font-mono font-bold uppercase text-slate-600 mb-1">CRM Activity Notes</label>
+              <input type="text" id="detail-crm-notes" placeholder="Maintenance log or registration notes..." class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900">
+            </div>
+          </div>
+
+          <div class="flex items-center justify-end gap-2 pt-1">
+            <button onclick="savePlatformDetailCrm(true)" class="px-4 py-1.5 rounded-lg bg-blue-700 hover:bg-blue-800 text-white text-xs font-semibold cursor-pointer">
+              Save CRM &amp; Stamp Last Checked
+            </button>
           </div>
         </div>
 
@@ -3996,6 +4190,7 @@
       sortBy: 'score_desc',
       latestOnly: false,
       topHubsOnly: false,
+      excludeProfiles: false,
       total: 400,
       pages: 16,
       items: []
@@ -4011,10 +4206,60 @@
       sortBy: 'score_desc',
       latestOnly: false,
       topHubsOnly: false,
+      excludeProfiles: false,
       page: 1,
       limit: 25,
       items: []
     };
+
+    let crmTeamOwners = [
+      'Panagiotis Dimitrelis',
+      'Aadarsh Singh Raghav',
+      'Shruti Sharma',
+      'Sreelakshmi Ajith K',
+      'Sarah Chen',
+      'Marcus Vance',
+      'Client Services Lead'
+    ];
+    let crmOwnersLoaded = false;
+    let profilesCrmState = {
+      search: '',
+      profileStatus: 'all',
+      managedBy: 'all',
+      newRegOnly: false,
+      actionOnly: false,
+      sortBy: 'new_reg_first',
+      items: []
+    };
+
+    async function ensureCrmTeamOwners() {
+      if (crmOwnersLoaded) return crmTeamOwners;
+      try {
+        const res = await fetch('/api/crm/team-owners');
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data.owners) && data.owners.length > 0) {
+            crmTeamOwners = data.owners.map(o => o.full_name).filter(Boolean);
+            crmOwnersLoaded = true;
+          }
+        }
+      } catch (e) {}
+      const ownerFilter = document.getElementById('profiles-crm-owner-filter');
+      if (ownerFilter) {
+        const curr = ownerFilter.value || 'all';
+        ownerFilter.innerHTML = `<option value="all">All Team Owners</option><option value="__unassigned__">Unassigned</option>` +
+          crmTeamOwners.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+        ownerFilter.value = curr;
+      }
+      const detSel = document.getElementById('detail-crm-managed-by');
+      if (detSel) {
+        const currDet = detSel.value || '';
+        detSel.innerHTML = `<option value="">Unassigned</option>` +
+          crmTeamOwners.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+        detSel.value = currDet;
+      }
+      return crmTeamOwners;
+    }
 
     let cachedCriteriaState = null;
 
@@ -4452,7 +4697,7 @@
     // Switch Room in Workspace
     function switchRoom(room) {
       currentRoom = room;
-      ['dashboard', 'presence', 'review', 'bespoke', 'team', 'database', 'orchestration'].forEach(r => {
+      ['dashboard', 'presence', 'review', 'bespoke', 'profiles', 'team', 'database', 'orchestration'].forEach(r => {
         const el = document.getElementById(`room-${r}`);
         const btn = document.getElementById(`nav-btn-${r}`);
         if (el) el.classList.add('hidden');
@@ -4473,6 +4718,7 @@
         presence: 'Presence Directory Index',
         review: 'Listing Review Queue',
         bespoke: 'Bespoke Platform Search',
+        profiles: 'Created Profiles & Listings CRM',
         team: 'Team & Governance',
         database: 'Database Inspector',
         orchestration: 'Operations & Channel Pipeline'
@@ -4484,6 +4730,7 @@
       if (room === 'presence') loadPresencePlatforms();
       if (room === 'review') loadReviewQueue();
       if (room === 'bespoke') initBespokeSearchRoom();
+      if (room === 'profiles') loadProfilesCrmRoom();
       if (room === 'team') loadTeamMembers();
       if (room === 'database') loadDbTables();
       if (room === 'orchestration') loadOrchestrationFleet();
@@ -4627,6 +4874,11 @@
         document.getElementById('kpi-pending-reviews').innerText = data.pending_reviews;
         document.getElementById('nav-presence-badge').innerText = data.core_target_count || data.total_platforms;
         document.getElementById('nav-review-badge').innerText = data.pending_reviews;
+        const crmSum = data.profile_crm_summary || {};
+        const navProfBadge = document.getElementById('nav-profiles-badge');
+        if (navProfBadge) navProfBadge.innerText = crmSum.created_profiles_total ?? 0;
+        const revProfTab = document.getElementById('rtab-profiles');
+        if (revProfTab) revProfTab.innerText = `Created Profiles (${crmSum.created_profiles_total ?? 0})`;
 
         // High-level category counters (Live DB counts - Zero Stale Fallbacks)
         const smEl = document.getElementById('dash-smartmatch-count');
@@ -4886,6 +5138,7 @@
     // 2. Presence Platforms Table
     async function loadPresencePlatforms() {
       try {
+        await ensureCrmTeamOwners();
         const queryParams = new URLSearchParams({
           page: presenceState.page,
           limit: presenceState.limit,
@@ -4894,7 +5147,8 @@
           category: presenceState.category,
           sort_by: presenceState.sortBy || 'score_desc',
           latest_only: presenceState.latestOnly ? 'true' : 'false',
-          top_hubs_only: presenceState.topHubsOnly ? 'true' : 'false'
+          top_hubs_only: presenceState.topHubsOnly ? 'true' : 'false',
+          exclude_profile_created: presenceState.excludeProfiles ? 'true' : 'false'
         });
         if (presenceState.tier) {
           queryParams.append('tier', presenceState.tier);
@@ -4984,6 +5238,9 @@
                 <div class="flex items-center gap-1.5">${linkFormEl}${linkPortalEl}</div>
               </td>
               <td class="py-3 px-3 align-top">
+                ${buildPlatformCrmCellHtml(p, 'presence')}
+              </td>
+              <td class="py-3 px-3 align-top">
                 <span class="px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200 font-mono font-bold text-xs">${p.score}</span>
               </td>
               <td class="py-3 px-3 align-top">
@@ -5015,7 +5272,7 @@
           `;
           }).join('');
         } else {
-          tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-500">No platforms matching current filters.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-500">No platforms matching current filters.</td></tr>`;
         }
         lucide.createIcons();
       } catch (err) {
@@ -5092,13 +5349,17 @@
     // 3. Review Queue
     async function loadReviewQueue() {
       try {
+        await ensureCrmTeamOwners();
+        const isProfilesTab = reviewState.tab === 'profiles';
         const queryParams = new URLSearchParams({
           page: reviewState.page,
           limit: reviewState.limit,
-          status: reviewState.tab,
+          status: isProfilesTab ? 'all' : reviewState.tab,
           sort_by: reviewState.sortBy || 'score_desc',
           latest_only: reviewState.latestOnly ? 'true' : 'false',
-          top_hubs_only: reviewState.topHubsOnly ? 'true' : 'false'
+          top_hubs_only: reviewState.topHubsOnly ? 'true' : 'false',
+          has_profile_only: isProfilesTab ? 'true' : 'false',
+          exclude_profile_created: (!isProfilesTab && reviewState.excludeProfiles) ? 'true' : 'false'
         });
         if (reviewState.tier) {
           queryParams.append('tier', reviewState.tier);
@@ -5218,6 +5479,9 @@
               <td class="py-3 px-3 align-top whitespace-nowrap">
                 <div class="flex items-center gap-1.5">${actionFormBtn}${actionPortalBtn}</div>
               </td>
+              <td class="py-3 px-3 align-top">
+                ${buildPlatformCrmCellHtml(p, 'review')}
+              </td>
               <td class="py-3 px-3 align-top text-slate-600 max-w-[200px] truncate text-xs" title="${escapeHtml(p.draft_pitch || '')}">
                 ${escapeHtml(p.draft_pitch || 'Draft ready')}
               </td>
@@ -5242,7 +5506,7 @@
           `;
           }).join('');
         } else {
-          tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-500">No items in this queue tab.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-slate-500">No items in this queue tab.</td></tr>`;
         }
         lucide.createIcons();
       } catch (err) {
@@ -5295,22 +5559,40 @@
     function setReviewTab(tab) {
       reviewState.tab = tab;
       reviewState.page = 1;
-      if (tab === 'unqualified' || tab === 'perk_benefit' || tab === 'dismissed') {
+      if (tab === 'unqualified' || tab === 'perk_benefit' || tab === 'dismissed' || tab === 'profiles') {
         reviewState.tier = 'all';
         reviewState.high_level_category = 'all';
       } else if (!reviewState.tier || reviewState.tier === 'all') {
         reviewState.tier = 'all_active';
       }
-      ['all', 'in_review', 'approved', 'submitted', 'perk_benefit', 'unqualified', 'dismissed'].forEach(t => {
+      ['all', 'in_review', 'approved', 'submitted', 'perk_benefit', 'unqualified', 'dismissed', 'profiles'].forEach(t => {
         const btn = document.getElementById(`rtab-${t}`);
         if (btn) {
           if (t === tab) {
             btn.className = "px-3 py-1.5 rounded-lg bg-slate-900 text-white font-semibold cursor-pointer";
+          } else if (t === 'profiles') {
+            btn.className = "px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 font-semibold cursor-pointer";
           } else {
             btn.className = "px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 cursor-pointer";
           }
         }
       });
+      loadReviewQueue();
+    }
+
+    function toggleReviewExcludeProfiles() {
+      reviewState.excludeProfiles = !reviewState.excludeProfiles;
+      reviewState.page = 1;
+      const btn = document.getElementById('review-hide-profiles-btn');
+      if (btn) {
+        if (reviewState.excludeProfiles) {
+          btn.className = 'px-2.5 py-1.5 rounded-xl bg-slate-900 text-white border border-slate-900 text-xs font-semibold cursor-pointer shadow-xs';
+          btn.innerText = 'Created Profiles Hidden (On)';
+        } else {
+          btn.className = 'px-2.5 py-1.5 rounded-xl bg-white text-slate-700 border border-slate-300 text-xs font-semibold cursor-pointer hover:bg-slate-50';
+          btn.innerText = 'Hide Created Profiles';
+        }
+      }
       loadReviewQueue();
     }
 
@@ -5468,6 +5750,7 @@
     let activeDetailPlatform = null;
     async function openPlatformDetail(id) {
       try {
+        await ensureCrmTeamOwners();
         const res = await fetch(`/api/platforms/${id}`);
         const p = await res.json();
         activeDetailPlatform = p;
@@ -5521,6 +5804,46 @@
         document.getElementById('detail-score-reasons').innerText = p.score_reasons || 'Verified against programme suitability criteria.';
         document.getElementById('detail-draft-pitch').innerText = p.draft_pitch || 'Pitch draft ready for review.';
         document.getElementById('detail-utm-link').value = p.tracking_url;
+
+        // Populate CRM fields inside Platform Detail modal
+        const crmStatusEl = document.getElementById('detail-crm-profile-status');
+        if (crmStatusEl) crmStatusEl.value = p.profile_status || '';
+        const crmOwnerEl = document.getElementById('detail-crm-managed-by');
+        if (crmOwnerEl) {
+          const curOwn = (p.profile_managed_by || '').trim();
+          if (curOwn && !Array.from(crmOwnerEl.options).some(o => o.value === curOwn)) {
+            const opt = document.createElement('option');
+            opt.value = curOwn;
+            opt.text = curOwn;
+            crmOwnerEl.appendChild(opt);
+          }
+          crmOwnerEl.value = curOwn;
+        }
+        const crmUrlEl = document.getElementById('detail-crm-profile-url');
+        if (crmUrlEl) crmUrlEl.value = p.profile_url || '';
+        const crmOpenBtn = document.getElementById('detail-crm-profile-open-btn');
+        if (crmOpenBtn) {
+          if (p.profile_url && p.profile_url.trim()) {
+            crmOpenBtn.href = p.profile_url.trim();
+            crmOpenBtn.classList.remove('hidden');
+            crmOpenBtn.classList.add('inline-flex');
+          } else {
+            crmOpenBtn.classList.add('hidden');
+            crmOpenBtn.classList.remove('inline-flex');
+          }
+        }
+        const crmCheckedEl = document.getElementById('detail-crm-last-checked');
+        if (crmCheckedEl) crmCheckedEl.innerText = `Last Checked: ${p.profile_last_checked ? p.profile_last_checked.slice(0, 16) : 'Never'}`;
+        const crmNewRegEl = document.getElementById('detail-crm-new-reg');
+        if (crmNewRegEl) crmNewRegEl.checked = Boolean(p.new_registration);
+        const crmRegCntEl = document.getElementById('detail-crm-reg-count');
+        if (crmRegCntEl) crmRegCntEl.innerText = `${p.new_registration_count || 0} total`;
+        const crmActEl = document.getElementById('detail-crm-action-needed');
+        if (crmActEl) crmActEl.checked = Boolean(p.crm_action_needed);
+        const crmNextEl = document.getElementById('detail-crm-next-action');
+        if (crmNextEl) crmNextEl.value = p.crm_next_action || '';
+        const crmNotesEl = document.getElementById('detail-crm-notes');
+        if (crmNotesEl) crmNotesEl.value = p.crm_notes || '';
 
         const detLatest = document.getElementById('detail-latest-search-badge');
         if (detLatest) detLatest.classList.toggle('hidden', !p.is_latest_search);
@@ -7418,6 +7741,7 @@
           <span class="px-2 py-1 rounded bg-white border border-sky-200 text-slate-800">Geography: <strong>${escapeHtml(geos)}</strong></span>
           <span class="px-2 py-1 rounded bg-white border border-sky-200 text-slate-800">Registration Gate: <strong>${parsed.require_registration ? 'Required' : 'Optional'}</strong></span>
           <span class="px-2 py-1 rounded bg-violet-50 border border-violet-200 text-violet-900">Mem0 Recalled: <strong>${recalledMem.length}</strong></span>
+          <span class="px-2 py-1 rounded bg-emerald-50 border border-emerald-200 text-emerald-900">Excluded Existing Profiles: <strong>${data.excluded_existing_profiles_count ?? 0}</strong></span>
         `;
       }
       if (routingEl) {
@@ -7609,6 +7933,324 @@
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+    }
+
+    // ========================================================================
+    // ACCELERATOR PLATFORM CRM (Profile Status, Managed By, Profile URL, Last Checked, New Reg, Action)
+    // ========================================================================
+    function getProfileStatusStyle(ps) {
+      switch (ps) {
+        case 'Receiving Registrations': return 'bg-emerald-50 text-emerald-800 border-emerald-300';
+        case 'Live': return 'bg-teal-50 text-teal-800 border-teal-300';
+        case 'Pending Approval': return 'bg-amber-50 text-amber-800 border-amber-300';
+        case 'Created': return 'bg-sky-50 text-sky-800 border-sky-300';
+        default: return 'bg-white text-slate-600 border-slate-300';
+      }
+    }
+
+    function buildPlatformCrmCellHtml(p, sourceRoom = 'presence') {
+      const ps = p.profile_status || '';
+      const owner = (p.profile_managed_by || '').trim();
+      const purl = (p.profile_url || '').trim();
+      const checkedStr = p.profile_last_checked ? p.profile_last_checked.slice(0, 16) : 'Not checked';
+      const newReg = Boolean(p.new_registration);
+      const regCnt = p.new_registration_count || 0;
+      const actNeeded = Boolean(p.crm_action_needed);
+
+      const ownerOpts = [`<option value="">Managed by: Unassigned</option>`]
+        .concat(crmTeamOwners.map(n => `<option value="${escapeHtml(n)}" ${n === owner ? 'selected' : ''}>${escapeHtml(n)}</option>`));
+      if (owner && !crmTeamOwners.includes(owner)) {
+        ownerOpts.push(`<option value="${escapeHtml(owner)}" selected>${escapeHtml(owner)}</option>`);
+      }
+
+      const psSelectCls = getProfileStatusStyle(ps);
+
+      const profileLinkHtml = purl
+        ? `<a href="${escapeHtml(purl)}" target="_blank" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-mono text-[10px] font-semibold" title="Open Accelerator Profile: ${escapeHtml(purl)}"><span>Profile</span><i data-lucide="external-link" class="w-2.5 h-2.5"></i></a>
+           <button onclick="promptSetProfileUrlFromBtn(this, ${p.id}, '${sourceRoom}')" data-url="${escapeHtml(purl)}" class="px-1.5 py-0.5 rounded bg-white border border-slate-300 text-slate-600 hover:text-slate-900 font-mono text-[9px] cursor-pointer" title="Edit Accelerator Profile URL">Edit URL</button>`
+        : `<button onclick="promptSetProfileUrlFromBtn(this, ${p.id}, '${sourceRoom}')" data-url="" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 font-mono text-[10px] cursor-pointer" title="Set actual Accelerator Listing URL (distinct from Form & Portal)">+ Profile Link</button>`;
+
+      const regBtnCls = newReg
+        ? 'bg-emerald-100 text-emerald-900 border-emerald-300 font-bold'
+        : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50';
+
+      const actBtnCls = actNeeded
+        ? 'bg-rose-100 text-rose-800 border-rose-300 font-bold'
+        : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50';
+
+      return `
+        <div class="space-y-1.5 min-w-[195px]">
+          <select onchange="savePlatformCrmQuick(${p.id}, { profile_status: this.value }, '${sourceRoom}')" class="w-full rounded-md border px-2 py-1 text-[11px] font-mono font-semibold cursor-pointer ${psSelectCls}" title="Accelerator Profile Status">
+            <option value="" ${ps === '' ? 'selected' : ''}>Profile: Not Created</option>
+            <option value="Created" ${ps === 'Created' ? 'selected' : ''}>Created</option>
+            <option value="Pending Approval" ${ps === 'Pending Approval' ? 'selected' : ''}>Pending Approval</option>
+            <option value="Live" ${ps === 'Live' ? 'selected' : ''}>Live</option>
+            <option value="Receiving Registrations" ${ps === 'Receiving Registrations' ? 'selected' : ''}>Receiving Registrations</option>
+          </select>
+          <select onchange="savePlatformCrmQuick(${p.id}, { profile_managed_by: this.value }, '${sourceRoom}')" class="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-[10px] font-sans text-slate-800 cursor-pointer" title="Profile Managed by">
+            ${ownerOpts.join('')}
+          </select>
+          <div class="flex items-center gap-1 flex-wrap">
+            ${profileLinkHtml}
+            <button onclick="savePlatformCrmQuick(${p.id}, { new_registration: ${!newReg} }, '${sourceRoom}')" class="px-1.5 py-0.5 rounded border font-mono text-[9px] cursor-pointer ${regBtnCls}" title="Toggle New Registration received flag">
+              ${newReg ? `New Reg (${regCnt || 1})` : 'No New Reg'}
+            </button>
+            <button onclick="savePlatformCrmQuick(${p.id}, { crm_action_needed: ${!actNeeded} }, '${sourceRoom}')" class="px-1.5 py-0.5 rounded border font-mono text-[9px] cursor-pointer ${actBtnCls}" title="Flag Action Needed">
+              ${actNeeded ? 'Action Due' : 'OK'}
+            </button>
+          </div>
+          <div class="text-[9px] font-mono text-slate-500 flex items-center justify-between gap-1">
+            <span title="Profile Last Checked">Checked: ${escapeHtml(checkedStr)}</span>
+            <button onclick="savePlatformCrmQuick(${p.id}, { mark_checked: true }, '${sourceRoom}')" class="text-blue-700 hover:underline font-semibold cursor-pointer" title="Stamp Checked Now">Check</button>
+          </div>
+        </div>
+      `;
+    }
+
+    async function savePlatformCrmQuick(platformId, payload, sourceRoom = 'presence') {
+      try {
+        const res = await fetch(`/api/platforms/${platformId}/crm`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'CRM update failed');
+        if (data.profile_crm_summary) {
+          updateCrmBadgesFromSummary(data.profile_crm_summary);
+        }
+        showToast('Profile CRM updated & Last Checked stamped.', 'success');
+        if (sourceRoom === 'profiles' || currentRoom === 'profiles') await loadProfilesCrmRoom();
+        if (sourceRoom === 'presence' || currentRoom === 'presence') await loadPresencePlatforms();
+        if (sourceRoom === 'review' || currentRoom === 'review') await loadReviewQueue();
+      } catch (err) {
+        showToast('Could not update CRM: ' + err.message, 'error');
+      }
+    }
+
+    function promptSetProfileUrlFromBtn(btnEl, platformId, sourceRoom = 'presence') {
+      const currUrl = btnEl ? (btnEl.getAttribute('data-url') || '') : '';
+      promptSetProfileUrl(platformId, currUrl, sourceRoom);
+    }
+
+    function promptSetCrmNotesFromBtn(btnEl, platformId, sourceRoom = 'profiles') {
+      const currNext = btnEl ? (btnEl.getAttribute('data-next') || '') : '';
+      const currNotes = btnEl ? (btnEl.getAttribute('data-notes') || '') : '';
+      promptSetCrmNotes(platformId, currNext, currNotes, sourceRoom);
+    }
+
+    function promptSetProfileUrl(platformId, currentUrl, sourceRoom = 'presence') {
+      const nextUrl = prompt('Enter actual Eupnea Accelerator Profile Listing URL (distinct from Form & Portal URLs):', currentUrl || 'https://');
+      if (nextUrl === null) return;
+      savePlatformCrmQuick(platformId, { profile_url: nextUrl.trim() }, sourceRoom);
+    }
+
+    function promptSetCrmNotes(platformId, currentNext, currentNotes, sourceRoom = 'profiles') {
+      const nextAct = prompt('Next Action required for this listing (leave blank if none):', currentNext || '');
+      if (nextAct === null) return;
+      const notes = prompt('Activity / Maintenance Notes:', currentNotes || '');
+      if (notes === null) return;
+      savePlatformCrmQuick(platformId, { crm_next_action: nextAct.trim(), crm_notes: notes.trim(), crm_action_needed: Boolean(nextAct.trim()) }, sourceRoom);
+    }
+
+    function updateCrmBadgesFromSummary(s) {
+      if (!s) return;
+      const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
+      setTxt('nav-profiles-badge', s.created_profiles_total ?? 0);
+      setTxt('rtab-profiles', `Created Profiles (${s.created_profiles_total ?? 0})`);
+      setTxt('crm-kpi-total', s.created_profiles_total ?? 0);
+      setTxt('crm-kpi-pending', (s.created_count ?? 0) + (s.pending_approval_count ?? 0));
+      setTxt('crm-kpi-live', (s.live_count ?? 0) + (s.receiving_registrations_count ?? 0));
+      setTxt('crm-kpi-newreg', s.new_registrations_flagged ?? 0);
+      setTxt('crm-kpi-action', s.action_needed_count ?? 0);
+    }
+
+    async function savePlatformDetailCrm(closeToast = true) {
+      if (!activeDetailPlatform) return;
+      const payload = {
+        profile_status: document.getElementById('detail-crm-profile-status')?.value ?? '',
+        profile_managed_by: document.getElementById('detail-crm-managed-by')?.value ?? '',
+        profile_url: document.getElementById('detail-crm-profile-url')?.value?.trim() ?? '',
+        new_registration: Boolean(document.getElementById('detail-crm-new-reg')?.checked),
+        crm_action_needed: Boolean(document.getElementById('detail-crm-action-needed')?.checked),
+        crm_next_action: document.getElementById('detail-crm-next-action')?.value?.trim() ?? '',
+        crm_notes: document.getElementById('detail-crm-notes')?.value?.trim() ?? '',
+        mark_checked: true
+      };
+      try {
+        const res = await fetch(`/api/platforms/${activeDetailPlatform.id}/crm`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'CRM save failed');
+        if (data.platform) {
+          activeDetailPlatform = data.platform;
+          const chkEl = document.getElementById('detail-crm-last-checked');
+          if (chkEl) chkEl.innerText = `Last Checked: ${(data.platform.profile_last_checked || '').slice(0, 16) || 'Just now'}`;
+          const cntEl = document.getElementById('detail-crm-reg-count');
+          if (cntEl) cntEl.innerText = `${data.platform.new_registration_count || 0} total`;
+          const openBtn = document.getElementById('detail-crm-profile-open-btn');
+          if (openBtn) {
+            if (data.platform.profile_url) {
+              openBtn.href = data.platform.profile_url;
+              openBtn.classList.remove('hidden');
+              openBtn.classList.add('inline-flex');
+            } else {
+              openBtn.classList.add('hidden');
+              openBtn.classList.remove('inline-flex');
+            }
+          }
+        }
+        if (data.profile_crm_summary) updateCrmBadgesFromSummary(data.profile_crm_summary);
+        if (closeToast) showToast('CRM listing profile updated & timestamp recorded.', 'success');
+        if (currentRoom === 'profiles') loadProfilesCrmRoom();
+        if (currentRoom === 'presence') loadPresencePlatforms();
+        if (currentRoom === 'review') loadReviewQueue();
+      } catch (err) {
+        showToast('CRM update failed: ' + err.message, 'error');
+      }
+    }
+
+    function handleProfilesCrmFilter() {
+      profilesCrmState.search = (document.getElementById('profiles-crm-search')?.value || '').trim();
+      profilesCrmState.profileStatus = document.getElementById('profiles-crm-status-filter')?.value || 'all';
+      profilesCrmState.managedBy = document.getElementById('profiles-crm-owner-filter')?.value || 'all';
+      profilesCrmState.sortBy = document.getElementById('profiles-crm-sort')?.value || 'new_reg_first';
+      loadProfilesCrmRoom();
+    }
+
+    function toggleProfilesNewRegFilter() {
+      profilesCrmState.newRegOnly = !profilesCrmState.newRegOnly;
+      const btn = document.getElementById('profiles-newreg-btn');
+      if (btn) {
+        btn.className = profilesCrmState.newRegOnly
+          ? 'px-2.5 py-1.5 rounded-xl bg-sky-700 text-white border border-sky-800 text-xs font-semibold cursor-pointer shadow-xs'
+          : 'px-2.5 py-1.5 rounded-xl bg-sky-50 text-sky-800 border border-sky-200 text-xs font-semibold cursor-pointer hover:bg-sky-100';
+      }
+      loadProfilesCrmRoom();
+    }
+
+    function toggleProfilesActionFilter() {
+      profilesCrmState.actionOnly = !profilesCrmState.actionOnly;
+      const btn = document.getElementById('profiles-action-btn');
+      if (btn) {
+        btn.className = profilesCrmState.actionOnly
+          ? 'px-2.5 py-1.5 rounded-xl bg-rose-700 text-white border border-rose-800 text-xs font-semibold cursor-pointer shadow-xs'
+          : 'px-2.5 py-1.5 rounded-xl bg-rose-50 text-rose-800 border border-rose-200 text-xs font-semibold cursor-pointer hover:bg-rose-100';
+      }
+      loadProfilesCrmRoom();
+    }
+
+    async function loadProfilesCrmRoom() {
+      const tbody = document.getElementById('profiles-crm-tbody');
+      if (!tbody) return;
+      try {
+        await ensureCrmTeamOwners();
+        const params = new URLSearchParams({
+          has_profile_only: 'true',
+          profile_status: profilesCrmState.profileStatus || 'all',
+          managed_by: profilesCrmState.managedBy || 'all',
+          new_registration_only: profilesCrmState.newRegOnly ? 'true' : 'false',
+          action_needed_only: profilesCrmState.actionOnly ? 'true' : 'false',
+          sort_by: profilesCrmState.sortBy || 'new_reg_first',
+          search: profilesCrmState.search || '',
+          limit: 100,
+          page: 1
+        });
+        const res = await fetch(`/api/platforms?${params.toString()}`);
+        const data = await res.json();
+        if (data.profile_crm_summary) updateCrmBadgesFromSummary(data.profile_crm_summary);
+
+        const list = data.platforms || [];
+        profilesCrmState.items = list;
+        const cntEl = document.getElementById('profiles-crm-count-label');
+        if (cntEl) cntEl.innerText = `${list.length} created profile${list.length === 1 ? '' : 's'} (excluded from AI search)`;
+
+        if (list.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-500 font-mono text-xs">No platforms with created profiles match the active filters yet. Set any platform's Profile dropdown to Created, Pending Approval, Live, or Receiving Registrations.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = list.map(p => {
+          const ps = p.profile_status || '';
+          const owner = (p.profile_managed_by || '').trim();
+          const purl = (p.profile_url || '').trim();
+          const portalUrl = p.url || `https://${p.domain}`;
+          const formUrl = p.form_url || '';
+          const checkedStr = p.profile_last_checked ? p.profile_last_checked.slice(0, 16) : 'Never';
+          const newReg = Boolean(p.new_registration);
+          const regCnt = p.new_registration_count || 0;
+          const actNeeded = Boolean(p.crm_action_needed);
+
+          const ownerOpts = [`<option value="">Unassigned</option>`]
+            .concat(crmTeamOwners.map(n => `<option value="${escapeHtml(n)}" ${n === owner ? 'selected' : ''}>${escapeHtml(n)}</option>`));
+          if (owner && !crmTeamOwners.includes(owner)) {
+            ownerOpts.push(`<option value="${escapeHtml(owner)}" selected>${escapeHtml(owner)}</option>`);
+          }
+
+          return `
+            <tr class="hover:bg-slate-50 align-top">
+              <td class="py-3 px-3">
+                <button onclick="openPlatformDetail(${p.id})" class="font-syne font-bold text-xs text-slate-900 hover:text-blue-700 text-left cursor-pointer">${escapeHtml(p.name)}</button>
+                <div class="text-[11px] font-mono text-slate-500 mt-0.5">${escapeHtml(p.domain)} · Score ${p.score}</div>
+                <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                  ${purl ? `<a href="${escapeHtml(purl)}" target="_blank" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-mono text-[10px] font-semibold inline-flex items-center gap-1"><span>Open Profile</span><i data-lucide="external-link" class="w-2.5 h-2.5"></i></a>` : ''}
+                  <button onclick="promptSetProfileUrlFromBtn(this, ${p.id}, 'profiles')" data-url="${escapeHtml(purl)}" class="px-2 py-0.5 rounded bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 font-mono text-[10px] cursor-pointer">${purl ? 'Edit Profile Link' : '+ Set Profile Link'}</button>
+                  ${formUrl ? `<a href="${escapeHtml(formUrl)}" target="_blank" class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 font-mono text-[9px] hover:bg-slate-200">Form ↗</a>` : ''}
+                  <a href="${escapeHtml(portalUrl)}" target="_blank" class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 font-mono text-[9px] hover:bg-slate-200">Portal ↗</a>
+                </div>
+              </td>
+              <td class="py-3 px-3">
+                <select onchange="savePlatformCrmQuick(${p.id}, { profile_status: this.value }, 'profiles')" class="rounded-lg border px-2.5 py-1.5 text-xs font-mono font-semibold cursor-pointer ${getProfileStatusStyle(ps)}">
+                  <option value="" ${ps === '' ? 'selected' : ''}>Remove (No Profile)</option>
+                  <option value="Created" ${ps === 'Created' ? 'selected' : ''}>Created</option>
+                  <option value="Pending Approval" ${ps === 'Pending Approval' ? 'selected' : ''}>Pending Approval</option>
+                  <option value="Live" ${ps === 'Live' ? 'selected' : ''}>Live</option>
+                  <option value="Receiving Registrations" ${ps === 'Receiving Registrations' ? 'selected' : ''}>Receiving Registrations</option>
+                </select>
+              </td>
+              <td class="py-3 px-3">
+                <select onchange="savePlatformCrmQuick(${p.id}, { profile_managed_by: this.value }, 'profiles')" class="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs text-slate-800 cursor-pointer min-w-[160px]">
+                  ${ownerOpts.join('')}
+                </select>
+              </td>
+              <td class="py-3 px-3 font-mono">
+                <div class="text-xs font-semibold ${p.crm_needs_check ? 'text-rose-700' : 'text-slate-800'}">${escapeHtml(checkedStr)}</div>
+                ${p.crm_needs_check ? `<span class="inline-block mt-1 px-1.5 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200 text-[9px] font-bold">Audit Check Due</span>` : ''}
+                <button onclick="savePlatformCrmQuick(${p.id}, { mark_checked: true }, 'profiles')" class="block mt-1 text-[10px] text-blue-700 hover:underline font-semibold cursor-pointer">✓ Stamp Checked Now</button>
+              </td>
+              <td class="py-3 px-3">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <button onclick="savePlatformCrmQuick(${p.id}, { new_registration: ${!newReg} }, 'profiles')" class="px-2 py-1 rounded-lg border font-mono text-[10px] font-semibold cursor-pointer ${newReg ? 'bg-emerald-100 text-emerald-900 border-emerald-300' : 'bg-white text-slate-600 border-slate-300'}">
+                    ${newReg ? '● New Reg Flagged' : 'Flag New Reg'}
+                  </button>
+                  <button onclick="savePlatformCrmQuick(${p.id}, { increment_registration: true }, 'profiles')" class="px-2 py-1 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 font-mono text-[10px] font-bold cursor-pointer" title="Log 1 new startup registration">+1 (${regCnt})</button>
+                </div>
+                ${p.last_registration_at ? `<div class="text-[9px] font-mono text-slate-500 mt-1">Last reg: ${escapeHtml(p.last_registration_at.slice(0, 16))}</div>` : ''}
+              </td>
+              <td class="py-3 px-3 max-w-xs">
+                <div class="flex items-center gap-1.5 mb-1">
+                  <button onclick="savePlatformCrmQuick(${p.id}, { crm_action_needed: ${!actNeeded} }, 'profiles')" class="px-2 py-0.5 rounded border font-mono text-[10px] font-semibold cursor-pointer ${actNeeded ? 'bg-rose-100 text-rose-800 border-rose-300' : 'bg-emerald-50 text-emerald-800 border-emerald-200'}">
+                    ${actNeeded ? '⚠ Action Needed' : 'Up to Date'}
+                  </button>
+                  <button onclick="promptSetCrmNotesFromBtn(this, ${p.id}, 'profiles')" data-next="${escapeHtml(p.crm_next_action || '')}" data-notes="${escapeHtml(p.crm_notes || '')}" class="text-[10px] font-mono text-blue-700 hover:underline cursor-pointer">Edit Action / Note</button>
+                </div>
+                ${p.crm_next_action ? `<div class="text-[11px] font-semibold text-rose-800">${escapeHtml(p.crm_next_action)}</div>` : ''}
+                ${p.crm_notes ? `<div class="text-[11px] text-slate-600 line-clamp-2">${escapeHtml(p.crm_notes)}</div>` : '<div class="text-[10px] text-slate-400">No notes yet</div>'}
+              </td>
+              <td class="py-3 px-3 text-right whitespace-nowrap">
+                <button onclick="openPlatformDetail(${p.id})" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-semibold cursor-pointer">Detail</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+        lucide.createIcons();
+      } catch (err) {
+        console.error('Failed to load Created Profiles CRM:', err);
+        tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-rose-600 text-xs">Failed to load Created Profiles CRM.</td></tr>`;
+      }
     }
 
 </script>

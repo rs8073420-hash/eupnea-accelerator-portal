@@ -84,7 +84,7 @@ def on_app_startup():
         print(f"Startup orchestrator notice: {e}")
 
 def ensure_platform_columns():
-    """Idempotently ensures link health, search-run tracking, and criteria breakdown columns exist."""
+    """Idempotently ensures link health, search-run tracking, criteria breakdown, and CRM columns exist."""
     conn = sqlite3.connect(DB_PATH, timeout=30.0)
     c = conn.cursor()
     existing = {r[1] for r in c.execute("PRAGMA table_info(platforms)").fetchall()}
@@ -98,12 +98,82 @@ def ensure_platform_columns():
         ("last_search_run_id", "INTEGER DEFAULT 0"),
         ("criteria_breakdown", "TEXT DEFAULT ''"),
         ("is_registration_hub", "INTEGER DEFAULT 0"),
+        ("profile_status", "TEXT DEFAULT ''"),
+        ("profile_managed_by", "TEXT DEFAULT ''"),
+        ("profile_url", "TEXT DEFAULT ''"),
+        ("profile_last_checked", "TIMESTAMP"),
+        ("new_registration", "INTEGER DEFAULT 0"),
+        ("new_registration_count", "INTEGER DEFAULT 0"),
+        ("last_registration_at", "TIMESTAMP"),
+        ("crm_action_needed", "INTEGER DEFAULT 0"),
+        ("crm_next_action", "TEXT DEFAULT ''"),
+        ("crm_notes", "TEXT DEFAULT ''"),
     ]
     for col, ddl in additions:
         if col not in existing:
             c.execute(f"ALTER TABLE platforms ADD COLUMN {col} {ddl}")
+    # Backfill existing submitted rows into Profile CRM if no CRM rows exist yet
+    has_any_crm = c.execute(
+        "SELECT COUNT(*) FROM platforms WHERE COALESCE(profile_status, '') != ''"
+    ).fetchone()[0]
+    if has_any_crm == 0:
+        c.execute(
+            """
+            UPDATE platforms
+            SET profile_status = 'Live',
+                profile_url = CASE WHEN COALESCE(profile_url, '') = '' THEN COALESCE(submitted_url, '') ELSE profile_url END,
+                profile_last_checked = COALESCE(profile_last_checked, submitted_at, CURRENT_TIMESTAMP)
+            WHERE status = 'submitted' AND COALESCE(profile_status, '') = ''
+            """
+        )
     conn.commit()
     conn.close()
+
+
+try:
+    ensure_platform_columns()
+except Exception as _col_init_err:
+    print(f"Schema startup notice: {_col_init_err}")
+
+
+PROFILE_STATUS_VALUES = ("Created", "Pending Approval", "Live", "Receiving Registrations")
+DEFAULT_CRM_TEAM_NAMES = [
+    "Panagiotis Dimitrelis",
+    "Aadarsh Singh Raghav",
+    "Shruti Sharma",
+    "Sreelakshmi Ajith K",
+    "Sarah Chen",
+    "Marcus Vance",
+    "Client Services Lead",
+]
+
+
+def _compute_profile_crm_summary(c) -> Dict[str, Any]:
+    rows = c.execute(
+        """
+        SELECT COALESCE(profile_status, '') AS ps,
+               COALESCE(profile_managed_by, '') AS owner,
+               COALESCE(profile_url, '') AS purl,
+               profile_last_checked,
+               COALESCE(new_registration, 0) AS new_reg,
+               COALESCE(new_registration_count, 0) AS new_reg_cnt,
+               COALESCE(crm_action_needed, 0) AS act_needed
+        FROM platforms
+        """
+    ).fetchall()
+    created_any = [r for r in rows if r["ps"] in PROFILE_STATUS_VALUES]
+    return {
+        "created_profiles_total": len(created_any),
+        "created_count": sum(1 for r in created_any if r["ps"] == "Created"),
+        "pending_approval_count": sum(1 for r in created_any if r["ps"] == "Pending Approval"),
+        "live_count": sum(1 for r in created_any if r["ps"] == "Live"),
+        "receiving_registrations_count": sum(1 for r in created_any if r["ps"] == "Receiving Registrations"),
+        "with_listing_url_count": sum(1 for r in created_any if (r["purl"] or "").strip()),
+        "assigned_owner_count": sum(1 for r in created_any if (r["owner"] or "").strip()),
+        "new_registrations_flagged": sum(1 for r in rows if r["new_reg"] == 1),
+        "new_registrations_total_count": sum(int(r["new_reg_cnt"] or 0) for r in rows),
+        "action_needed_count": sum(1 for r in rows if r["act_needed"] == 1),
+    }
 
 app.add_middleware(
     CORSMiddleware,
@@ -151,6 +221,18 @@ class EditScoreRequest(BaseModel):
 class StatusUpdateRequest(BaseModel):
     status: str
     submitted_url: Optional[str] = None
+
+class PlatformCRMUpdateRequest(BaseModel):
+    profile_status: Optional[str] = None
+    profile_managed_by: Optional[str] = None
+    profile_url: Optional[str] = None
+    new_registration: Optional[bool] = None
+    new_registration_count: Optional[int] = None
+    increment_registration: Optional[bool] = False
+    crm_action_needed: Optional[bool] = None
+    crm_next_action: Optional[str] = None
+    crm_notes: Optional[str] = None
+    mark_checked: Optional[bool] = True
 
 class AddManualPlatformRequest(BaseModel):
     name: str
@@ -645,6 +727,7 @@ def get_dashboard_stats():
 
     quality_summary = _compute_quality_summary(c, runs)
     criteria_state = pse.get_scoring_criteria(DB_PATH)
+    profile_crm_summary = _compute_profile_crm_summary(c)
 
     # Listing sources with visits
     sources_rows = c.execute("""
@@ -719,6 +802,7 @@ def get_dashboard_stats():
         "ai_engine": ghe.GeminiHydrogenEngine.get_engine_status(),
         "registration_hubs_count": quality_summary["registration_hubs_count"],
         "quality_summary": quality_summary,
+        "profile_crm_summary": profile_crm_summary,
         "quality_definitions": criteria_state["quality_definitions"],
         "modified_weights_count": criteria_state["modified_count"],
         "categories": categories,
@@ -743,6 +827,12 @@ def get_platforms(
     sort_by: Optional[str] = Query("score_desc"),
     latest_only: bool = Query(False),
     top_hubs_only: bool = Query(False),
+    has_profile_only: bool = Query(False),
+    exclude_profile_created: bool = Query(False),
+    profile_status: Optional[str] = Query(None),
+    managed_by: Optional[str] = Query(None),
+    new_registration_only: bool = Query(False),
+    action_needed_only: bool = Query(False),
     page: int = Query(1, ge=1),
     limit: int = Query(25, ge=1, le=100)
 ):
@@ -758,6 +848,12 @@ def get_platforms(
     if hasattr(sort_by, "default"): sort_by = sort_by.default or "score_desc"
     if hasattr(latest_only, "default"): latest_only = bool(latest_only.default)
     if hasattr(top_hubs_only, "default"): top_hubs_only = bool(top_hubs_only.default)
+    if hasattr(has_profile_only, "default"): has_profile_only = bool(has_profile_only.default)
+    if hasattr(exclude_profile_created, "default"): exclude_profile_created = bool(exclude_profile_created.default)
+    if hasattr(profile_status, "default"): profile_status = profile_status.default
+    if hasattr(managed_by, "default"): managed_by = managed_by.default
+    if hasattr(new_registration_only, "default"): new_registration_only = bool(new_registration_only.default)
+    if hasattr(action_needed_only, "default"): action_needed_only = bool(action_needed_only.default)
     if hasattr(page, "default"): page = page.default or 1
     if hasattr(limit, "default"): limit = limit.default or 25
 
@@ -851,15 +947,43 @@ def get_platforms(
     if top_hubs_only:
         query_parts.append("COALESCE(is_registration_hub, 0) = 1 AND status NOT IN ('unqualified', 'not_suitable', 'perk_benefit', 'dismissed')")
 
+    if has_profile_only:
+        query_parts.append("COALESCE(profile_status, '') IN ('Created', 'Pending Approval', 'Live', 'Receiving Registrations')")
+    elif exclude_profile_created:
+        query_parts.append("COALESCE(profile_status, '') NOT IN ('Created', 'Pending Approval', 'Live', 'Receiving Registrations')")
+
+    if profile_status and profile_status != "all":
+        if profile_status == "created_any":
+            query_parts.append("COALESCE(profile_status, '') IN ('Created', 'Pending Approval', 'Live', 'Receiving Registrations')")
+        elif profile_status == "none":
+            query_parts.append("COALESCE(profile_status, '') = ''")
+        else:
+            query_parts.append("COALESCE(profile_status, '') = ?")
+            params.append(profile_status)
+
+    if managed_by and managed_by != "all":
+        if managed_by == "__unassigned__":
+            query_parts.append("TRIM(COALESCE(profile_managed_by, '')) = ''")
+        else:
+            query_parts.append("LOWER(TRIM(COALESCE(profile_managed_by, ''))) = LOWER(?)")
+            params.append(managed_by.strip())
+
+    if new_registration_only:
+        query_parts.append("COALESCE(new_registration, 0) = 1")
+
+    if action_needed_only:
+        query_parts.append("COALESCE(crm_action_needed, 0) = 1")
+
     if search:
-        query_parts.append("(name LIKE ? OR domain LIKE ? OR draft_pitch LIKE ?)")
+        query_parts.append("(name LIKE ? OR domain LIKE ? OR draft_pitch LIKE ? OR COALESCE(profile_managed_by, '') LIKE ? OR COALESCE(crm_notes, '') LIKE ?)")
         search_param = f"%{search}%"
-        params.extend([search_param, search_param, search_param])
+        params.extend([search_param, search_param, search_param, search_param, search_param])
 
     where_clause = " AND ".join(query_parts)
 
     tab_metrics = _compute_tab_quality_metrics(c, where_clause, params, latest_run_id)
     total_count = tab_metrics["total"]
+    profile_crm_summary = _compute_profile_crm_summary(c)
 
     order_params: List[Any] = []
     if sort_by == "date_desc":
@@ -868,6 +992,10 @@ def get_platforms(
         order_sql = "ORDER BY COALESCE(discovered_at, '') ASC, id ASC"
     elif sort_by == "score_asc":
         order_sql = "ORDER BY score ASC, COALESCE(discovered_at, '') DESC, id DESC"
+    elif sort_by == "last_checked_asc":
+        order_sql = "ORDER BY CASE WHEN COALESCE(profile_last_checked, '') = '' THEN 0 ELSE 1 END, COALESCE(profile_last_checked, '') ASC, score DESC, id DESC"
+    elif sort_by == "new_reg_first":
+        order_sql = "ORDER BY COALESCE(new_registration, 0) DESC, COALESCE(crm_action_needed, 0) DESC, COALESCE(new_registration_count, 0) DESC, score DESC, id DESC"
     elif sort_by == "latest_search_first":
         order_sql = "ORDER BY CASE WHEN ? > 0 AND COALESCE(last_search_run_id, 0) = ? THEN 0 ELSE 1 END, COALESCE(discovered_at, '') DESC, score DESC, id DESC"
         order_params = [latest_run_id, latest_run_id]
@@ -900,7 +1028,17 @@ def get_platforms(
                link_checked_at,
                COALESCE(last_search_run_id, 0) AS last_search_run_id,
                COALESCE(is_registration_hub, 0) AS is_registration_hub,
-               COALESCE(criteria_breakdown, '[]') AS criteria_breakdown
+               COALESCE(criteria_breakdown, '[]') AS criteria_breakdown,
+               COALESCE(profile_status, '') AS profile_status,
+               COALESCE(profile_managed_by, '') AS profile_managed_by,
+               COALESCE(profile_url, '') AS profile_url,
+               profile_last_checked,
+               COALESCE(new_registration, 0) AS new_registration,
+               COALESCE(new_registration_count, 0) AS new_registration_count,
+               last_registration_at,
+               COALESCE(crm_action_needed, 0) AS crm_action_needed,
+               COALESCE(crm_next_action, '') AS crm_next_action,
+               COALESCE(crm_notes, '') AS crm_notes
         FROM platforms
         WHERE {where_clause}
         {order_sql}
@@ -908,6 +1046,7 @@ def get_platforms(
     """
     rows = c.execute(sql, params + order_params + [limit, offset]).fetchall()
     platforms = []
+    now_dt = datetime.now()
     for r in rows:
         item = dict(r)
         dt_fmt = _format_date_added(item.get("discovered_at"))
@@ -915,6 +1054,22 @@ def get_platforms(
         item["date_added_label"] = dt_fmt["label"]
         item["is_latest_search"] = bool(latest_run_id > 0 and item.get("last_search_run_id") == latest_run_id)
         item["is_registration_hub"] = bool(item.get("is_registration_hub"))
+        item["new_registration"] = bool(item.get("new_registration"))
+        item["crm_action_needed"] = bool(item.get("crm_action_needed"))
+        item["has_created_profile"] = item.get("profile_status") in PROFILE_STATUS_VALUES
+        plc = (item.get("profile_last_checked") or "").strip()
+        needs_check = False
+        if item["has_created_profile"]:
+            if not plc:
+                needs_check = True
+            else:
+                try:
+                    dt_plc = datetime.strptime(plc[:19], "%Y-%m-%d %H:%M:%S")
+                    if (now_dt - dt_plc).days >= 14:
+                        needs_check = True
+                except Exception:
+                    pass
+        item["crm_needs_check"] = needs_check
         try:
             item["criteria_breakdown_list"] = json.loads(item.get("criteria_breakdown") or "[]")
         except Exception:
@@ -930,6 +1085,7 @@ def get_platforms(
         "sort_by": sort_by,
         "latest_search_run_id": latest_run_id,
         "tab_metrics": tab_metrics,
+        "profile_crm_summary": profile_crm_summary,
         "platforms": platforms
     }
 
@@ -1218,9 +1374,12 @@ def update_platform_status(platform_id: int, req: StatusUpdateRequest):
             SET status = 'submitted', 
                 submitted_url = ?, 
                 submitted_at = CURRENT_TIMESTAMP,
-                visit_count = COALESCE(visit_count, 0)
+                visit_count = COALESCE(visit_count, 0),
+                profile_status = CASE WHEN COALESCE(profile_status, '') = '' THEN 'Live' ELSE profile_status END,
+                profile_url = CASE WHEN COALESCE(profile_url, '') = '' THEN ? ELSE profile_url END,
+                profile_last_checked = CURRENT_TIMESTAMP
             WHERE id = ?
-        """, (req.submitted_url or "", platform_id))
+        """, (req.submitted_url or "", req.submitted_url or "", platform_id))
     elif req.status == "undo_submit":
         target_status = "approved"
         c.execute("UPDATE platforms SET status = 'approved', submitted_url = '' WHERE id = ?", (platform_id,))
@@ -1230,6 +1389,115 @@ def update_platform_status(platform_id: int, req: StatusUpdateRequest):
     conn.commit()
     conn.close()
     return {"status": "success", "status_updated": target_status}
+
+
+@app.get("/api/crm/team-owners")
+def get_crm_team_owners():
+    """Returns active team members' full names for CRM Profile Managed By dropdowns."""
+    conn = get_db()
+    c = conn.cursor()
+    rows = c.execute(
+        "SELECT id, full_name, email, role FROM users WHERE is_active = 1 ORDER BY CASE WHEN LOWER(full_name) LIKE '%panagiotis%' THEN 0 ELSE 1 END, id ASC"
+    ).fetchall()
+    conn.close()
+    names = []
+    seen = set()
+    for r in rows:
+        fn = (r["full_name"] or "").strip()
+        if fn and fn.lower() not in seen:
+            seen.add(fn.lower())
+            names.append({"full_name": fn, "email": r["email"], "role": r["role"]})
+    for fallback_name in DEFAULT_CRM_TEAM_NAMES:
+        if fallback_name.lower() not in seen:
+            seen.add(fallback_name.lower())
+            names.append({"full_name": fallback_name, "email": "", "role": "member"})
+    return {"owners": names, "profile_statuses": list(PROFILE_STATUS_VALUES)}
+
+
+@app.post("/api/platforms/{platform_id}/crm")
+def update_platform_crm(platform_id: int, req: PlatformCRMUpdateRequest):
+    """Updates Platform CRM fields and auto-stamps Profile Last Checked timestamp."""
+    if req.profile_status is not None and req.profile_status != "" and req.profile_status not in PROFILE_STATUS_VALUES:
+        raise HTTPException(status_code=400, detail=f"Invalid profile_status. Choose one of {PROFILE_STATUS_VALUES} or empty.")
+
+    conn = get_db()
+    c = conn.cursor()
+    row = c.execute("SELECT * FROM platforms WHERE id = ?", (platform_id,)).fetchone()
+    if not row:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Platform not found.")
+
+    curr = dict(row)
+    now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    new_ps = curr.get("profile_status") or "" if req.profile_status is None else req.profile_status.strip()
+    new_owner = curr.get("profile_managed_by") or "" if req.profile_managed_by is None else req.profile_managed_by.strip()
+    new_purl = curr.get("profile_url") or "" if req.profile_url is None else req.profile_url.strip()
+
+    reg_cnt = int(curr.get("new_registration_count") or 0)
+    reg_flag = int(curr.get("new_registration") or 0)
+    last_reg_at = curr.get("last_registration_at") or ""
+
+    if req.increment_registration:
+        reg_cnt += 1
+        reg_flag = 1
+        last_reg_at = now_str
+    else:
+        if req.new_registration is not None:
+            reg_flag = 1 if req.new_registration else 0
+            if reg_flag == 1 and reg_cnt == 0:
+                reg_cnt = 1
+            if reg_flag == 1:
+                last_reg_at = now_str
+        if req.new_registration_count is not None:
+            reg_cnt = max(0, int(req.new_registration_count))
+            if reg_cnt > 0 and req.new_registration is None:
+                reg_flag = 1
+                last_reg_at = now_str
+
+    act_needed = int(curr.get("crm_action_needed") or 0) if req.crm_action_needed is None else (1 if req.crm_action_needed else 0)
+    next_act = curr.get("crm_next_action") or "" if req.crm_next_action is None else req.crm_next_action.strip()
+    notes_val = curr.get("crm_notes") or "" if req.crm_notes is None else req.crm_notes.strip()
+
+    last_checked_val = now_str if (req.mark_checked is not False) else (curr.get("profile_last_checked") or now_str)
+
+    c.execute(
+        """
+        UPDATE platforms
+        SET profile_status = ?,
+            profile_managed_by = ?,
+            profile_url = ?,
+            profile_last_checked = ?,
+            new_registration = ?,
+            new_registration_count = ?,
+            last_registration_at = ?,
+            crm_action_needed = ?,
+            crm_next_action = ?,
+            crm_notes = ?
+        WHERE id = ?
+        """,
+        (
+            new_ps,
+            new_owner,
+            new_purl,
+            last_checked_val,
+            reg_flag,
+            reg_cnt,
+            last_reg_at,
+            act_needed,
+            next_act,
+            notes_val,
+            platform_id,
+        ),
+    )
+    conn.commit()
+    summary = _compute_profile_crm_summary(c)
+    updated = dict(c.execute("SELECT * FROM platforms WHERE id = ?", (platform_id,)).fetchone())
+    conn.close()
+    updated["new_registration"] = bool(updated.get("new_registration"))
+    updated["crm_action_needed"] = bool(updated.get("crm_action_needed"))
+    updated["has_created_profile"] = updated.get("profile_status") in PROFILE_STATUS_VALUES
+    return {"status": "success", "platform": updated, "profile_crm_summary": summary}
 
 @app.post("/api/platforms/{platform_id}/verify-live")
 async def verify_platform_live_endpoint(platform_id: int):
@@ -1761,7 +2029,13 @@ def run_background_discovery_worker(run_id: int, query: str, target_count: int):
             with open(pool_file, "r", encoding="utf-8") as f:
                 candidates = json.load(f)
 
-        existing_domains = set(r[0].lower() for r in c.execute("SELECT domain FROM platforms").fetchall())
+        existing_domains = set(r[0].lower().replace("www.", "") for r in c.execute("SELECT domain FROM platforms WHERE domain IS NOT NULL").fetchall())
+        existing_domains.update(
+            r[0].lower().replace("www.", "")
+            for r in c.execute(
+                "SELECT domain FROM platforms WHERE domain IS NOT NULL AND COALESCE(profile_status, '') IN ('Created', 'Pending Approval', 'Live', 'Receiving Registrations')"
+            ).fetchall()
+        )
         existing_names = set(r[0].lower() for r in c.execute("SELECT name FROM platforms").fetchall())
         conn.close()
 

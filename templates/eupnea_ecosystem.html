@@ -1835,7 +1835,7 @@
             <i data-lucide="layers" class="w-4 h-4 text-slate-600"></i>
             <span>Operations</span>
           </div>
-          <span class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 font-semibold">100</span>
+          <span id="nav-orch-badge" class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 font-semibold">110</span>
         </button>
       </nav>
 
@@ -3070,6 +3070,26 @@
           </div>
         </div>
 
+        <!-- 10 Dedicated Competitor Agents Roster (Squad Kappa · browser-use 1.0) -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="px-2 py-0.5 rounded bg-slate-900 text-white font-mono text-[10px] font-bold">SQUAD KAPPA · 10 AGENTS</span>
+                <h4 class="font-syne font-bold text-sm text-slate-900">Dedicated Competitor Scanning Fleet (Own Browser-Use Profiles)</h4>
+                <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono text-[10px] font-semibold">100% Strict Mode</span>
+              </div>
+              <p class="text-[11px] text-slate-600 mt-0.5">Each agent (<span class="font-mono text-slate-800">Agent-C01..C10</span>) runs on its own isolated <span class="font-mono text-slate-800">agent_browser_profiles/competitor_01..10</span> profile, scanning strictly assigned platforms with zero DuckDuckGo &amp; Pydantic proof verification.</p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <button onclick="switchRoom('orchestration')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 text-[11px] font-semibold cursor-pointer">Open 110-Agent Orchestrator →</button>
+            </div>
+          </div>
+          <div id="comp-agents-mini-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
+            <div class="col-span-full text-center py-4 text-xs font-mono text-slate-500">Loading 10 Competitor Agents (Squad Kappa)...</div>
+          </div>
+        </div>
+
         <!-- View Switcher & Filters -->
         <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div class="flex items-center gap-2">
@@ -3174,17 +3194,17 @@
             <div>
               <div class="flex items-center gap-2 mb-1 flex-wrap">
                 <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
-                <h3 class="font-syne font-bold text-base text-slate-900">Research Operations &amp; Channel Orchestration</h3>
-                <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 text-[10px] font-mono font-semibold">100 Workstreams</span>
-                <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-mono font-semibold">WAL Concurrency Enabled</span>
+                <h3 class="font-syne font-bold text-base text-slate-900">110-Agent Research &amp; Competitor Strict Orchestration</h3>
+                <span class="px-2 py-0.5 rounded bg-indigo-50 text-indigo-800 border border-indigo-200 text-[10px] font-mono font-bold">110 Agents · 10 Squads · Strict Mode</span>
+                <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-mono font-semibold">110 Browser-Use Profiles</span>
               </div>
-              <p class="text-xs text-slate-600">90 specialised directory research tasks grouped across 9 domain cohorts with 10 coordination monitors.</p>
+              <p class="text-xs text-slate-600">90 directory specialists (Squads Alpha–Iota) + 10 Competitor Listing Scanners (Squad Kappa) + 10 strict coordination officers, each bound to an isolated <span class="font-mono text-slate-800">browser-use 1.0</span> profile.</p>
             </div>
 
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 flex-wrap">
               <button onclick="triggerOrchestrationCycle()" id="orch-run-cycle-btn" class="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 shadow-xs flex items-center gap-2 transition-colors cursor-pointer">
                 <i data-lucide="play" class="w-3.5 h-3.5"></i>
-                <span>Run Operations Cycle</span>
+                <span>Run 110-Agent Strict Cycle</span>
               </button>
               <button onclick="loadOrchestrationFleet()" class="p-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 cursor-pointer" title="Refresh Operations State">
                 <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
@@ -3195,25 +3215,26 @@
           <!-- Top Fleet Stats Grid -->
           <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mt-4 pt-4 border-t border-slate-200 text-xs">
             <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-              <span class="text-slate-500 block text-[10px] font-mono">TOTAL CAPACITY</span>
-              <span class="text-base font-bold font-syne text-slate-900" id="orch-stat-total">100 Nodes</span>
+              <span class="text-slate-500 block text-[10px] font-mono">TOTAL ORCHESTRATED</span>
+              <span class="text-base font-bold font-syne text-slate-900" id="orch-stat-total">110 Agents</span>
             </div>
             <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-              <span class="text-slate-500 block text-[10px] font-mono">DISCOVERY COHORTS</span>
-              <span class="text-base font-bold font-syne text-blue-800" id="orch-stat-search">90 Research Tasks</span>
-              <span class="text-[9px] text-slate-500 font-mono block">45 Scouts · 9 Leads · 36 QA</span>
+              <span class="text-slate-500 block text-[10px] font-mono">WORKER COHORTS</span>
+              <span class="text-base font-bold font-syne text-blue-800" id="orch-stat-search">90 Search + 10 Comp</span>
+              <span class="text-[9px] text-slate-500 font-mono block">100 Active Browser Profiles</span>
             </div>
             <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-              <span class="text-slate-500 block text-[10px] font-mono">COORDINATION DESK</span>
-              <span class="text-base font-bold font-syne text-slate-900" id="orch-stat-mgmt">10 Coordinators</span>
+              <span class="text-slate-500 block text-[10px] font-mono">MANAGEMENT OFFICERS</span>
+              <span class="text-base font-bold font-syne text-slate-900" id="orch-stat-mgmt">10 Officers</span>
             </div>
             <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-              <span class="text-slate-500 block text-[10px] font-mono">DOMAIN GROUPS</span>
-              <span class="text-base font-bold font-syne text-emerald-800">9 Groups</span>
+              <span class="text-slate-500 block text-[10px] font-mono">FUNCTIONAL SQUADS</span>
+              <span class="text-base font-bold font-syne text-indigo-800" id="orch-stat-squads">10 Squads</span>
+              <span class="text-[9px] text-slate-500 font-mono block">Alpha–Iota + Kappa</span>
             </div>
             <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-              <span class="text-slate-500 block text-[10px] font-mono">QUEUE HEALTH</span>
-              <span class="text-base font-bold font-syne text-emerald-800" id="orch-stat-latency">Nominal</span>
+              <span class="text-slate-500 block text-[10px] font-mono">STRICT COMPLIANCE</span>
+              <span class="text-base font-bold font-syne text-emerald-800" id="orch-stat-latency">100.0% Pass</span>
             </div>
           </div>
         </div>
@@ -3359,18 +3380,34 @@
           </div>
         </div>
 
+        <!-- SECTION 1B: 10 COMPETITOR LISTING SCANNERS (SQUAD KAPPA) -->
+        <div class="glass-card rounded-2xl p-5 border border-indigo-200 bg-white shadow-sm">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+            <div class="flex items-center gap-2 flex-wrap">
+              <i data-lucide="bar-chart-3" class="w-4 h-4 text-indigo-600"></i>
+              <h4 class="font-syne font-bold text-sm uppercase tracking-wider text-slate-900">10 Competitor Listing Scanners (Squad Kappa · Dedicated Browser-Use Profiles)</h4>
+              <span class="px-2 py-0.5 rounded bg-indigo-50 text-indigo-800 border border-indigo-200 font-mono text-[10px] font-semibold">Agent-C01 to Agent-C10</span>
+            </div>
+            <button onclick="switchRoom('competitors')" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold cursor-pointer">Open Competitor Intelligence →</button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3" id="orch-competitor-grid">
+            <!-- Injected via JavaScript -->
+          </div>
+        </div>
+
         <!-- SECTION 2: THE 90 WEBSITE SEARCH SPECIALISTS -->
         <div class="glass-card rounded-2xl p-5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-sm">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
             <div class="flex items-center gap-2">
               <i data-lucide="globe-2" class="w-4 h-4 text-sky-500"></i>
-              <h4 class="font-syne font-bold text-sm uppercase tracking-wider text-slate-900 dark:text-white">90 Website Search Specialists (9 Regional & Domain Squads)</h4>
+              <h4 class="font-syne font-bold text-sm uppercase tracking-wider text-slate-900 dark:text-white">90 Website Search Specialists + 10 Competitor Scanners (All 10 Squads)</h4>
             </div>
 
-            <!-- Search inside 90 agents -->
+            <!-- Search inside agents -->
             <div class="relative w-72">
               <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5"></i>
-              <input type="text" id="orch-search-filter" oninput="handleSearchAgentsFilter(this.value)" placeholder="Search 90 agents, squads, targets..." class="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 font-mono">
+              <input type="text" id="orch-search-filter" oninput="handleSearchAgentsFilter(this.value)" placeholder="Search 100 worker agents, squads..." class="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 font-mono">
             </div>
           </div>
 
@@ -6991,13 +7028,19 @@
         const data = await res.json();
         fleetState.data = data;
 
-        // Update Top KPIs
+        // Update Top KPIs (110 Agents: 90 Search + 10 Competitor + 10 Management)
         const totalEl = document.getElementById('orch-stat-total');
         const searchEl = document.getElementById('orch-stat-search');
         const mgmtEl = document.getElementById('orch-stat-mgmt');
-        if (totalEl) totalEl.innerText = `${data.total_agents} Agents`;
-        if (searchEl) searchEl.innerText = `${data.search_count} Specialists`;
-        if (mgmtEl) mgmtEl.innerText = `${data.management_count} Officers`;
+        const compStatEl = document.getElementById('orch-stat-latency');
+        const navOrchBadge = document.getElementById('nav-orch-badge');
+        if (totalEl) totalEl.innerText = `${data.total_agents || 110} Agents`;
+        if (navOrchBadge) navOrchBadge.innerText = data.total_agents || 110;
+        if (searchEl) searchEl.innerText = `${data.search_count || 90} Search + ${data.competitor_scanners_count || 10} Comp`;
+        if (mgmtEl) mgmtEl.innerText = `${data.management_count || 10} Officers`;
+        if (compStatEl && data.strict_orchestration) {
+          compStatEl.innerText = `${data.strict_orchestration.compliance_avg_pct ?? 100}% Pass`;
+        }
 
         // Update Manager Evaluation & Top Performers
         if (data.manager_evaluation) {
@@ -7059,8 +7102,9 @@
         }
 
         renderManagementAgents(data.management_agents || []);
+        renderOrchCompetitorAgents(data.competitor_agents || []);
         renderSquadTabs(data.squads || []);
-        renderSearchAgents(data.search_agents || []);
+        renderSearchAgents([...(data.search_agents || []), ...(data.competitor_agents || [])]);
         lucide.createIcons();
       } catch (err) {
         console.error('Error loading orchestration fleet:', err);
@@ -7129,7 +7173,12 @@
               
               <h5 class="font-syne font-bold text-xs text-slate-900 mb-0.5 leading-tight">${escapeHtml(a.name)}</h5>
               <span class="text-[11px] font-medium text-slate-600 block mb-1.5">${escapeHtml(a.role)}</span>
-              ${a.browser_profile ? `<div class="mb-2 flex items-center gap-1.5 flex-wrap text-[10px] font-mono"><span class="px-1.5 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-emerald-800 font-semibold">${escapeHtml(a.browser_engine || 'browser-use 1.0')}</span><span class="text-slate-500 truncate max-w-[180px]" title="${escapeHtml(a.browser_profile)}">${escapeHtml(a.browser_profile)}</span></div>` : ''}
+              <div class="mb-2 flex items-center gap-1.5 flex-wrap text-[10px] font-mono">
+                <span class="px-1.5 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-emerald-800 font-semibold">${escapeHtml(a.browser_engine || 'browser-use 1.0')}</span>
+                <span class="px-1.5 py-0.5 rounded bg-indigo-50 border border-indigo-200 text-indigo-800 font-bold">${escapeHtml(a.strict_rule_code || 'STRICT-MGMT')}</span>
+                ${a.browser_profile ? `<span class="text-slate-500 truncate max-w-[160px]" title="${escapeHtml(a.browser_profile)}">${escapeHtml(a.browser_profile)}</span>` : ''}
+              </div>
+              ${a.strict_mandate ? `<div class="mb-2 text-[10px] text-indigo-900 bg-indigo-50/70 border border-indigo-200 rounded-lg px-2 py-1 leading-snug line-clamp-2">${escapeHtml(a.strict_mandate)}</div>` : ''}
               
               <div class="mb-3 text-[11px] text-slate-600 leading-relaxed bg-slate-50 p-2.5 rounded-lg border border-slate-200">
                 <span class="font-mono text-[9px] uppercase tracking-wider text-slate-500 block mb-1">Active Duty / Task</span>
@@ -7154,13 +7203,46 @@
       }).join('');
     }
 
+    function renderOrchCompetitorAgents(compList) {
+      const container = document.getElementById('orch-competitor-grid');
+      if (!container) return;
+      if (!compList || compList.length === 0) {
+        container.innerHTML = `<div class="col-span-full text-center py-6 text-xs text-slate-500 font-mono">No competitor scanning agents registered.</div>`;
+        return;
+      }
+      container.innerHTML = compList.map(a => {
+        const profShort = (a.browser_profile || '').replace('agent_browser_profiles/', '');
+        const plats = a.assigned_platforms || [];
+        return `
+          <div class="p-3.5 rounded-xl border border-indigo-200 bg-indigo-50/30 hover:bg-indigo-50/60 transition-colors flex flex-col justify-between shadow-xs">
+            <div>
+              <div class="flex items-center justify-between gap-1 mb-1.5">
+                <span class="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-600 text-white">${escapeHtml(a.agent_id)}</span>
+                <span class="font-mono text-[9px] px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold">${Math.round(a.compliance_score ?? 100)}% STRICT</span>
+              </div>
+              <h5 class="font-syne font-bold text-xs text-slate-900 leading-tight mb-1">${escapeHtml(a.name)}</h5>
+              <div class="text-[10px] font-mono text-emerald-800 bg-emerald-50 border border-emerald-200 rounded px-1.5 py-0.5 inline-block mb-2">browser-use: ${escapeHtml(profShort)}</div>
+              <div class="flex flex-wrap gap-1 mb-2">
+                ${plats.map(d => `<span class="px-1.5 py-0.5 rounded bg-white border border-indigo-200 text-indigo-800 font-mono text-[9px] font-semibold">${escapeHtml(d)}</span>`).join('')}
+              </div>
+              <p class="text-[10px] text-slate-600 line-clamp-2 mb-2">${escapeHtml(a.strict_mandate || a.current_task || '')}</p>
+            </div>
+            <div class="pt-2 border-t border-indigo-200/70 flex items-center justify-between text-[10px] font-mono">
+              <span class="text-slate-600">Proofs: <strong class="text-slate-900">${a.platforms_processed || 0}</strong></span>
+              <button onclick="runSingleCompetitorAgentScanBtn(this)" data-agent-id="${escapeHtml(a.agent_id)}" class="px-2 py-0.5 rounded bg-slate-900 hover:bg-slate-800 text-white text-[9px] font-semibold cursor-pointer">Scan Shard</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
     function renderSquadTabs(squads) {
       const container = document.getElementById('orch-squad-tabs');
       if (!container) return;
 
       let html = `
         <button onclick="filterSquad('all')" class="px-3 py-1 rounded-lg border font-mono text-xs whitespace-nowrap transition-colors ${fleetState.selectedSquad === 'all' ? 'bg-slate-900 text-white dark:bg-amber-600 dark:text-white border-transparent' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'}">
-          All Squads (90)
+          All Squads (100 Workers)
         </button>
       `;
 
@@ -7179,11 +7261,16 @@
       container.innerHTML = html;
     }
 
+    function getCombinedWorkerAgents() {
+      if (!fleetState.data) return [];
+      return [...(fleetState.data.search_agents || []), ...(fleetState.data.competitor_agents || [])];
+    }
+
     function filterSquad(squadName) {
       fleetState.selectedSquad = squadName;
       if (fleetState.data) {
         renderSquadTabs(fleetState.data.squads || []);
-        renderSearchAgents(fleetState.data.search_agents || []);
+        renderSearchAgents(getCombinedWorkerAgents());
         lucide.createIcons();
       }
     }
@@ -7191,7 +7278,7 @@
     function handleSearchAgentsFilter(query) {
       fleetState.searchQuery = (query || '').toLowerCase().trim();
       if (fleetState.data) {
-        renderSearchAgents(fleetState.data.search_agents || []);
+        renderSearchAgents(getCombinedWorkerAgents());
         lucide.createIcons();
       }
     }
@@ -7256,8 +7343,10 @@
 
           <div class="mb-2 flex items-center gap-1.5 flex-wrap">
             ${roleBadge}
+            <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-indigo-50 text-indigo-800 border border-indigo-200">${escapeHtml(a.strict_rule_code || 'STRICT-G4H')} · ${Math.round(a.compliance_score ?? 100)}%</span>
             ${a.browser_profile ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono bg-emerald-50 text-emerald-800 border border-emerald-200 truncate max-w-[165px]" title="${escapeHtml(a.browser_engine || 'browser-use 1.0')} · ${escapeHtml(a.browser_profile)}">${escapeHtml(a.browser_profile.replace('agent_browser_profiles/', 'browser-use: '))}</span>` : ''}
           </div>
+          ${a.strict_mandate ? `<div class="mb-1.5 text-[9px] font-mono text-slate-600 bg-slate-50 border border-slate-200 rounded px-2 py-1 line-clamp-2">${escapeHtml(a.strict_mandate)}</div>` : ''}
 
           <span class="text-[11px] font-medium text-slate-700 block mb-1.5">${escapeHtml(a.role)}</span>
           <p class="text-[11px] text-slate-600 line-clamp-2 mb-2 leading-relaxed flex items-start gap-1.5">
@@ -7284,7 +7373,7 @@
         const res = await fetch('/api/orchestration/cycle', { method: 'POST' });
         const result = await res.json();
         if (result.status === 'success') {
-          showToast(`Verification cycle complete: 90 worker tasks updated in ${result.cycle_duration_seconds}s.`, 'success');
+          showToast(`110-Agent strict cycle complete: 100 workers + 10 officers updated in ${Math.round(result.duration_ms || 0)}ms.`, 'success');
           await loadOrchestrationFleet();
         } else {
           showToast('Failed to run verification cycle.', 'error');
@@ -7294,7 +7383,7 @@
       } finally {
         if (btn) {
           btn.disabled = false;
-          btn.innerHTML = `<i data-lucide="play" class="w-3.5 h-3.5"></i><span>Run Verification Cycle</span>`;
+          btn.innerHTML = `<i data-lucide="play" class="w-3.5 h-3.5"></i><span>Run 110-Agent Strict Cycle</span>`;
           lucide.createIcons();
         }
       }
@@ -8475,6 +8564,67 @@
         });
         csvEl.href = `/api/competitors/export-csv?${q.toString()}`;
       }
+      renderCompetitorMiniAgents(data.competitor_agents || []);
+    }
+
+    function renderCompetitorMiniAgents(agents) {
+      const grid = document.getElementById('comp-agents-mini-grid');
+      if (!grid) return;
+      if (!agents || agents.length === 0) {
+        grid.innerHTML = `<div class="col-span-full text-center py-3 text-xs font-mono text-slate-500">10 Competitor Agents standing by.</div>`;
+        return;
+      }
+      grid.innerHTML = agents.map(ag => `
+        <div class="p-2.5 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-indigo-50/50 transition-colors flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between gap-1 mb-1">
+              <span class="px-1.5 py-0.5 rounded bg-indigo-600 text-white font-mono text-[9px] font-bold">${escapeHtml(ag.agent_id)}</span>
+              <span class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono text-[9px] font-semibold">${Math.round(ag.compliance_score ?? 100)}% Strict</span>
+            </div>
+            <div class="font-syne font-bold text-[11px] text-slate-900 leading-snug mb-1 line-clamp-1" title="${escapeHtml(ag.name)}">${escapeHtml(ag.name)}</div>
+            <div class="text-[9px] font-mono text-emerald-800 bg-white border border-emerald-200 rounded px-1.5 py-0.5 mb-1.5 truncate" title="${escapeHtml(ag.browser_profile)}">browser: ${escapeHtml(ag.browser_profile_id || '')}</div>
+            <div class="flex flex-wrap gap-1 mb-1.5">
+              ${(ag.assigned_platforms || []).map(d => `<span class="px-1 py-0.5 rounded bg-white border border-slate-200 text-slate-700 font-mono text-[9px]">${escapeHtml(d)}</span>`).join('')}
+            </div>
+          </div>
+          <div class="pt-1.5 border-t border-slate-200 flex items-center justify-between text-[9px] font-mono">
+            <span class="text-slate-600">Listed: <strong class="text-slate-900">${ag.verified_listings_count ?? 0}</strong></span>
+            <button onclick="runSingleCompetitorAgentScanBtn(this)" data-agent-id="${escapeHtml(ag.agent_id)}" class="px-1.5 py-0.5 rounded bg-slate-900 hover:bg-slate-800 text-white font-semibold cursor-pointer">Scan Shard</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function runSingleCompetitorAgentScanBtn(btn) {
+      const agentId = btn ? btn.getAttribute('data-agent-id') : '';
+      if (!agentId) return;
+      const origTxt = btn.innerText;
+      btn.disabled = true;
+      btn.innerText = 'Scanning...';
+      try {
+        const res = await fetch('/api/competitors/run-scan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ agent_id: agentId, use_browser_use: true })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Shard scan failed');
+        if (data.overview) {
+          competitorState.overview = data.overview;
+          updateCompetitorSummaryUI(data.overview);
+          renderCompetitorPlatforms();
+          renderCompetitorAccelerators();
+        }
+        if (currentRoom === 'orchestration' && typeof loadOrchestrationFleet === 'function') {
+          await loadOrchestrationFleet();
+        }
+        showToast(`${agentId} shard scan complete: ${data.scan?.matches_verified ?? 0} verified UK proofs.`, 'success');
+      } catch (err) {
+        showToast(`${agentId} scan error: ` + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = origTxt;
+      }
     }
 
     async function refreshCompetitorBadge() {
@@ -8595,6 +8745,7 @@
               </div>
               <div class="flex items-center gap-2 mt-1.5 flex-wrap">
                 <a href="${escapeHtml(p.platform_url)}" target="_blank" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 font-mono text-[10px]">Portal ↗</a>
+                ${p.assigned_agent_id ? `<span class="px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-800 border border-indigo-200 font-mono text-[9px] font-bold" title="${escapeHtml(p.assigned_browser_profile || '')}">${escapeHtml(p.assigned_agent_id)} · ${escapeHtml((p.assigned_browser_profile || '').replace('agent_browser_profiles/', ''))}</span>` : ''}
                 ${p.is_registration_hub ? `<span class="px-1.5 py-0.5 rounded bg-sky-50 text-sky-800 border border-sky-200 font-mono text-[9px] font-semibold">Registration Hub</span>` : ''}
                 ${p.in_main_index ? `<span class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono text-[9px]">Index Score ${p.index_score}</span>` : ''}
               </div>

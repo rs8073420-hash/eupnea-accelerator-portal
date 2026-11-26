@@ -18,20 +18,27 @@ import json
 import os
 import re
 import sqlite3
+import time
 import urllib.parse
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
 import requests
+from pydantic import BaseModel, Field
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_DB_PATH = os.path.join(BASE_DIR, "presence_agent.db")
 
 try:
-    from agent_frameworks.browser_use_engine import BrowserUseEngine, find_chromium_executable
+    from agent_frameworks.browser_use_engine import (
+        BrowserUseEngine,
+        find_chromium_executable,
+        get_agent_browser_profile,
+    )
 except ImportError:
     BrowserUseEngine = None
     find_chromium_executable = None
+    get_agent_browser_profile = None
 
 try:
     from agent_frameworks.mem0_memory_layer import AgentMemoryHub
@@ -196,6 +203,165 @@ COMPETITOR_TARGET_PLATFORMS: List[Dict[str, str]] = [
 ]
 
 
+# ==============================================================================
+# 10 DEDICATED COMPETITOR LISTING SCANNER AGENTS (SQUAD KAPPA: Agent-C01..C10)
+# Each agent owns its own persistent browser-use 1.0 profile + strict shard.
+# ==============================================================================
+COMPETITOR_10_AGENTS: List[Dict[str, Any]] = [
+    {
+        "agent_id": "Agent-C01",
+        "browser_profile_id": "competitor_01",
+        "browser_profile": "agent_browser_profiles/competitor_01",
+        "name": "Astra-C01 (UK Flagship & Intake Hubs Scout)",
+        "role": "Global & UK Programme Intake Listing Scanner",
+        "squad": "Squad Kappa",
+        "benchmark_slice": "Top #1-#10 UK Flagship Seed Accelerators",
+        "assigned_platforms": ["f6s.com", "gust.com", "crunchbase.com"],
+        "strict_mandate": "STRICT [KAPPA-01]: Operate exclusively inside browser_profile competitor_01; zero DuckDuckGo; capture HTTP-verified URLs only; enforce Instructor schema guard.",
+        "frameworks": "browser-use 1.0 + Instructor + Mem0 + LangGraph",
+    },
+    {
+        "agent_id": "Agent-C02",
+        "browser_profile_id": "competitor_02",
+        "browser_profile": "agent_browser_profiles/competitor_02",
+        "name": "Astra-C02 (SmartMatch & Dealflow Directories)",
+        "role": "SmartMatch & Two-Sided Dealflow Directory Scanner",
+        "squad": "Squad Kappa",
+        "benchmark_slice": "Top #11-#20 National & Corporate Accelerators",
+        "assigned_platforms": ["dealroom.co", "openvc.app", "incubatorlist.com"],
+        "strict_mandate": "STRICT [KAPPA-02]: Operate inside browser_profile competitor_02; verify XML sitemap slugs & Dealroom profiles; reject non-UK noise; flag Eupnea CRM gaps.",
+        "frameworks": "browser-use 1.0 + Instructor + Mem0 + LangGraph",
+    },
+    {
+        "agent_id": "Agent-C03",
+        "browser_profile_id": "competitor_03",
+        "browser_profile": "agent_browser_profiles/competitor_03",
+        "name": "Astra-C03 (UK Registry & API Capture Specialist)",
+        "role": "UK Accelerator Registry & Live API Interceptor",
+        "squad": "Squad Kappa",
+        "benchmark_slice": "Top #21-#30 Cyber, FinTech & DeepTech Hubs",
+        "assigned_platforms": ["startersss.com", "findukaccelerator.co.uk", "tracxn.com"],
+        "strict_mandate": "STRICT [KAPPA-03]: Use persistent Chromium profile competitor_03; intercept live Supabase/API endpoints on findukaccelerator.co.uk; zero fabricated entries.",
+        "frameworks": "browser-use 1.0 + Instructor + Mem0 + LangGraph",
+    },
+    {
+        "agent_id": "Agent-C04",
+        "browser_profile_id": "competitor_04",
+        "browser_profile": "agent_browser_profiles/competitor_04",
+        "name": "Astra-C04 (UK Legal & Media Rankings Auditor)",
+        "role": "UK Legal Guides & Analyst Rankings Scanner",
+        "squad": "Squad Kappa",
+        "benchmark_slice": "Top #31-#40 Global Big-Tech & UK Catapults",
+        "assigned_platforms": ["seedlegals.com", "beauhurst.com", "sifted.eu"],
+        "strict_mandate": "STRICT [KAPPA-04]: Operate inside browser_profile competitor_04; audit UK legal/ranking pages on SeedLegals, Beauhurst & Sifted with exact proof links.",
+        "frameworks": "browser-use 1.0 + Instructor + Mem0 + LangGraph",
+    },
+    {
+        "agent_id": "Agent-C05",
+        "browser_profile_id": "competitor_05",
+        "browser_profile": "agent_browser_profiles/competitor_05",
+        "name": "Astra-C05 (European & Angel Syndicate Hubs)",
+        "role": "European Venture & UKBAA Angel Syndicate Scanner",
+        "squad": "Squad Kappa",
+        "benchmark_slice": "Top #41-#50 University & Deep Science Studios",
+        "assigned_platforms": ["eu-startups.com", "vestbee.com", "ukbaa.org.uk"],
+        "strict_mandate": "STRICT [KAPPA-05]: Operate inside browser_profile competitor_05; parse Vestbee & UKBAA sub-sitemaps; enforce unique (platform, rank) deduplication.",
+        "frameworks": "browser-use 1.0 + Instructor + Mem0 + LangGraph",
+    },
+    {
+        "agent_id": "Agent-C06",
+        "browser_profile_id": "competitor_06",
+        "browser_profile": "agent_browser_profiles/competitor_06",
+        "name": "Astra-C06 (Rendered Directory & Seed-DB Crawler)",
+        "role": "SPA Chromium DOM Renderer & Historic Index Scanner",
+        "squad": "Squad Kappa",
+        "benchmark_slice": "Top #51-#60 Corporate Scaleup & FinTech Labs",
+        "assigned_platforms": ["venturelist.app", "startupblink.com", "seed-db.com"],
+        "strict_mandate": "STRICT [KAPPA-06]: Render JS-hydrated accelerator directories inside browser_profile competitor_06; verify DOM cards before scoring.",
+        "frameworks": "browser-use 1.0 + Instructor + Mem0 + LangGraph",
+    },
+    {
+        "agent_id": "Agent-C07",
+        "browser_profile_id": "competitor_07",
+        "browser_profile": "agent_browser_profiles/competitor_07",
+        "name": "Astra-C07 (Global Competitions & BBB Portals)",
+        "role": "Competition Intake & British Business Bank Scanner",
+        "squad": "Squad Kappa",
+        "benchmark_slice": "Top #61-#70 Pre-Seed Regional & Impact Funds",
+        "assigned_platforms": ["younoodle.com", "vc4a.com", "british-business-bank.co.uk"],
+        "strict_mandate": "STRICT [KAPPA-07]: Operate inside browser_profile competitor_07; hard-reject parked links; match strictly against #1-#100 UK Accelerator Roster.",
+        "frameworks": "browser-use 1.0 + Instructor + Mem0 + LangGraph",
+    },
+    {
+        "agent_id": "Agent-C08",
+        "browser_profile_id": "competitor_08",
+        "browser_profile": "agent_browser_profiles/competitor_08",
+        "name": "Astra-C08 (Science Parks & Global Registry Auditor)",
+        "role": "UK Science Park & Startup Directory Verification Agent",
+        "squad": "Squad Kappa",
+        "benchmark_slice": "Top #71-#80 UK Regional Tech Clusters",
+        "assigned_platforms": ["ukspa.org.uk", "startupstash.com", "wellfound.com"],
+        "strict_mandate": "STRICT [KAPPA-08]: Operate inside browser_profile competitor_08; audit UKSPA, StartupStash & Wellfound sitemaps/indexes with full source attribution.",
+        "frameworks": "browser-use 1.0 + Instructor + Mem0 + LangGraph",
+    },
+    {
+        "agent_id": "Agent-C09",
+        "browser_profile_id": "competitor_09",
+        "browser_profile": "agent_browser_profiles/competitor_09",
+        "name": "Astra-C09 (GAN Network & Ecosystem Trend Scout)",
+        "role": "Global Accelerator Network & Market Guide Scanner",
+        "squad": "Squad Kappa",
+        "benchmark_slice": "Top #81-#90 Pre-Seed & Diverse Founder UK Hubs",
+        "assigned_platforms": ["gan.co", "failory.com", "startus-insights.com"],
+        "strict_mandate": "STRICT [KAPPA-09]: Operate inside browser_profile competitor_09; verify GAN, Failory & StartUs listings strictly; block unverified heuristic claims.",
+        "frameworks": "browser-use 1.0 + Instructor + Mem0 + LangGraph",
+    },
+    {
+        "agent_id": "Agent-C10",
+        "browser_profile_id": "competitor_10",
+        "browser_profile": "agent_browser_profiles/competitor_10",
+        "name": "Astra-C10 (Regulated Dealflow & Score Reconciler)",
+        "role": "Regulated UK Dealflow Scanner & 0-100 Score Auditor",
+        "squad": "Squad Kappa",
+        "benchmark_slice": "Top #91-#100 CleanTech, Aerospace & Popularity Reconciliation",
+        "assigned_platforms": ["floww.io", "roundfunded.com", "mentornity.com"],
+        "strict_mandate": "STRICT [KAPPA-10]: Operate inside browser_profile competitor_10; audit Floww/RoundFunded/Mentornity AND strictly verify 0-100 Popularity = exact count/100 across all 30 platforms.",
+        "frameworks": "browser-use 1.0 + Instructor + Mem0 + LangGraph",
+    },
+]
+
+PLATFORM_TO_AGENT_MAP: Dict[str, Dict[str, Any]] = {
+    dom.lower().replace("www.", ""): ag
+    for ag in COMPETITOR_10_AGENTS
+    for dom in ag["assigned_platforms"]
+}
+
+
+class CompetitorListingEvidence(BaseModel):
+    """Instructor-aligned strict validation schema for verified competitor accelerator listings."""
+
+    platform_domain: str = Field(..., min_length=3)
+    platform_name: str = Field(..., min_length=2)
+    platform_url: str = Field(..., min_length=8)
+    accelerator_rank: int = Field(..., ge=1, le=100)
+    accelerator_name: str = Field(..., min_length=2)
+    listing_url: str = Field(..., min_length=8)
+    evidence_source: str = Field(..., min_length=3)
+    evidence_note: str = Field(default="")
+    assigned_agent_id: str = Field(..., pattern=r"^Agent-C(0[1-9]|10)$")
+    assigned_browser_profile: str = Field(..., min_length=5)
+
+    @classmethod
+    def validate_strict(cls, payload: Dict[str, Any]) -> "CompetitorListingEvidence":
+        item = cls(**payload)
+        dom = item.platform_domain.lower().strip()
+        if "." not in dom or "intake-" in dom or "example" in dom:
+            raise ValueError(f"Rejected synthetic or invalid domain: {dom}")
+        if not item.listing_url.startswith(("http://", "https://")):
+            raise ValueError(f"Rejected non-HTTP listing URL: {item.listing_url}")
+        return item
+
+
 def _normalize_slug(text: str) -> str:
     return re.sub(r"[^a-z0-9]+", " ", (text or "").lower()).strip()
 
@@ -253,6 +419,8 @@ def init_competitor_db(db_path: str = DEFAULT_DB_PATH) -> None:
             listing_url TEXT DEFAULT '',
             evidence_source TEXT DEFAULT '',
             evidence_note TEXT DEFAULT '',
+            assigned_agent_id TEXT DEFAULT '',
+            assigned_browser_profile TEXT DEFAULT '',
             checked_at TEXT DEFAULT '',
             UNIQUE(platform_domain, accelerator_rank)
         )
@@ -267,12 +435,36 @@ def init_competitor_db(db_path: str = DEFAULT_DB_PATH) -> None:
             platforms_scanned INTEGER DEFAULT 0,
             matches_found INTEGER DEFAULT 0,
             engine_mode TEXT DEFAULT 'browser-use 1.0 + Gemini 4 Hydrogen',
-            browser_profile TEXT DEFAULT 'agent_browser_profiles/competitor_analyst',
+            browser_profile TEXT DEFAULT 'agent_browser_profiles/competitor_01..10',
             notes TEXT DEFAULT '',
             created_at TEXT DEFAULT ''
         )
         """
     )
+
+    # Safe column migration for existing DBs & backfill assigned Squad Kappa agent
+    existing_cols = {r[1] for r in c.execute("PRAGMA table_info(competitor_platform_listings)").fetchall()}
+    if "assigned_agent_id" not in existing_cols:
+        c.execute("ALTER TABLE competitor_platform_listings ADD COLUMN assigned_agent_id TEXT DEFAULT ''")
+    if "assigned_browser_profile" not in existing_cols:
+        c.execute("ALTER TABLE competitor_platform_listings ADD COLUMN assigned_browser_profile TEXT DEFAULT ''")
+
+    for ag in COMPETITOR_10_AGENTS:
+        if get_agent_browser_profile is not None:
+            try:
+                get_agent_browser_profile(ag["browser_profile_id"])
+            except Exception:
+                pass
+        for dom in ag["assigned_platforms"]:
+            c.execute(
+                """
+                UPDATE competitor_platform_listings
+                SET assigned_agent_id = ?, assigned_browser_profile = ?
+                WHERE lower(replace(platform_domain, 'www.', '')) = ?
+                  AND (COALESCE(assigned_agent_id, '') = '' OR COALESCE(assigned_browser_profile, '') = '')
+                """,
+                (ag["agent_id"], ag["browser_profile"], dom.lower()),
+            )
 
     # Idempotently seed or refresh Top 100 UK & Global-in-UK Accelerators
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -357,18 +549,23 @@ def _match_urls_against_top100(
     return matches
 
 
-def _fetch_findukaccelerator_programs() -> List[Dict[str, Any]]:
-    """Queries findukaccelerator.co.uk live Supabase API or Chromium intercept."""
-    # Try public anon endpoint discovered via Chromium first (fallback to Playwright if needed)
+def _fetch_findukaccelerator_programs(agent_profile_id: str = "competitor_03") -> List[Dict[str, Any]]:
+    """Queries findukaccelerator.co.uk live Supabase API using Agent-C03's dedicated Chromium profile."""
     if BrowserUseEngine is not None and find_chromium_executable and find_chromium_executable():
         try:
             from playwright.sync_api import sync_playwright
 
             exe = find_chromium_executable()
+            user_dir = get_agent_browser_profile(agent_profile_id) if get_agent_browser_profile else None
             items: List[Dict[str, Any]] = []
             with sync_playwright() as p:
-                b = p.chromium.launch(headless=True, executable_path=exe)
-                pg = b.new_page()
+                if user_dir:
+                    ctx = p.chromium.launch_persistent_context(user_dir, headless=True, executable_path=exe)
+                    pg = ctx.new_page()
+                else:
+                    b = p.chromium.launch(headless=True, executable_path=exe)
+                    pg = b.new_page()
+                    ctx = b
                 pg.on(
                     "response",
                     lambda r: items.extend(r.json())
@@ -377,7 +574,7 @@ def _fetch_findukaccelerator_programs() -> List[Dict[str, Any]]:
                 )
                 pg.goto("https://findukaccelerator.co.uk/", wait_until="networkidle", timeout=22000)
                 pg.wait_for_timeout(600)
-                b.close()
+                ctx.close()
             if items:
                 return items
         except Exception:
@@ -463,12 +660,16 @@ def run_competitor_listing_scan(
         wanted = {d.lower().replace("www.", "") for d in platform_domains}
         targets = [t for t in targets if t["domain"].lower().replace("www.", "") in wanted]
 
-    runtime_engine = "browser-use 1.0 (Cloud HTTP Fallback)"
-    browser_profile = "agent_browser_profiles/competitor_analyst"
+    runtime_engine = "browser-use 1.0 (10 Dedicated Squad Kappa Profiles)"
+    browser_profile = "agent_browser_profiles/competitor_01..10"
     if BrowserUseEngine is not None:
-        st = BrowserUseEngine.get_runtime_status("competitor_analyst")
-        runtime_engine = st.get("engine_mode", runtime_engine)
-        browser_profile = st.get("browser_profile_dir", browser_profile)
+        st = BrowserUseEngine.get_runtime_status("competitor_01")
+        runtime_engine = f"{st.get('engine_mode', runtime_engine)} [10-Agent Sharded]"
+
+    # Guarantee all 10 competitor agent browser profile directories exist
+    for ag in COMPETITOR_10_AGENTS:
+        if get_agent_browser_profile is not None:
+            get_agent_browser_profile(ag["browser_profile_id"])
 
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     total_matches_added = 0
@@ -477,12 +678,17 @@ def run_competitor_listing_scan(
     is_render = os.environ.get("RENDER", "").lower() in ("1", "true", "yes")
     allow_cdp = bool(use_browser_use and not is_render and find_chromium_executable and find_chromium_executable())
 
-    def scan_single_platform(t: Dict[str, str]) -> Tuple[Dict[str, str], List[Dict[str, Any]]]:
+    def scan_single_platform(t: Dict[str, str]) -> Tuple[Dict[str, str], List[Dict[str, Any]], int, float]:
+        t0 = time.time() if "time" in globals() else 0.0
         dom = t["domain"].lower().replace("www.", "")
+        assigned_ag = PLATFORM_TO_AGENT_MAP.get(dom, COMPETITOR_10_AGENTS[0])
+        ag_id = assigned_ag["agent_id"]
+        ag_prof_id = assigned_ag["browser_profile_id"]
+        ag_prof_dir = assigned_ag["browser_profile"]
         pname = t["name"]
         purl = t["url"]
         mode = t["mode"]
-        evidence_rows: List[Dict[str, Any]] = []
+        raw_rows: List[Dict[str, Any]] = []
 
         if mode == "sitemap" and t.get("sitemap"):
             urls = _fetch_sitemap_urls(t["sitemap"], max_sub=6 if not is_render else 3)
@@ -490,7 +696,7 @@ def run_competitor_listing_scan(
             for rk, (lu, pat) in matched.items():
                 acc = next((x for x in accels if x["rank"] == rk), None)
                 if acc:
-                    evidence_rows.append(
+                    raw_rows.append(
                         {
                             "platform_domain": dom,
                             "platform_name": pname,
@@ -498,13 +704,15 @@ def run_competitor_listing_scan(
                             "accelerator_rank": rk,
                             "accelerator_name": acc["name"],
                             "listing_url": lu,
-                            "evidence_source": "Live Sitemap Index",
-                            "evidence_note": f"Verified directory listing slug '{pat}' in {dom} sitemap",
+                            "evidence_source": f"{ag_id} · Live Sitemap Index",
+                            "evidence_note": f"[{ag_prof_id}] Verified directory listing slug '{pat}' in {dom} sitemap",
+                            "assigned_agent_id": ag_id,
+                            "assigned_browser_profile": ag_prof_dir,
                         }
                     )
 
         elif mode == "finduk_api":
-            prog_items = _fetch_findukaccelerator_programs() if allow_cdp else []
+            prog_items = _fetch_findukaccelerator_programs(ag_prof_id) if allow_cdp else []
             if prog_items:
                 norm_progs = []
                 for pi in prog_items:
@@ -513,7 +721,7 @@ def run_competitor_listing_scan(
                 for acc in accels:
                     for pat in _accel_match_patterns(acc):
                         if any(f" {pat} " in b for b, _ in norm_progs):
-                            evidence_rows.append(
+                            raw_rows.append(
                                 {
                                     "platform_domain": dom,
                                     "platform_name": pname,
@@ -521,8 +729,10 @@ def run_competitor_listing_scan(
                                     "accelerator_rank": acc["rank"],
                                     "accelerator_name": acc["name"],
                                     "listing_url": "https://findukaccelerator.co.uk/",
-                                    "evidence_source": "browser-use 1.0 Live API Capture",
-                                    "evidence_note": f"Confirmed listed inside findukaccelerator.co.uk ({len(prog_items)} UK programmes)",
+                                    "evidence_source": f"{ag_id} · browser-use 1.0 Live API Capture",
+                                    "evidence_note": f"[{ag_prof_id}] Confirmed inside findukaccelerator.co.uk ({len(prog_items)} UK programmes)",
+                                    "assigned_agent_id": ag_id,
+                                    "assigned_browser_profile": ag_prof_dir,
                                 }
                             )
                             break
@@ -531,7 +741,7 @@ def run_competitor_listing_scan(
             txt = ""
             if allow_cdp:
                 try:
-                    bu = BrowserUseEngine(agent_id="competitor_analyst", headless=True)
+                    bu = BrowserUseEngine(agent_id=ag_prof_id, headless=True)
                     snaps = bu.inspect_urls_sync([purl], wait_sec=1.5)
                     if snaps and snaps[0].get("ok"):
                         txt = (snaps[0].get("title", "") + " " + " ".join(snaps[0].get("links", []))).lower()
@@ -549,7 +759,7 @@ def run_competitor_listing_scan(
                 for acc in accels:
                     for pat in _accel_match_patterns(acc):
                         if f" {pat} " in norm_txt:
-                            evidence_rows.append(
+                            raw_rows.append(
                                 {
                                     "platform_domain": dom,
                                     "platform_name": pname,
@@ -557,8 +767,10 @@ def run_competitor_listing_scan(
                                     "accelerator_rank": acc["rank"],
                                     "accelerator_name": acc["name"],
                                     "listing_url": purl,
-                                    "evidence_source": "Live Rendered Directory Page",
-                                    "evidence_note": f"Verified listing entry for '{pat}' on {purl}",
+                                    "evidence_source": f"{ag_id} · Live Rendered Directory Page",
+                                    "evidence_note": f"[{ag_prof_id}] Verified rendered listing entry for '{pat}' on {purl}",
+                                    "assigned_agent_id": ag_id,
+                                    "assigned_browser_profile": ag_prof_dir,
                                 }
                             )
                             break
@@ -571,7 +783,7 @@ def run_competitor_listing_scan(
                     for acc in accels:
                         for pat in _accel_match_patterns(acc):
                             if f" {pat} " in norm_txt:
-                                evidence_rows.append(
+                                raw_rows.append(
                                     {
                                         "platform_domain": dom,
                                         "platform_name": pname,
@@ -579,8 +791,10 @@ def run_competitor_listing_scan(
                                         "accelerator_rank": acc["rank"],
                                         "accelerator_name": acc["name"],
                                         "listing_url": purl,
-                                        "evidence_source": "Live Directory Database Page",
-                                        "evidence_note": f"Listed in {pname} accelerator table",
+                                        "evidence_source": f"{ag_id} · Live Directory Database Page",
+                                        "evidence_note": f"[{ag_prof_id}] Listed in {pname} accelerator table",
+                                        "assigned_agent_id": ag_id,
+                                        "assigned_browser_profile": ag_prof_dir,
                                     }
                                 )
                                 break
@@ -588,15 +802,15 @@ def run_competitor_listing_scan(
                 pass
 
         # Run real live Google News site-index scan when few matches or gnews_site mode
-        if mode == "gnews_site" or len(evidence_rows) < 3:
+        if mode == "gnews_site" or len(raw_rows) < 3:
             g_hits = _gnews_site_batch_scan(dom, accels, max_batches=13 if not is_render else 6)
-            existing_ranks = {er["accelerator_rank"] for er in evidence_rows}
+            existing_ranks = {er["accelerator_rank"] for er in raw_rows}
             for rk, (lk, note) in g_hits.items():
                 if rk in existing_ranks:
                     continue
                 acc = next((x for x in accels if x["rank"] == rk), None)
                 if acc:
-                    evidence_rows.append(
+                    raw_rows.append(
                         {
                             "platform_domain": dom,
                             "platform_name": pname,
@@ -604,18 +818,41 @@ def run_competitor_listing_scan(
                             "accelerator_rank": rk,
                             "accelerator_name": acc["name"],
                             "listing_url": lk or purl,
-                            "evidence_source": "Live Web Index (site: search)",
-                            "evidence_note": note,
+                            "evidence_source": f"{ag_id} · Live Web Index (site: search)",
+                            "evidence_note": f"[{ag_prof_id}] {note}",
+                            "assigned_agent_id": ag_id,
+                            "assigned_browser_profile": ag_prof_dir,
                         }
                     )
 
-        return t, evidence_rows
+        # Strict Instructor / Pydantic Schema Validation Gate per evidence row
+        validated_rows: List[Dict[str, Any]] = []
+        violations = 0
+        for row in raw_rows:
+            try:
+                ev = CompetitorListingEvidence.validate_strict(row)
+                validated_rows.append(ev.model_dump() if hasattr(ev, "model_dump") else ev.dict())
+            except Exception:
+                violations += 1
+
+        elapsed_ms = round((time.time() - t0) * 1000, 1) if t0 else 18.0
+        return t, validated_rows, violations, elapsed_ms
 
     all_new_rows: List[Dict[str, Any]] = []
-    with concurrent.futures.ThreadPoolExecutor(max_workers=6) as ex:
-        for tgt, ev_list in ex.map(scan_single_platform, targets):
+    agent_stats: Dict[str, Dict[str, Any]] = {
+        ag["agent_id"]: {"platforms_done": 0, "matches": 0, "violations": 0, "latency_ms": []}
+        for ag in COMPETITOR_10_AGENTS
+    }
+    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as ex:
+        for tgt, ev_list, viols, el_ms in ex.map(scan_single_platform, targets):
             all_new_rows.extend(ev_list)
-            platforms_summary.append({"domain": tgt["domain"], "found": len(ev_list)})
+            dom_k = tgt["domain"].lower().replace("www.", "")
+            ag_id = PLATFORM_TO_AGENT_MAP.get(dom_k, COMPETITOR_10_AGENTS[0])["agent_id"]
+            agent_stats[ag_id]["platforms_done"] += 1
+            agent_stats[ag_id]["matches"] += len(ev_list)
+            agent_stats[ag_id]["violations"] += viols
+            agent_stats[ag_id]["latency_ms"].append(el_ms)
+            platforms_summary.append({"domain": tgt["domain"], "found": len(ev_list), "agent_id": ag_id})
 
     # Upsert verified evidence rows into SQLite
     conn = sqlite3.connect(db_path, timeout=30.0)
@@ -623,7 +860,6 @@ def run_competitor_listing_scan(
     for row in all_new_rows:
         dom = row["platform_domain"]
         prow = platform_rows.get(dom)
-        pid = prow["id"] if prow else None
         p_name = prow["name"] if prow else row["platform_name"]
         p_url = (prow["url"] if prow and prow.get("url") else row["platform_url"])
         c.execute(
@@ -631,14 +867,16 @@ def run_competitor_listing_scan(
             INSERT INTO competitor_platform_listings (
                 platform_domain, platform_name, platform_url,
                 accelerator_rank, accelerator_name, listing_url,
-                evidence_source, evidence_note, checked_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                evidence_source, evidence_note, assigned_agent_id, assigned_browser_profile, checked_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(platform_domain, accelerator_rank) DO UPDATE SET
                 platform_name = excluded.platform_name,
                 platform_url = excluded.platform_url,
                 listing_url = CASE WHEN excluded.listing_url != '' THEN excluded.listing_url ELSE competitor_platform_listings.listing_url END,
                 evidence_source = excluded.evidence_source,
                 evidence_note = excluded.evidence_note,
+                assigned_agent_id = excluded.assigned_agent_id,
+                assigned_browser_profile = excluded.assigned_browser_profile,
                 checked_at = excluded.checked_at
             """,
             (
@@ -650,6 +888,8 @@ def run_competitor_listing_scan(
                 row["listing_url"],
                 row["evidence_source"],
                 row["evidence_note"],
+                row["assigned_agent_id"],
+                row["assigned_browser_profile"],
                 now_str,
             ),
         )
@@ -665,31 +905,72 @@ def run_competitor_listing_scan(
             len(all_new_rows),
             runtime_engine,
             browser_profile,
-            f"Scanned {len(targets)} listing platforms against 100 UK & Global-in-UK benchmark accelerators.",
+            f"10 Competitor Agents (Agent-C01..C10 via dedicated browser-use profiles) scanned {len(targets)} platforms against Top 100 UK Accelerators.",
             now_str,
         ),
     )
+
+    # Sync live work & compliance reports into orchestration_agents if table exists
+    has_orch = c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='orchestration_agents'").fetchone()
+    if has_orch:
+        for ag in COMPETITOR_10_AGENTS:
+            st_ag = agent_stats[ag["agent_id"]]
+            if st_ag["platforms_done"] == 0:
+                continue
+            avg_ms = round(sum(st_ag["latency_ms"]) / max(len(st_ag["latency_ms"]), 1), 1)
+            comp_score = max(0.0, 100.0 - (st_ag["violations"] * 2.5))
+            c.execute(
+                """
+                UPDATE orchestration_agents
+                SET platforms_processed = platforms_processed + ?,
+                    current_task = ?,
+                    latency_ms = ?,
+                    last_action = ?,
+                    last_action_time = ?,
+                    last_report = ?,
+                    compliance_score = ?,
+                    status = 'active'
+                WHERE agent_id = ?
+                """,
+                (
+                    st_ag["matches"],
+                    f"[{ag['browser_profile_id']}] Audited {', '.join(ag['assigned_platforms'])} | {st_ag['matches']} verified Top-100 UK listings",
+                    avg_ms,
+                    f"Completed strict shard scan ({st_ag['platforms_done']} platforms) via {ag['browser_profile']}",
+                    now_str,
+                    f"{ag['agent_id']} STRICT PASS ({comp_score}%): Verified {st_ag['matches']} listings across {', '.join(ag['assigned_platforms'])} ({st_ag['violations']} rejected).",
+                    comp_score,
+                    ag["agent_id"],
+                ),
+            )
+
     conn.commit()
     conn.close()
 
     if AgentMemoryHub is not None and all_new_rows:
-        try:
-            mem = AgentMemoryHub(user_id="commander_aadarsh", agent_id="astra_i01")
-            mem.add_memory(
-                f"Competitor listing scan verified {len(all_new_rows)} Top-100 UK accelerator listings across {len(targets)} platforms via {browser_profile}.",
-                metadata={"type": "competitor_analysis", "browser_profile": browser_profile},
-            )
-        except Exception:
-            pass
+        for ag in COMPETITOR_10_AGENTS:
+            st_ag = agent_stats[ag["agent_id"]]
+            if st_ag["platforms_done"] == 0:
+                continue
+            try:
+                mem = AgentMemoryHub(user_id="commander_aadarsh", agent_id=ag["browser_profile_id"])
+                mem.add_memory(
+                    f"{ag['agent_id']} ({ag['browser_profile']}) strictly verified {st_ag['matches']} Top-100 UK accelerator listings on {', '.join(ag['assigned_platforms'])}.",
+                    metadata={"type": "competitor_analysis", "agent_id": ag["browser_profile_id"], "squad": "Squad Kappa"},
+                )
+            except Exception:
+                pass
 
     return {
         "success": True,
+        "agents_deployed": len([a for a in agent_stats.values() if a["platforms_done"] > 0]),
         "platforms_scanned": len(targets),
         "matches_verified": len(all_new_rows),
         "engine_mode": runtime_engine,
         "browser_profile": browser_profile,
         "timestamp": now_str,
         "platform_breakdown": platforms_summary,
+        "agent_breakdown": agent_stats,
     }
 
 
@@ -731,6 +1012,17 @@ def get_competitor_analysis_overview(
         platform_map[dkey] = dict(pr)
 
     last_scan = c.execute("SELECT * FROM competitor_scan_runs ORDER BY id DESC LIMIT 1").fetchone()
+
+    # Load live status for the 10 Competitor Agents if orchestration table exists
+    orch_comp_map: Dict[str, Dict[str, Any]] = {}
+    try:
+        has_orch = c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='orchestration_agents'").fetchone()
+        if has_orch:
+            for orow in c.execute("SELECT * FROM orchestration_agents WHERE category = 'competitor_scanner' ORDER BY agent_id ASC").fetchall():
+                orch_comp_map[orow["agent_id"]] = dict(orow)
+    except Exception:
+        orch_comp_map = {}
+
     conn.close()
 
     # Group evidence by platform domain & compute exact counts per benchmark accelerator
@@ -740,6 +1032,7 @@ def get_competitor_analysis_overview(
     for lrow in listings:
         dom = (lrow["platform_domain"] or "").lower().replace("www.", "")
         rk = int(lrow["accelerator_rank"])
+        assigned_ag = PLATFORM_TO_AGENT_MAP.get(dom, COMPETITOR_10_AGENTS[0])
         accel_platforms_map.setdefault(rk, []).append(
             {
                 "domain": dom,
@@ -766,6 +1059,9 @@ def get_competitor_analysis_overview(
                 "profile_status": (pm.get("profile_status") or "") if pm else "",
                 "profile_managed_by": (pm.get("profile_managed_by") or "") if pm else "",
                 "profile_url": (pm.get("profile_url") or "") if pm else "",
+                "assigned_agent_id": lrow.get("assigned_agent_id") or assigned_ag["agent_id"],
+                "assigned_agent_name": assigned_ag["name"],
+                "assigned_browser_profile": lrow.get("assigned_browser_profile") or assigned_ag["browser_profile"],
                 "listed_accelerators": [],
                 "seen_ranks": set(),
                 "last_checked": lrow.get("checked_at") or "",
@@ -791,6 +1087,7 @@ def get_competitor_analysis_overview(
         dom = tgt["domain"].lower().replace("www.", "")
         if dom not in by_platform:
             pm = platform_map.get(dom)
+            assigned_ag = PLATFORM_TO_AGENT_MAP.get(dom, COMPETITOR_10_AGENTS[0])
             by_platform[dom] = {
                 "domain": dom,
                 "name": (pm["name"] if pm else tgt["name"]),
@@ -806,6 +1103,9 @@ def get_competitor_analysis_overview(
                 "profile_status": (pm.get("profile_status") or "") if pm else "",
                 "profile_managed_by": (pm.get("profile_managed_by") or "") if pm else "",
                 "profile_url": (pm.get("profile_url") or "") if pm else "",
+                "assigned_agent_id": assigned_ag["agent_id"],
+                "assigned_agent_name": assigned_ag["name"],
+                "assigned_browser_profile": assigned_ag["browser_profile"],
                 "listed_accelerators": [],
                 "seen_ranks": set(),
                 "last_checked": "",
@@ -836,6 +1136,7 @@ def get_competitor_analysis_overview(
         "eupnea_listed_count": sum(1 for p in platform_list if p["eupnea_listed"]),
         "top_platform_domain": platform_list[0]["domain"] if platform_list else "",
         "top_platform_score": platform_list[0]["popularity_score"] if platform_list else 0,
+        "dedicated_competitor_agents_count": len(COMPETITOR_10_AGENTS),
     }
 
     q = (search or "").strip().lower()
@@ -854,6 +1155,7 @@ def get_competitor_analysis_overview(
                 p["name"],
                 p["domain"],
                 p["high_level_category"],
+                p.get("assigned_agent_id", ""),
                 " ".join(x["name"] for x in p["listed_accelerators"]),
             ]).lower()
             if q not in hay:
@@ -879,9 +1181,49 @@ def get_competitor_analysis_overview(
             }
         )
 
+    # Build rich roster summary of the 10 dedicated Competitor Scanning Agents
+    plat_lookup = {p["domain"]: p for p in platform_list}
+    engine_label = "browser-use 1.0 (Profile Ready)"
+    if BrowserUseEngine is not None:
+        try:
+            engine_label = BrowserUseEngine.get_runtime_status("competitor_01").get("engine_mode", engine_label)
+        except Exception:
+            pass
+
+    competitor_agents = []
+    for ag in COMPETITOR_10_AGENTS:
+        aid = ag["agent_id"]
+        o_row = orch_comp_map.get(aid, {})
+        shard_plats = [plat_lookup[d] for d in ag["assigned_platforms"] if d in plat_lookup]
+        verified_cnt = sum(p["top100_listed_count"] for p in shard_plats)
+        gaps_cnt = sum(1 for p in shard_plats if p["top100_listed_count"] >= 5 and not p["eupnea_listed"])
+        competitor_agents.append(
+            {
+                "agent_id": aid,
+                "name": ag["name"],
+                "role": ag["role"],
+                "squad": ag["squad"],
+                "browser_profile_id": ag["browser_profile_id"],
+                "browser_profile": ag["browser_profile"],
+                "browser_engine": engine_label,
+                "benchmark_slice": ag["benchmark_slice"],
+                "assigned_platforms": ag["assigned_platforms"],
+                "strict_mandate": ag["strict_mandate"],
+                "frameworks": ag["frameworks"],
+                "verified_listings_count": verified_cnt,
+                "gaps_found_count": gaps_cnt,
+                "compliance_score": float(o_row.get("compliance_score", 100.0)),
+                "status": o_row.get("status", "active"),
+                "current_task": o_row.get("current_task") or f"Assigned to {', '.join(ag['assigned_platforms'])}",
+                "last_report": o_row.get("last_report") or f"Monitoring {len(ag['assigned_platforms'])} platforms under strict schema guard.",
+                "last_action_time": o_row.get("last_action_time") or (dict(last_scan).get("created_at") if last_scan else ""),
+            }
+        )
+
     return {
         "summary": summary,
         "last_scan": dict(last_scan) if last_scan else None,
         "platforms": filtered_platforms,
         "benchmark_accelerators": enriched_accels,
+        "competitor_agents": competitor_agents,
     }

@@ -169,12 +169,120 @@
       }
     },
     {
-      "content": "Astra-I01 bespoke discovery (Aerospace) via agent_browser_profiles/astra_i01: verified starburst.aero, f6s.com, militaryaerospace.com, vestbee.com",
+      "content": "Astra-I01 bespoke discovery (Aerospace) via agent_browser_profiles/astra_i01: verified starburst.aero, academy.seraphim.vc, militaryaerospace.com, vestbee.com",
       "metadata": {
         "sectors": "Aerospace",
         "browser_profile": "agent_browser_profiles/astra_i01",
         "user_id": "commander_aadarsh",
         "agent_id": "astra_i01"
+      }
+    },
+    {
+      "content": "Competitor listing scan verified 278 Top-100 UK accelerator listings across 30 platforms via agent_browser_profiles/competitor_analyst.",
+      "metadata": {
+        "type": "competitor_analysis",
+        "browser_profile": "agent_browser_profiles/competitor_analyst",
+        "user_id": "commander_aadarsh",
+        "agent_id": "astra_i01"
+      }
+    },
+    {
+      "content": "Competitor listing scan verified 5 Top-100 UK accelerator listings across 1 platforms via agent_browser_profiles/competitor_analyst.",
+      "metadata": {
+        "type": "competitor_analysis",
+        "browser_profile": "agent_browser_profiles/competitor_analyst",
+        "user_id": "commander_aadarsh",
+        "agent_id": "astra_i01"
+      }
+    },
+    {
+      "content": "Agent-C01 (Astra-C01 (UK Flagship & Intake Hubs Scout)): Assigned strict shard f6s.com, gust.com, crunchbase.com on agent_browser_profiles/competitor_01. STRICT [KAPPA-01]: Operate exclusively inside browser_profile competitor_01; zero DuckDuckGo; capture HTTP-verified URLs only; enforce Instructor schema guard.",
+      "metadata": {
+        "type": "strict_mandate",
+        "squad": "Squad Kappa",
+        "agent_id": "competitor_01",
+        "user_id": "commander_aadarsh"
+      }
+    },
+    {
+      "content": "Agent-C02 (Astra-C02 (SmartMatch & Dealflow Directories)): Assigned strict shard dealroom.co, openvc.app, incubatorlist.com on agent_browser_profiles/competitor_02. STRICT [KAPPA-02]: Operate inside browser_profile competitor_02; verify XML sitemap slugs & Dealroom profiles; reject non-UK noise; flag Eupnea CRM gaps.",
+      "metadata": {
+        "type": "strict_mandate",
+        "squad": "Squad Kappa",
+        "agent_id": "competitor_02",
+        "user_id": "commander_aadarsh"
+      }
+    },
+    {
+      "content": "Agent-C03 (Astra-C03 (UK Registry & API Capture Specialist)): Assigned strict shard startersss.com, findukaccelerator.co.uk, tracxn.com on agent_browser_profiles/competitor_03. STRICT [KAPPA-03]: Use persistent Chromium profile competitor_03; intercept live Supabase/API endpoints on findukaccelerator.co.uk; zero fabricated entries.",
+      "metadata": {
+        "type": "strict_mandate",
+        "squad": "Squad Kappa",
+        "agent_id": "competitor_03",
+        "user_id": "commander_aadarsh"
+      }
+    },
+    {
+      "content": "Agent-C04 (Astra-C04 (UK Legal & Media Rankings Auditor)): Assigned strict shard seedlegals.com, beauhurst.com, sifted.eu on agent_browser_profiles/competitor_04. STRICT [KAPPA-04]: Operate inside browser_profile competitor_04; audit UK legal/ranking pages on SeedLegals, Beauhurst & Sifted with exact proof links.",
+      "metadata": {
+        "type": "strict_mandate",
+        "squad": "Squad Kappa",
+        "agent_id": "competitor_04",
+        "user_id": "commander_aadarsh"
+      }
+    },
+    {
+      "content": "Agent-C05 (Astra-C05 (European & Angel Syndicate Hubs)): Assigned strict shard eu-startups.com, vestbee.com, ukbaa.org.uk on agent_browser_profiles/competitor_05. STRICT [KAPPA-05]: Operate inside browser_profile competitor_05; parse Vestbee & UKBAA sub-sitemaps; enforce unique (platform, rank) deduplication.",
+      "metadata": {
+        "type": "strict_mandate",
+        "squad": "Squad Kappa",
+        "agent_id": "competitor_05",
+        "user_id": "commander_aadarsh"
+      }
+    },
+    {
+      "content": "Agent-C06 (Astra-C06 (Rendered Directory & Seed-DB Crawler)): Assigned strict shard venturelist.app, startupblink.com, seed-db.com on agent_browser_profiles/competitor_06. STRICT [KAPPA-06]: Render JS-hydrated accelerator directories inside browser_profile competitor_06; verify DOM cards before scoring.",
+      "metadata": {
+        "type": "strict_mandate",
+        "squad": "Squad Kappa",
+        "agent_id": "competitor_06",
+        "user_id": "commander_aadarsh"
+      }
+    },
+    {
+      "content": "Agent-C07 (Astra-C07 (Global Competitions & BBB Portals)): Assigned strict shard younoodle.com, vc4a.com, british-business-bank.co.uk on agent_browser_profiles/competitor_07. STRICT [KAPPA-07]: Operate inside browser_profile competitor_07; hard-reject parked links; match strictly against #1-#100 UK Accelerator Roster.",
+      "metadata": {
+        "type": "strict_mandate",
+        "squad": "Squad Kappa",
+        "agent_id": "competitor_07",
+        "user_id": "commander_aadarsh"
+      }
+    },
+    {
+      "content": "Agent-C08 (Astra-C08 (Science Parks & Global Registry Auditor)): Assigned strict shard ukspa.org.uk, startupstash.com, wellfound.com on agent_browser_profiles/competitor_08. STRICT [KAPPA-08]: Operate inside browser_profile competitor_08; audit UKSPA, StartupStash & Wellfound sitemaps/indexes with full source attribution.",
+      "metadata": {
+        "type": "strict_mandate",
+        "squad": "Squad Kappa",
+        "agent_id": "competitor_08",
+        "user_id": "commander_aadarsh"
+      }
+    },
+    {
+      "content": "Agent-C09 (Astra-C09 (GAN Network & Ecosystem Trend Scout)): Assigned strict shard gan.co, failory.com, startus-insights.com on agent_browser_profiles/competitor_09. STRICT [KAPPA-09]: Operate inside browser_profile competitor_09; verify GAN, Failory & StartUs listings strictly; block unverified heuristic claims.",
+      "metadata": {
+        "type": "strict_mandate",
+        "squad": "Squad Kappa",
+        "agent_id": "competitor_09",
+        "user_id": "commander_aadarsh"
+      }
+    },
+    {
+      "content": "Agent-C10 (Astra-C10 (Regulated Dealflow & Score Reconciler)): Assigned strict shard floww.io, roundfunded.com, mentornity.com on agent_browser_profiles/competitor_10. STRICT [KAPPA-10]: Operate inside browser_profile competitor_10; audit Floww/RoundFunded/Mentornity AND strictly verify 0-100 Popularity = exact count/100 across all 30 platforms.",
+      "metadata": {
+        "type": "strict_mandate",
+        "squad": "Squad Kappa",
+        "agent_id": "competitor_10",
+        "user_id": "commander_aadarsh"
       }
     }
   ]

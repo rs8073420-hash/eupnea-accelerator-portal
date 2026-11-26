@@ -159,12 +159,21 @@ def run_suite():
     )["match"] is False
     print(f"5. Trained Category Fleet (7/7 @ 100.0% Acc) & Strict Category Gate verified (rankers={len(rankers)}).")
 
-    # 6. Check orchestration fleet endpoints (read-only + live agent metadata)
+    # 6. Check orchestration fleet endpoints (read-only + 110-agent strict orchestration telemetry)
     r_fleet = client.get("/api/orchestration/fleet")
     assert r_fleet.status_code == 200
     fleet = r_fleet.json()
-    assert fleet["total_agents"] == 100
-    print(f"6. 100-Agent Swarm Orchestration Fleet verified (total_agents={fleet['total_agents']}).")
+    assert fleet["total_agents"] == 110, fleet["total_agents"]
+    assert fleet["management_count"] == 10, fleet["management_count"]
+    assert fleet["search_count"] == 90, fleet["search_count"]
+    assert fleet["competitor_scanners_count"] == 10, fleet["competitor_scanners_count"]
+    assert len(fleet["competitor_agents"]) == 10
+    assert fleet["strict_orchestration"]["enabled"] is True
+    assert fleet["strict_orchestration"]["isolated_browser_profiles"] == 110
+    print(
+        f"6. 110-Agent Strict Swarm Orchestration Verified (total_agents={fleet['total_agents']}, "
+        f"search={fleet['search_count']}, competitor_scanners={fleet['competitor_scanners_count']}, mgmt={fleet['management_count']})."
+    )
 
     print("\nALL GEMINI 4 HYDROGEN E2E ASSERTIONS PASSED WITH 0 FAILURES!")
 

@@ -2563,6 +2563,7 @@ def serve_live_listing_view(slug: str):
 
 class CompetitorScanRequest(BaseModel):
     platform_domains: Optional[List[str]] = None
+    agent_id: Optional[str] = None
     use_browser_use: bool = True
 
 
@@ -2596,8 +2597,15 @@ async def api_competitors_overview(
 @app.post("/api/competitors/run-scan")
 async def api_competitors_run_scan(req: CompetitorScanRequest = Body(default=CompetitorScanRequest())):
     comp_eng.init_competitor_db(DB_PATH)
+    orch_eng.init_orchestration_db()
+    target_domains = req.platform_domains
+    if not target_domains and req.agent_id:
+        ag = next((a for a in comp_eng.COMPETITOR_10_AGENTS if a["agent_id"].lower() == req.agent_id.strip().lower()), None)
+        if not ag:
+            raise HTTPException(status_code=404, detail=f"Unknown competitor agent_id: {req.agent_id}")
+        target_domains = ag["assigned_platforms"]
     scan_res = comp_eng.run_competitor_listing_scan(
-        platform_domains=req.platform_domains,
+        platform_domains=target_domains,
         use_browser_use=req.use_browser_use,
         db_path=DB_PATH,
     )

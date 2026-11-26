@@ -41,9 +41,12 @@ except Exception:
     sync_playwright = None
     PLAYWRIGHT_AVAILABLE = False
 
+COMPETITOR_SCANNER_PROFILE_IDS = [f"competitor_{i:02d}" for i in range(1, 11)]
+
 ALL_SPECIALIST_PROFILE_IDS = [
     "bespoke_coordinator",
     "eupnea_v2_presence_browser",
+    "competitor_analyst",
     "astra_r01",
     "astra_s01",
     "astra_u01",
@@ -51,7 +54,7 @@ ALL_SPECIALIST_PROFILE_IDS = [
     "astra_v01",
     "astra_e01",
     "astra_c01",
-]
+] + COMPETITOR_SCANNER_PROFILE_IDS
 
 
 def get_agent_browser_profile(agent_id: str) -> str:
@@ -63,8 +66,13 @@ def get_agent_browser_profile(agent_id: str) -> str:
 
 
 def ensure_all_agent_browser_profiles() -> Dict[str, str]:
-    """Ensures every category agent, bespoke coordinator, and presence agent owns a dedicated browser profile."""
-    return {aid: get_agent_browser_profile(aid) for aid in ALL_SPECIALIST_PROFILE_IDS}
+    """Ensures every category, bespoke, orchestrator (110 agents), and competitor agent owns a dedicated browser profile."""
+    profile_map = {aid: get_agent_browser_profile(aid) for aid in ALL_SPECIALIST_PROFILE_IDS}
+    for i in range(1, 91):
+        profile_map[f"agent_{i:02d}"] = get_agent_browser_profile(f"agent_{i:02d}")
+    for i in range(1, 11):
+        profile_map[f"agent_m{i:02d}"] = get_agent_browser_profile(f"agent_m{i:02d}")
+    return profile_map
 
 
 _CACHED_CHROME_EXE: Optional[str] = ""
